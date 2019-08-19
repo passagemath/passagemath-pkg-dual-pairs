@@ -1,7 +1,7 @@
 dual_pairs
 ==========
 
-A Sage package for computing with dual pairs of algebras.
+A SageMath package for computing with dual pairs of algebras.
 
 
 Author

@@ -2,13 +2,13 @@ import setuptools
 
 setuptools.setup(
     name="dual_pairs",
-    version="0.1",
+    version="0.1.1",
     author="Peter Bruin",
     author_email="P.J.Bruin@math.leidenuniv.nl",
     description="SageMath package for computing with dual pairs of algebras",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
-    url="http://gitlab.com/pbruin/dual_pairs",
+    url="https://gitlab.com/pbruin/dual-pairs",
     packages=["dual_pairs"],
     package_data={"": ["../doc/Makefile", "../doc/*.rst"]},
     install_requires=["sagemath"],
