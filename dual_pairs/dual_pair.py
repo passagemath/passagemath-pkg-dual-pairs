@@ -1,0 +1,963 @@
+# -*- coding: utf-8 -*-
+"""
+Dual pairs of algebras, representing commutative finite flat group
+schemes.
+"""
+
+from __future__ import absolute_import
+
+from sage.misc.all import cached_method
+from sage.structure.category_object import CategoryObject
+from sage.structure.factory import UniqueFactory
+
+
+class DualPair_class(CategoryObject):
+    """
+    A dual pair of finite flat algebras.
+
+    EXAMPLES::
+
+        sage: R.<x> = QQ[]
+        sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+        sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+        sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+        ....:                   [1/4,  1/4, -1/2,   0],
+        ....:                   [1/2, -1/2,    0,   0],
+        ....:                   [  0,    0,    0, -17]])
+        sage: D = DualPair(A, Phi)
+        sage: D
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
+        Number Field in a2 with defining polynomial x^2 + 17
+        B = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
+        Number Field in a2 with defining polynomial x^2 + 17
+        sage: D.category()
+        Category of objects
+    """
+
+    def __init__(self, alg1, alg2, phi):
+        """
+        Initialise a dual pair of finite flat algebras.
+
+        This is not meant to be called directly; use
+        :class:`DualPairFactory` instead.
+
+        TESTS::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: TestSuite(D).run()
+        """
+        self._algebra1 = alg1
+        self._algebra2 = alg2
+        self._phi = phi
+        super(DualPair_class, self).__init__(base=alg1.base_ring())
+
+    def _repr_(self):
+        """
+        Return a string representation of ``self``.
+
+        TESTS::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D
+            Dual pair of algebras over Rational function field in a over Rational Field
+            A = Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 - a
+            B = Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 + 3*a
+        """
+        return ('Dual pair of algebras over %s\nA = %s\nB = %s'
+                % (self.base_ring(), self.algebra1(), self.algebra2()))
+
+    def algebra1(self):
+        """
+        Return the algebra `A` attached to ``self``.
+
+        TESTS::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.algebra1()
+            Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 - a
+        """
+        return self._algebra1
+
+    def algebra2(self):
+        """
+        Return the algebra `B` attached to ``self``.
+
+        TESTS::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.algebra2()
+            Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 + 3*a
+        """
+        return self._algebra2
+
+    def phi(self):
+        """
+        TODO
+        """
+        return self._phi
+
+    @cached_method
+    def theta(self):
+        r"""
+        Return the canonical root of unity attached to ``self``.
+
+        OUTPUT:
+
+        The canonical root of unity `\theta \in A\otimes_R B`, where
+        `R` is the base ring and `A` and `B` are the two algebras
+        defining ``self``.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.theta()
+            [    1     1     1     0]
+            [    1     1    -1     0]
+            [    1    -1     0     0]
+            [    0     0     0 -1/17]
+        """
+        return self.phi().transpose().inverse()
+
+    def degree(self):
+        """
+        TODO
+        """
+        return self.algebra1().degree()
+
+    def unit1(self):
+        """
+        TODO
+        """
+        return self.algebra1().one()
+
+    def unit2(self):
+        """
+        TODO
+        """
+        return self.algebra1().one()
+
+    @cached_method
+    def counit1(self):
+        """
+        TODO
+        """
+        return self.unit1() * self.phi()
+
+    @cached_method
+    def counit2(self):
+        """
+        TODO
+        """
+        return self.phi() * self.unit2()
+
+    def matrix_space(self):
+        """
+        TODO
+        """
+        return self._matrix_space
+
+    def is_isomorphic(self, other):
+        """
+        Return ``True`` if ``self`` is isomorphic to ``other``.
+        """
+        raise NotImplementedError
+
+    def change_ring(self, R):
+        """
+        Return a copy of ``self`` base-changed to `R`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair
+            sage: R.<t> = ZZ[]
+            sage: D = DualPair(ZZ, [[t, t]], [[1, 1], [1, -1]])
+            sage: D
+            Dual pair of algebras over Integer Ring
+            A = Finite flat algebra of degree 2 over Integer Ring, product of:
+            Order in Number Field in a0 with defining polynomial t
+            Order in Number Field in a1 with defining polynomial t
+            B = Finite flat algebra of degree 2 over Integer Ring, product of:
+            Order in Number Field in a0 with defining polynomial t
+            Order in Number Field in a1 with defining polynomial t
+            sage: D.change_ring(GF(7))
+            Dual pair of algebras over Finite Field of size 7
+            A = Finite flat algebra of degree 2 over Finite Field of size 7, product of:
+            Finite Field of size 7
+            Finite Field of size 7
+            B = Finite flat algebra of degree 2 over Finite Field of size 7, product of:
+            Finite Field of size 7
+            Finite Field of size 7
+        """
+        return DualPair(self.algebra1().change_ring(R), self.algebra2().change_ring(R), self.phi())
+
+    def points(self, R):
+        """
+        Return the group of points of ``self`` over `R`.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.points(QQ)
+            [(1, 0, 0, 0), (0, 1, 0, 0)]
+            sage: L.<a> = D.splitting_field()
+            sage: L
+            Number Field in a with defining polynomial x^2 + 17
+            sage: D.points(L)
+            [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, a), (0, 0, 1, -a)]
+        """
+        return self.algebra1().morphisms_to_ring(R)
+
+    def dual_points(self, R):
+        """
+        Return the group of points of the dual of ``self`` over `R`.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: L.<a> = D.splitting_field()
+            sage: L
+            Number Field in a with defining polynomial x^2 + 17
+            sage: D.dual_points(L)
+            [(1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, a), (0, 0, 1, -a)]
+        """
+        return self.algebra2().morphisms_to_ring(R)
+
+    def splitting_field_polynomial(self):
+        """
+        Return a defining polynomial for the splitting field of ``self``.
+        """
+        from sage.libs.pari import pari
+        f = self.algebra1().splitting_field_polynomial()
+        x = f.variable_name()
+        g = self.algebra2().splitting_field_polynomial()
+        g = g.change_variable_name(x)
+        if g == f:
+            return f
+        comp = pari(f).polcompositum(g)
+        return f.parent()(comp[len(comp) - 1])
+
+    @cached_method
+    def splitting_field(self, names):
+        """
+        Return a splitting field for ``self``.
+        """
+        from sage.rings.all import QQ
+        R = self.base_ring()
+        if not R.is_field():
+            raise NotImplementedError
+        if R.is_finite():
+            d1 = self.algebra1().splitting_field('w1').degree()
+            d2 = self.algebra2().splitting_field('w2').degree()
+            return R.extension(d1.lcm(d2), names=names)
+        elif R is QQ:
+            return QQ.extension(self.splitting_field_polynomial(),
+                                names=names)
+        else:
+            from sage.categories.pushout import pushout
+            return pushout(self.algebra1().splitting_field(names),
+                           self.algebra2().splitting_field(names))
+
+    @cached_method
+    def ramified_primes(self):
+        """
+        Return the set of ramified primes of ``self``.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.ramified_primes()
+            {2, 17}
+        """
+        P = self.algebra1().ramified_primes()
+        return P.union(self.degree().prime_divisors())
+
+    def _group_data(self, L):
+        """
+        Internal function to compute some data attached to the group of
+        `L`-points of ``self``.
+        """
+        from sage.rings.all import QQ
+        from sage.rings.complex_field import ComplexField_class
+        from .group_structure import mod1
+        n = self.degree()
+        if isinstance(L, ComplexField_class):
+            twopii = 2 * L.pi() * L.gen()
+            dlog = lambda x: mod1(((x.log()/twopii).real() * n).round() / n)
+        else:
+            m = L.zeta_order().gcd(n)
+            zeta = L.zeta(m)
+            zeta_pow = zeta.powers(m)
+            dlog = lambda x: mod1(zeta_pow.index(x) / m)
+        P = self.algebra1().morphisms_to_ring(L, as_matrix=True)
+        Q = self.algebra2().morphisms_to_ring(L, as_matrix=True)
+        T = P * self.theta() * Q.transpose()
+        T = T.apply_map(dlog, QQ)
+        return T, P, Q
+
+    @cached_method
+    def group_structure(self, L):
+        """
+        Return the structure of the group of `L`-points of ``self``.
+        """
+        from .group_structure import find_group_structure
+        T, P, Q = self._group_data(L)
+        M, E, p, q = find_group_structure(T)
+        P.permute_rows(p)
+        Q.permute_rows(q)
+        elements = list(M)
+        gens_indices = [elements.index(g) for g in M.gens()]
+        basis1 = tuple(P.row(i) for i in gens_indices)
+        basis2 = tuple(Q.row(i) for i in gens_indices)
+        return (M, E, P, Q, basis1, basis2)
+
+    def group_structure_algebraic_closure(self):
+        """
+        Return the group of points of ``self`` over an algebraic closure.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.group_structure_algebraic_closure()[0]
+            Additive abelian group isomorphic to Z/2 + Z/2
+        """
+        from sage.rings.all import QQ
+        n = self.degree()
+        if self.base_ring() is QQ:
+            from sage.rings.all import ComplexField
+            L = ComplexField(800)  # TODO: adapt precision
+        elif self.base_ring().is_finite():
+            L = self.splitting_field('w')
+        else:
+            raise NotImplementedError
+        return self.group_structure(L)
+
+    def pairing(self, P, Q):
+        """
+        Return the image of (P, Q) under the Cartier duality pairing.
+        """
+        return P * self.theta() * Q
+
+    def add(self, P, Q):
+        """
+        Return the sum of `P` and `Q` under the group operation of
+        ``self``.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: L.<a> = D.splitting_field()
+            sage: O, P, Q, R = D.points(L)
+            sage: D.add(P, Q) == R
+            True
+
+        """
+        R = P.base_ring()
+        if Q.base_ring() is not R:
+            raise ValueError("points have different base rings")
+        B = self.algebra2().change_ring(R)
+        S = B(P * self.theta()) * B(Q * self.theta())
+        return self.phi() * S.module_element()
+
+    def multiplication_by_m(self, m):
+        """
+        Return the multiplication-by-`m` map on ``self``.
+        """
+        raise NotImplementedError
+
+    def trivial_torsor(self):
+        """
+        Return a trivial torsor under ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.trivial_torsor()
+            Torsor for Dual pair of algebras over Rational Field
+            A = Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17
+            B = Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17
+            T = Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17
+        """
+        from .torsor_pair import TorsorPair
+        from .finite_flat_algebra_module import FiniteFlatAlgebraModule
+        T = self.algebra1()
+        U = FiniteFlatAlgebraModule(self.algebra2())
+        Psi = self.phi()
+        return TorsorPair(self, T, U, Psi)
+
+    def automorphism_matrix(self, L, aut, basis=None):
+        """
+        Return the matrix of the automorphism ``aut``.
+
+        INPUT:
+
+        - ``L`` -- an extension of the base field `K` of ``self``
+
+        - ``aut`` -- an automorphism of `L` over `K`
+
+        - ``basis`` -- basis of the group of `L`-points of ``self``
+          (default: choose some basis)
+
+        OUTPUT:
+
+        The matrix of ``aut`` on the group of `L`-points of ``self``.
+        """
+        from sage.matrix.all import Matrix
+        from sage.rings.all import IntegerModRing
+        M, _, _, _, basis1, basis2 = self.group_structure(L)
+        if basis is None:
+            basis = basis1
+        d = M.exponent()
+        zeta_powers = L.zeta(d).powers(d)
+        dlog = lambda x: zeta_powers.index(x)
+        T = Matrix([[dlog(self.pairing(P, Q))
+                     for P in basis] for Q in basis2])
+        U = Matrix([[dlog(self.pairing(P.apply_map(aut), Q))
+                     for P in basis] for Q in basis2])
+        return T.solve_left(U).transpose().change_ring(IntegerModRing(d))
+        # return Matrix([T.transpose().__pari__().matsolvemod(r.__pari__().Col(), d).sage() for r in U.rows()]).transpose()
+
+    @cached_method
+    def frobenius_matrix(self, q=None):
+        """
+        Return the matrix of the `q`-power Frobenius automorphism on
+        ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: {p: D.frobenius_matrix(p) for p in {3, 5, 7, 11, 13}}
+            {3: [0 1]
+                [1 1],
+             5: [1 0]
+                [1 1],
+             7: [1 0]
+                [1 1],
+             11: [1 0]
+                 [1 1],
+             13: [0 1]
+                 [1 1]}
+            sage: D.frobenius_matrix(2)
+            Traceback (most recent call last):
+            ...
+            ZeroDivisionError: inverse of Mod(0, 2) does not exist
+            sage: D.frobenius_matrix(23)
+            Traceback (most recent call last):
+            ...
+            ZeroDivisionError: input matrix must be nonsingular
+        """
+        from sage.rings.all import ZZ
+        K = self.base_ring()
+        if K.is_finite():
+            p = K.characteristic()
+            L = self.splitting_field('w')
+            if q is None:
+                q = K.cardinality()
+            q = ZZ(q)
+            if not q.is_power_of(p):
+                raise ValueError('%s is not a power of %s' % (q, p))
+            F = L.frobenius_endomorphism(q.log(p))
+            return self.automorphism_matrix(L, F)
+        else:
+            from sage.rings.all import FiniteField
+            if q is None:
+                raise ValueError("should pass a prime power to Frob")
+            return self.change_ring(FiniteField(q, 'a')).frobenius_matrix()
+
+    def frobenius_charpoly(self, q=None):
+        """
+        Return the characteristic polynomial of the `q`-power Frobenius
+        automorphism on ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: {p: D.frobenius_charpoly(p) for p in {3, 5, 7, 11, 13}}
+            {3: x^2 + x + 1,
+             5: x^2 + 1,
+             7: x^2 + 1,
+             11: x^2 + 1,
+             13: x^2 + x + 1}
+        """
+        return self.frobenius_matrix(q).charpoly()
+
+    def frobenius_traces(self, B=100):
+        """
+        Return the traces of Frobenius elements at all unramified primes
+        below `B`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: D.frobenius_traces()
+            [(3, 1),
+             (5, 0),
+             (7, 0),
+             (11, 0),
+             (13, 1),
+             (17, 0),
+             (19, 0),
+             (29, 1),
+             (31, 1),
+             (37, 0),
+             (41, 1),
+             (43, 0),
+             (47, 1),
+             (53, 0),
+             (59, 0),
+             (61, 0),
+             (67, 0),
+             (71, 1),
+             (73, 1),
+             (79, 0),
+             (83, 0),
+             (89, 0),
+             (97, 0)]
+        """
+        from sage.arith.misc import primes
+        P = self.ramified_primes()
+        L = []
+        for p in primes(B):
+            if p not in P:
+                L.append((p, self.frobenius_matrix(p).trace()))
+        return L
+
+    def representation_table(self, L=None, basis=None):
+        """
+        Return the representation table of ``self``.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.representation_table()
+            {Ring endomorphism of Number Field in z with defining polynomial x^2 + 17
+             Defn: z |--> -z: [1 0]
+                              [1 1],
+             Ring endomorphism of Number Field in z with defining polynomial x^2 + 17
+             Defn: z |--> z: [1 0]
+                             [0 1]}
+
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
+            sage: table = D.representation_table(L)
+            sage: {f(z): m for f, m in table.iteritems()}
+            {-1/14*z^5 - 1/14*z^4 - 4/7*z^3 - 1/14*z^2 - 13/7*z + 1/7: [1 1]
+                                                                       [0 1],
+             1/14*z^5 - 1/14*z^4 + 4/7*z^3 - 1/14*z^2 + 13/7*z + 1/7: [0 1]
+                                                                      [1 1],
+             1/14*z^5 + 1/14*z^4 + 4/7*z^3 + 1/14*z^2 + 13/7*z - 1/7: [1 1]
+                                                                      [1 0],
+             -1/14*z^5 + 1/14*z^4 - 4/7*z^3 + 1/14*z^2 - 13/7*z - 1/7: [0 1]
+                                                                       [1 0],
+             -z: [1 0]
+                 [1 1],
+             z: [1 0]
+                [0 1]}
+        """
+        if L is None:
+            L = self.splitting_field('z')
+        G = L.automorphisms()
+        return {g: self.automorphism_matrix(L, g, basis) for g in G}
+
+    def conductor_exponent(self, p):
+        """
+        Return the exponent of the local Artin conductor of ``self`` at `p`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: D.conductor_exponent(2)
+            0
+            sage: D.conductor_exponent(7)
+            0
+            sage: D.conductor_exponent(23)
+            1
+        """
+        from sage.modules.all import VectorSpace
+        from sage.rings.all import FiniteField, pAdicField, PolynomialRing, ZZ
+        from sage.rings.infinity import infinity
+        from sage.rings.padics.precision_error import PrecisionError
+        from .padic_roots import kummer_dedekind, integral_basis_generator, padic_aut
+        from .finite_flat_algebra import polroots
+        # TODO: use a p-adic splitting field (not implemented in Sage)
+        g = self.splitting_field_polynomial()
+        prec = 20
+        while True:
+            Qp = pAdicField(p, prec)
+            try:
+                h = g.base_extend(Qp).factor()[0][0]
+            except PrecisionError:
+                prec *= 2
+            else:
+                break
+        h = integral_basis_generator(h)
+        L = Qp.extension(h, names='a')
+        if L.ramification_index() == 1:
+            return ZZ(0)
+        M, _, _, _, basis, _ = self.group_structure(L)
+        F = FiniteField(M.exponent())
+        dim = len(M.invariants())
+        roots = polroots(h, L)
+        assert len(roots) == L.degree()
+        assert L.gen() in roots
+        indices = [(r - L.gen()).valuation() - 1 for r in roots]
+        breaks = sorted(set(indices).difference({infinity}))
+        assert breaks != []
+        lengths = [breaks[0] + 1] + [breaks[i] - breaks[i-1]
+                                     for i in range(1, len(breaks))]
+        # from smaller to larger subgroups of G_0
+        breaks.reverse()
+        lengths.reverse()
+        V = VectorSpace(F, dim)
+        f = ZZ(0)
+        for i, l in zip(breaks, lengths):
+            # compute order of G_i
+            gi = len([k for k in indices if k >= i])
+            # compute elements in G_i \ G_{i+1}
+            Ri = [r for j, r in enumerate(roots) if indices[j] == i]
+            if V.dimension() > 0:
+                # compute G_i-invariants
+                for g in Ri:
+                    aut_g = padic_aut(L, g)
+                    m = self.automorphism_matrix(L, aut_g, basis)
+                    V = V.intersection((m.change_ring(F) - 1).kernel())
+                    if V.dimension() == 0:
+                        break
+            f += l * gi * (dim - V.dimension())
+        assert f % L.degree() == 0
+        return f // L.degree()
+
+    def artin_conductor(self):
+        """
+        Return the prime-to-`l` part of the Artin conductor of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: D.artin_conductor()
+            23
+
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.artin_conductor()
+            17
+
+            sage: D = DualPair(QQ, [[t, t^3 - 2]], [[1/4, 3/4, 0, 0], [3/4, -3/4, 0, 0], [0, 0, 0, 3], [0, 0, 3, 0]])
+            sage: D.artin_conductor()
+            27
+
+            sage: D = DualPair(QQ, [[t, t^8 - 4*t^7 + 10*t^6 - 16*t^5 + 16*t^4 - 4*t^3 - 14*t^2 + 20*t - 11], [[1], [1, 3/23*t^7 - 20/23*t^6 + 45/23*t^5 - 76/23*t^4 + 59/23*t^3 + 7/23*t^2 - 99/23*t + 94/23, -1/23*t^7 - 1/23*t^6 + 8/23*t^5 - 13/23*t^4 + 34/23*t^3 - 10/23*t^2 - 13/23*t + 30/23, -4/23*t^7 - 4/23*t^6 + 9/23*t^5 - 29/23*t^4 + 44/23*t^3 - 17/23*t^2 - 29/23*t + 74/23, t - 1, 15/23*t^7 - 54/23*t^6 + 110/23*t^5 - 150/23*t^4 + 88/23*t^3 + 81/23*t^2 - 219/23*t + 148/23, -4/23*t^7 + 19/23*t^6 - 37/23*t^5 + 63/23*t^4 - 48/23*t^3 + 6/23*t^2 + 63/23*t - 41/23, 18/23*t^7 - 51/23*t^6 + 109/23*t^5 - 134/23*t^4 + 78/23*t^3 + 65/23*t^2 - 180/23*t + 81/23]]], [[1/9, 8/9, 0, -4/9, 4/9, -4/9, 4/9, 4/9, -4/9], [8/9, -8/9, 0, 4/9, -4/9, 4/9, -4/9, -4/9, 4/9], [0, 0, 0, 0, 0, 0, 0, 0, -4], [-4/9, 4/9, 0, 16/9, 20/9, 16/9, 20/9, 20/9, 16/9], [4/9, -4/9, 0, 20/9, 16/9, -16/9, 16/9, -20/9, 20/9], [-4/9, 4/9, 0, -20/9, -16/9, -20/9, 20/9, -16/9, 16/9], [4/9, -4/9, 0, 20/9, 16/9, -16/9, 16/9, 16/9, -16/9], [4/9, -4/9, 0, 20/9, -20/9, -16/9, 16/9, 16/9, 20/9], [-4/9, 4/9, 4, -20/9, 20/9, 16/9, 20/9, 20/9, -20/9]])
+            sage: D.artin_conductor()  # long time (14 s)
+            32
+        """
+        from sage.misc.all import prod
+        return prod(p ** self.conductor_exponent(p)
+                    for p in self.algebra1().ramified_primes()
+                    if self.degree() % p != 0)
+
+    def weight(self):
+        """"
+        Return the Serre weight of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: D.weight()
+            1
+
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.weight()
+            2
+
+            sage: D = DualPair(QQ, [[t, t^3 - 2]], [[1/4, 3/4, 0, 0], [3/4, -3/4, 0, 0], [0, 0, 0, 3], [0, 0, 3, 0]])
+            sage: D.weight()
+            2
+
+            sage: D = DualPair(QQ, [[t, t^8 - 4*t^7 + 10*t^6 - 16*t^5 + 16*t^4 - 4*t^3 - 14*t^2 + 20*t - 11], [[1], [1, 3/23*t^7 - 20/23*t^6 + 45/23*t^5 - 76/23*t^4 + 59/23*t^3 + 7/23*t^2 - 99/23*t + 94/23, -1/23*t^7 - 1/23*t^6 + 8/23*t^5 - 13/23*t^4 + 34/23*t^3 - 10/23*t^2 - 13/23*t + 30/23, -4/23*t^7 - 4/23*t^6 + 9/23*t^5 - 29/23*t^4 + 44/23*t^3 - 17/23*t^2 - 29/23*t + 74/23, t - 1, 15/23*t^7 - 54/23*t^6 + 110/23*t^5 - 150/23*t^4 + 88/23*t^3 + 81/23*t^2 - 219/23*t + 148/23, -4/23*t^7 + 19/23*t^6 - 37/23*t^5 + 63/23*t^4 - 48/23*t^3 + 6/23*t^2 + 63/23*t - 41/23, 18/23*t^7 - 51/23*t^6 + 109/23*t^5 - 134/23*t^4 + 78/23*t^3 + 65/23*t^2 - 180/23*t + 81/23]]], [[1/9, 8/9, 0, -4/9, 4/9, -4/9, 4/9, 4/9, -4/9], [8/9, -8/9, 0, 4/9, -4/9, 4/9, -4/9, -4/9, 4/9], [0, 0, 0, 0, 0, 0, 0, 0, -4], [-4/9, 4/9, 0, 16/9, 20/9, 16/9, 20/9, 20/9, 16/9], [4/9, -4/9, 0, 20/9, 16/9, -16/9, 16/9, -20/9, 20/9], [-4/9, 4/9, 0, -20/9, -16/9, -20/9, 20/9, -16/9, 16/9], [4/9, -4/9, 0, 20/9, 16/9, -16/9, 16/9, 16/9, -16/9], [4/9, -4/9, 0, 20/9, -20/9, -16/9, 16/9, 16/9, 20/9], [-4/9, 4/9, 4, -20/9, 20/9, 16/9, 20/9, 20/9, -20/9]])
+            sage: D.weight()  # long time (14 s)
+            2
+        """
+        from sage.arith.misc import primes
+        from sage.rings.all import infinity, Mod
+        from sage.rings.all import ComplexField
+        L = ComplexField(800)  # TODO: adapt precision
+        N = self.artin_conductor()
+        M, _, _, _, basis, _ = self.group_structure(L)
+        l = M.exponent()
+        if not l.is_prime():
+            raise ValueError("value ring of the representation must be a finite field")
+        dim = len(M.invariants())
+        if dim != 2:
+            raise ValueError("representation must be 2-dimensional")
+        for p in primes(2, infinity):
+            if (p % N == 1 and p % l != 0
+                and Mod(p, l).is_primitive_root()):
+                try:
+                    d = self.frobenius_matrix(p).determinant()
+                except ZeroDivisionError:
+                    continue
+                k = d.log(p) + 1
+                if k == 1 and l in self.algebra1().ramified_primes():
+                    k = l
+                return k
+
+
+class DualPairFactory(UniqueFactory):
+    """
+    Factory for dual pairs of algebras.
+    """
+    def create_key(self, *data):
+        """
+        Return a key for the dual pair of algebras defined by the given
+        data.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: DualPair.create_key(A, Phi)
+            (
+            Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17            ,
+            Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17            ,
+            [ 1/4  1/4  1/2    0]
+            [ 1/4  1/4 -1/2    0]
+            [ 1/2 -1/2    0    0]
+            [   0    0    0  -17]
+            )
+        """
+        from sage.matrix.all import MatrixSpace
+        from .finite_flat_algebra import FiniteFlatAlgebra, FiniteFlatAlgebra_base
+        if len(data) == 0:
+            raise ValueError('no arguments given')
+        if isinstance(data[0], FiniteFlatAlgebra_base):
+            if len(data) == 2:
+                alg1, phi = data
+                alg2 = alg1
+            else:
+                alg1, alg2, phi = data
+            base_ring = alg1.base_ring()
+            if alg2.base_ring() is not base_ring:
+                raise ValueError('inconsistent base rings')
+        else:
+            if len(data) == 3:
+                base_ring, alg1, phi = data
+                alg2 = None
+            else:
+                base_ring, alg1, alg2, phi = data
+            alg1 = FiniteFlatAlgebra(base_ring, *alg1)
+            if alg2 is None:
+                alg2 = alg1
+            else:
+                alg2 = FiniteFlatAlgebra(base_ring, *alg2)
+        n = alg1.degree()
+        if alg2.degree() != n:
+            raise ValueError('inconsistent degrees')
+        phi = MatrixSpace(base_ring, n, n)(phi)
+        return (alg1, alg2, phi)
+
+    def create_object(self, version, key):
+        """
+        Return the dual pair of algebras defined by the given key.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: DualPair.create_object((8, 8), (A, A, Phi))
+            Dual pair of algebras over Rational Field
+            A = Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17
+            B = Finite flat algebra of degree 4 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            Number Field in a2 with defining polynomial x^2 + 17
+        """
+        return DualPair_class(*key)
+
+
+DualPair = DualPairFactory("dual_pairs.dual_pair.DualPair")
