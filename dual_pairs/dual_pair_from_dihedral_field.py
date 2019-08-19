@@ -17,19 +17,19 @@ def dual_pair_from_dihedral_field(L, F):
 
     INPUT:
 
-    - `L` -- either a Galois extension of `\QQ` with dihedral Galois
-      group, or a polynomial over `\QQ` whose splitting field is such
-      an extension
+    - `L` -- either a Galois extension of :math:`\mathbf{Q}` with
+      dihedral Galois group, or a polynomial over :math:`\mathbf{Q}`
+      whose splitting field is such an extension
 
     - `F` -- a finite field such that the Galois group of `L` over
-      `\QQ` can be embedded into `\mathrm{GL}_2(F)`
+      :math:`\mathbf{Q}` can be embedded into :math:`\mathrm{GL}_2(F)`
 
-    EXAMPLES:
+    EXAMPLES::
 
         sage: from dual_pairs.dual_pair_from_dihedral_field import dual_pair_from_dihedral_field
         sage: R.<x> = QQ[]
 
-    An example of level 23 over `\GF_2`::
+    An example of level 23 over :math:`\mathbf{F}_2`::
 
         sage: f = x^3 - x - 1
         sage: dual_pair_from_dihedral_field(f.splitting_field('a'), GF(2))
@@ -41,7 +41,7 @@ def dual_pair_from_dihedral_field(L, F):
         Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^3 + 3*x^2 - x - 11
 
-    An example of level 13 over `\GF_3`::
+    An example of level 13 over :math:`\mathbf{F}_3`::
 
         sage: f = x^4 + x^2 - 3
         sage: L = f.splitting_field('w')
@@ -56,8 +56,8 @@ def dual_pair_from_dihedral_field(L, F):
         Number Field in a1 with defining polynomial x^4 + 4*x^3 + 14*x^2 - 4*x + 1
         Number Field in a2 with defining polynomial x^4 + 8*x^3 - 14*x^2 + 192*x + 69
 
-    An example of level 16 over `\GF_3` (cf. Serre, Divisibilité de
-    certaines fonctions arithmétiques, exemple (4.4))::
+    An example of level 16 over :math:`\mathbf{F}_3` (cf. Serre,
+    Divisibilité de certaines fonctions arithmétiques, exemple (4.4))::
 
         sage: dual_pair_from_dihedral_field(x^4 - 12, GF(3))
         Dual pair of algebras over Rational Field
@@ -70,7 +70,7 @@ def dual_pair_from_dihedral_field(L, F):
         Number Field in a1 with defining polynomial x^4 + 4*x^3 + 6*x^2 + 4*x - 191
         Number Field in a2 with defining polynomial x^4 + 4*x^3 + 12*x^2 - 32*x + 16
 
-    An example of level 23 over `\GF_5`::
+    An example of level 23 over :math:`\mathbf{F}_5`::
 
         sage: dual_pair_from_dihedral_field(x^3 - x - 1, GF(5))
         Dual pair of algebras over Rational Field
@@ -86,7 +86,6 @@ def dual_pair_from_dihedral_field(L, F):
         Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^12 - 6*x^11 + 20*x^10 - 34*x^9 + 69*x^8 - 84*x^7 + 440*x^6 - 186*x^5 + 196*x^4 + 1400*x^3 + 1110*x^2 - 1600*x + 4105
         Number Field in a2 with defining polynomial x^12 + 128*x^11 + 7561*x^10 + 266074*x^9 + 6149384*x^8 + 97619882*x^7 + 1087374619*x^6 + 8445691276*x^5 + 43165980311*x^4 + 117455115180*x^3 - 49919785310*x^2 - 1428330707300*x - 2669533475975
-
     """
     if isinstance(L, Polynomial):
         L = L.splitting_field('w')

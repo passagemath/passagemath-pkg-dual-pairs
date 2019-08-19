@@ -23,7 +23,7 @@ except ImportError:
 
 # -- Project information -----------------------------------------------------
 
-project = u'dual_pairs'
+project = u'Dual pairs of algebras'
 copyright = u'2019, Peter Bruin'
 author = u'Peter Bruin'
 

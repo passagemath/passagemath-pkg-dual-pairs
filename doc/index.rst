@@ -1,7 +1,41 @@
 .. Documentation index
 
-Documentation for the `dual_pairs` package
-==========================================
+The ``dual_pairs`` package
+==========================
+
+The `SageMath`_ package ``dual_pairs`` implements computations with
+finite commutative group schemes and Galois representations in the
+form of *dual pairs of algebras*.  See the preprint `Dual pairs of
+algebras and finite commutative group schemes`_ for details.
+
+.. _`SageMath`: http://www.sagemath.org/
+
+.. _`Dual pairs of algebras and finite commutative group schemes`:
+   https://arxiv.org/abs/1709.09847
+
+Author
+------
+
+Peter Bruin <P.J.Bruin@math.leidenuniv.nl>
+
+Installation
+------------
+
+The package can be installed using
+
+    ``$ sage --pip install dual_pairs``
+
+Source code
+-----------
+
+The source code is available at <https://gitlab.com/pbruin/dual-pairs>.
+
+
+Documentation of the modules
+============================
+
+The documentation pages in the table below point are automatically
+generated from the source code.
 
 Dual pairs of algebras
 ----------------------

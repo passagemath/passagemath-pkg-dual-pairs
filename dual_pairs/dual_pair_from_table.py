@@ -68,18 +68,19 @@ def algebra_and_points_from_action(G, V, action):
     return A, X, M
 
 def dual_pair_from_table(G, V, table):
-    """
+    r"""
     Return a dual pair of algebras corresponding to the given
     Galois representation.
 
     INPUT:
 
-    - `G` -- Galois group of a finite Galois extension of `\\QQ`
+    - `G` -- Galois group of a finite Galois extension of
+      :math:`\mathbf{Q}`
 
     - `V` -- a finite-dimensional vector space over a finite field
 
-    - ``table`` -- a dictionary ``{g: rho(g)}`` where ``g`` ranges
-      over `G` and `rho` is a group homomorphism from `G` to the
+    - ``table`` -- a dictionary ``{g: rho(g)}`` where `g` ranges
+      over `G` and ``rho`` is a group homomorphism from `G` to the
       automorphism group of `V`.
     """
     L = G.number_field()

@@ -25,8 +25,9 @@ Installation
 Documentation
 -------------
 
-Currently, all documentation for this module is contained in the
-source files.
+The documentation for this package is automatically generated from the
+source code and is available at
+<https://dual-pairs.readthedocs.io/en/latest/>.
 
 TODO
 ----
