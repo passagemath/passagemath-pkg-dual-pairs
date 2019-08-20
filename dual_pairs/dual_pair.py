@@ -250,6 +250,8 @@ class DualPair_class(CategoryObject):
         Return the vector of coefficients of the counit of the algebra `A`
         as an element of the dual of the underlying module.
 
+        EXAMPLES::
+
             sage: K.<a> = FunctionField(QQ)
             sage: R.<x> = K[]
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
@@ -269,6 +271,8 @@ class DualPair_class(CategoryObject):
         """
         Return the vector of coefficients of the counit of the algebra `B`
         as an element of the dual of the underlying module.
+
+        EXAMPLES::
 
             sage: K.<a> = FunctionField(QQ)
             sage: R.<x> = K[]
