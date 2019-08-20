@@ -12,7 +12,30 @@ from sage.rings.rational_field import QQ
 
 def algebra_and_points_from_action(G, V, action):
     """
-    TODO
+    This is a helper function for :func:`dual_pair_from_table`.
+
+    EXAMPLES::
+
+        sage: from dual_pairs.dual_pair_from_table import algebra_and_points_from_action
+        sage: R.<x> = QQ[]
+        sage: L.<a> = NumberField(x^3 - x^2 - 2*x + 1)
+        sage: G = L.galois_group()
+        sage: V = GF(2)^2
+        sage: M = MatrixSpace(GF(2), 2, 2)
+        sage: table = {G[0]: M.one(),
+        ....:          G[1]: M([1, 1, 1, 0]),
+        ....:          G[2]: M([0, 1, 1, 1])}
+        sage: algebra_and_points_from_action(G, V, lambda g, v: table[g] * v)
+        (
+        Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1 ,
+        [(0, 0), (1, 1), (1, 0), (0, 1)],
+        [           1            0            0            0]
+        [           0            1     -a^2 + 2 -a^2 + a + 3]
+        [           0            1  a^2 - a - 1       -a + 2]
+        [           0            1            a          a^2]
+        )
     """
     T = set()
     Vlist = V.list()
@@ -82,6 +105,26 @@ def dual_pair_from_table(G, V, table):
     - ``table`` -- a dictionary ``{g: rho(g)}`` where `g` ranges
       over `G` and ``rho`` is a group homomorphism from `G` to the
       automorphism group of `V`.
+
+    EXAMPLES::
+
+        sage: from dual_pairs.dual_pair_from_table import dual_pair_from_table
+        sage: R.<x> = QQ[]
+        sage: L.<a> = NumberField(x^3 - x^2 - 2*x + 1)
+        sage: G = L.galois_group()
+        sage: V = GF(2)^2
+        sage: M = MatrixSpace(GF(2), 2, 2)
+        sage: table = {G[0]: M.one(),
+        ....:          G[1]: M([1, 1, 1, 0]),
+        ....:          G[2]: M([0, 1, 1, 1])}
+        sage: dual_pair_from_table(G, V, table)
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
+        B = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
     """
     L = G.number_field()
     l = V.base_ring().characteristic()  # TODO: exponent
