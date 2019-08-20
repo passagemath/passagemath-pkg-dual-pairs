@@ -136,7 +136,21 @@ class DualPair_class(CategoryObject):
 
     def phi(self):
         """
-        TODO
+        Return the pairing matrix attached to ``self``.
+
+        TESTS::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.phi() == Phi
+            True
         """
         return self._phi
 
@@ -147,9 +161,9 @@ class DualPair_class(CategoryObject):
 
         OUTPUT:
 
-        The canonical root of unity `\theta \in A\otimes_R B`, where
-        `R` is the base ring and `A` and `B` are the two algebras
-        defining ``self``.
+        The canonical root of unity :math:`\theta \in A\otimes_R B`,
+        where `R` is the base ring and `A` and `B` are the two
+        algebras defining ``self``.
 
         EXAMPLES::
 
@@ -171,41 +185,104 @@ class DualPair_class(CategoryObject):
 
     def degree(self):
         """
-        TODO
+        Return the degree of ``self``.
+
+        EXAMPLES::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.degree()
+            4
         """
         return self.algebra1().degree()
 
     def unit1(self):
         """
-        TODO
+        Return the unit element of the algebra `A` as an element of the
+        underlying module.
+
+        EXAMPLES::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.unit1()
+            (1, 1, 0)
         """
-        return self.algebra1().one()
+        return self.algebra1().one().module_element()
 
     def unit2(self):
         """
-        TODO
+        Return the unit element of the algebra `B` as an element of the
+        underlying module.
+
+        EXAMPLES::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.unit2()
+            (1, 1, 0)
         """
-        return self.algebra1().one()
+        return self.algebra2().one().module_element()
 
     @cached_method
     def counit1(self):
         """
-        TODO
+        Return the vector of coefficients of the counit of the algebra `A`
+        as an element of the dual of the underlying module.
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.counit1()
+            (1, 0, 0)
         """
-        return self.unit1() * self.phi()
+        return self.phi() * self.unit2()
 
     @cached_method
     def counit2(self):
         """
-        TODO
-        """
-        return self.phi() * self.unit2()
+        Return the vector of coefficients of the counit of the algebra `B`
+        as an element of the dual of the underlying module.
 
-    def matrix_space(self):
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.counit2()
+            (1, 0, 0)
         """
-        TODO
-        """
-        return self._matrix_space
+        return self.unit1() * self.phi()
 
     def is_isomorphic(self, other):
         """
@@ -810,7 +887,7 @@ class DualPair_class(CategoryObject):
                     if self.degree() % p != 0)
 
     def weight(self):
-        """"
+        """
         Return the Serre weight of ``self``.
 
         EXAMPLES::
