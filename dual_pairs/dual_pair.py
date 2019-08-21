@@ -369,8 +369,26 @@ class DualPair_class(CategoryObject):
         return self.algebra2().morphisms_to_ring(R)
 
     def splitting_field_polynomial(self):
-        """
+        r"""
         Return a defining polynomial for the splitting field of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.splitting_field_polynomial()
+            x^2 + 17
+
+        .. TODO:
+
+            This is only implemented in general over
+            :math:`\mathbf{Q}`.
         """
         from sage.libs.pari import pari
         f = self.algebra1().splitting_field_polynomial()
@@ -384,8 +402,26 @@ class DualPair_class(CategoryObject):
 
     @cached_method
     def splitting_field(self, names):
-        """
+        r"""
         Return a splitting field for ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 7])
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 21])
+            sage: Phi = Matrix(QQ, [[1/3,  2/3,   0],
+            ....:                   [2/3, -2/3,   0],
+            ....:                   [  0,    0, 14]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.splitting_field('a')
+            Number Field in a with defining polynomial x^4 + 28*x^2 + 784
+
+        .. TODO:
+
+            This is only implemented in general over
+            :math:`\mathbf{Q}` and over finite fields.
         """
         from sage.rings.all import QQ
         R = self.base_ring()
@@ -428,6 +464,33 @@ class DualPair_class(CategoryObject):
         """
         Internal function to compute some data attached to the group of
         `L`-points of ``self``.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: T, P, Q = D._group_data(ComplexField())
+            sage: T
+            [  0   0   0   0]
+            [  0   0 1/2 1/2]
+            [  0 1/2   0 1/2]
+            [  0 1/2 1/2   0]
+            sage: P
+            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
+            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
+            sage: Q
+            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
+            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
         """
         from sage.rings.all import QQ
         from sage.rings.complex_field import ComplexField_class
@@ -451,6 +514,41 @@ class DualPair_class(CategoryObject):
     def group_structure(self, L):
         """
         Return the structure of the group of `L`-points of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: M, E, P, Q, basis1, basis2 = D.group_structure(ComplexField())
+            sage: M
+            Additive abelian group isomorphic to Z/2 + Z/2
+            sage: E
+            [  0   0   0   0]
+            [  0 1/2   0 1/2]
+            [  0   0 1/2 1/2]
+            [  0 1/2 1/2   0]
+            sage: P
+            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
+            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
+            sage: Q
+            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
+            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
+            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
+            sage: basis1
+            ((0.000000000000000, 1.00000000000000, 0.000000000000000, 0.000000000000000),
+             (0.000000000000000, 0.000000000000000, 1.00000000000000, -4.12310562561766*I))
+            sage: basis2
+            ((0.000000000000000, 0.000000000000000, 1.00000000000000, -4.12310562561766*I),
+             (0.000000000000000, 1.00000000000000, 0.000000000000000, 0.000000000000000))
         """
         from .group_structure import find_group_structure
         T, P, Q = self._group_data(L)
@@ -494,6 +592,24 @@ class DualPair_class(CategoryObject):
     def pairing(self, P, Q):
         """
         Return the image of (P, Q) under the Cartier duality pairing.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: L.<a> = D.splitting_field()
+            sage: points = D.points(L)
+            sage: Matrix([[D.pairing(S, T) for S in points] for T in points])
+            [ 1  1  1  1]
+            [ 1  1 -1 -1]
+            [ 1 -1  1 -1]
+            [ 1 -1 -1  1]
         """
         return P * self.theta() * Q
 
@@ -583,6 +699,22 @@ class DualPair_class(CategoryObject):
         OUTPUT:
 
         The matrix of ``aut`` on the group of `L`-points of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<t> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
+            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
+            ....:                   [3, -3, 0, -2],
+            ....:                   [0,  0, 4, -6],
+            ....:                   [2, -2, -6, 0]])
+            sage: D = DualPair(A, phi)
+            sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
+            sage: aut = L.hom([1/14*(z^5 + z^4 + 8*z^3 + z^2 + 26*z - 2)])
+            sage: D.automorphism_matrix(L, aut)
+            [1 1]
+            [1 0]
         """
         from sage.matrix.all import Matrix
         from sage.rings.all import IntegerModRing
