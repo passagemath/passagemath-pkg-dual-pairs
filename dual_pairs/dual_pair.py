@@ -549,6 +549,13 @@ class DualPair_class(CategoryObject):
             sage: basis2
             ((0.000000000000000, 0.000000000000000, 1.00000000000000, -4.12310562561766*I),
              (0.000000000000000, 1.00000000000000, 0.000000000000000, 0.000000000000000))
+
+        A more complicated example::
+
+            sage: from dual_pairs.dual_pair_import import dual_pair_import
+            sage: D = dual_pair_import('example_data/GL2_mod_7.gp')
+            sage: D.group_structure(ComplexField(200))[0]
+            Additive abelian group isomorphic to Z/7 + Z/7
         """
         from .group_structure import find_group_structure
         T, P, Q = self._group_data(L)
