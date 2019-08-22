@@ -855,6 +855,15 @@ class DualPair_class(CategoryObject):
              (83, 0),
              (89, 0),
              (97, 0)]
+
+        Verify numerically that the dual pair from ``GL2_mod_3.gp``
+        corresponds to the 3-torsion of the elliptic curve ``11a3``::
+
+            sage: from dual_pairs.dual_pair_import import dual_pair_import
+            sage: D = dual_pair_import('example_data/GL2_mod_3.gp')
+            sage: E = EllipticCurve('11a3')
+            sage: all(Mod(E.ap(p), 3) == t for p, t in D.frobenius_traces())
+            True
         """
         from sage.arith.misc import primes
         P = self.ramified_primes()
