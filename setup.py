@@ -10,6 +10,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://gitlab.com/pbruin/dual-pairs",
     packages=["dual_pairs"],
+    package_data={"dual_pairs": ["example_data/*.gp"]},
     install_requires=["sagemath"],
     classifiers=[
         "Topic :: Scientific/Engineering :: Mathematics",
