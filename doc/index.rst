@@ -50,7 +50,7 @@ Dual pairs of algebras
 
 Finite flat algebras
 --------------------
-   
+
 .. toctree::
    :maxdepth: 2
 
@@ -60,7 +60,7 @@ Finite flat algebras
 
 Torsors
 -------
-   
+
 .. toctree::
    :maxdepth: 2
 
