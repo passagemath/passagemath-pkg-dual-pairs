@@ -813,6 +813,19 @@ class DualPair_class(CategoryObject):
              7: x^2 + 1,
              11: x^2 + 1,
              13: x^2 + x + 1}
+
+        A more complicated example::
+
+            sage: from dual_pairs.dual_pair_import import dual_pair_import
+            sage: D = dual_pair_import('example_data/GL2_mod_5.gp')
+            sage: {p: D.frobenius_charpoly(p) for p in {3, 7, 11, 13, 17, 19, 23}}
+            {3: x^2 + 4*x + 2,
+             7: x^2 + x + 3,
+             11: x^2 + 4*x + 1,
+             13: x^2 + 3*x + 2,
+             17: x^2 + 3,
+             19: x^2 + x + 4,
+             23: x^2 + x + 2}
         """
         return self.frobenius_matrix(q).charpoly()
 
