@@ -372,33 +372,33 @@ class DualPair_class(CategoryObject):
         r"""
         Return a defining polynomial for the splitting field of ``self``.
 
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
-            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
-            ....:                   [1/4,  1/4, -1/2,   0],
-            ....:                   [1/2, -1/2,    0,   0],
-            ....:                   [  0,    0,    0, -17]])
-            sage: D = DualPair(A, Phi)
-            sage: D.splitting_field_polynomial()
-            x^2 + 17
-
         .. TODO:
 
-            This is only implemented in general over
-            :math:`\mathbf{Q}`.
+            This currently only works over :math:`\mathbf{Q}`.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: F = GF(19)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, [x, x, x^2 + 17])
+            sage: Phi = Matrix(F, [[1/4,  1/4,  1/2,   0],
+            ....:                  [1/4,  1/4, -1/2,   0],
+            ....:                  [1/2, -1/2,    0,   0],
+            ....:                  [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.splitting_field_polynomial()
+            Traceback (most recent call last):
+            ...
+            PariError: incorrect type in nfsplitting [not in Z[X]] (t_POL)
         """
-        from sage.libs.pari import pari
         f = self.algebra1().splitting_field_polynomial()
         x = f.variable_name()
         g = self.algebra2().splitting_field_polynomial()
         g = g.change_variable_name(x)
         if g == f:
             return f
-        comp = pari(f).polcompositum(g)
-        return f.parent()(comp[len(comp) - 1])
+        raise NotImplementedError
 
     @cached_method
     def splitting_field(self, names):
@@ -408,22 +408,22 @@ class DualPair_class(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 7])
-            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 21])
-            sage: Phi = Matrix(QQ, [[1/3,  2/3,   0],
-            ....:                   [2/3, -2/3,   0],
-            ....:                   [  0,    0, 14]])
+            sage: F = GF(23)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, [x, x^2 - 7])
+            sage: B = FiniteFlatAlgebra(F, [x, x^2 + 21])
+            sage: Phi = Matrix(F, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 14]])
             sage: D = DualPair(A, B, Phi)
             sage: D.splitting_field('a')
-            Number Field in a with defining polynomial x^4 + 28*x^2 + 784
+            Finite Field in a of size 23^2
 
         .. TODO:
 
             This is only implemented in general over
             :math:`\mathbf{Q}` and over finite fields.
         """
-        from sage.rings.all import QQ
         R = self.base_ring()
         if not R.is_field():
             raise NotImplementedError
@@ -431,34 +431,10 @@ class DualPair_class(CategoryObject):
             d1 = self.algebra1().splitting_field('w1').degree()
             d2 = self.algebra2().splitting_field('w2').degree()
             return R.extension(d1.lcm(d2), names=names)
-        elif R is QQ:
-            return QQ.extension(self.splitting_field_polynomial(),
-                                names=names)
         else:
             from sage.categories.pushout import pushout
             return pushout(self.algebra1().splitting_field(names),
                            self.algebra2().splitting_field(names))
-
-    @cached_method
-    def ramified_primes(self):
-        """
-        Return the set of ramified primes of ``self``.
-
-        EXAMPLES::
-
-            sage: R.<x> = QQ[]
-            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
-            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
-            ....:                   [1/4,  1/4, -1/2,   0],
-            ....:                   [1/2, -1/2,    0,   0],
-            ....:                   [  0,    0,    0, -17]])
-            sage: D = DualPair(A, Phi)
-            sage: D.ramified_primes()
-            {2, 17}
-        """
-        P = self.algebra1().ramified_primes()
-        return P.union(self.degree().prime_divisors())
 
     def _group_data(self, L):
         """
@@ -574,27 +550,19 @@ class DualPair_class(CategoryObject):
 
         EXAMPLES::
 
-            sage: R.<x> = QQ[]
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
-            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
-            ....:                   [1/4,  1/4, -1/2,   0],
-            ....:                   [1/2, -1/2,    0,   0],
-            ....:                   [  0,    0,    0, -17]])
+            sage: F = GF(23)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, [x, x, x^2 + 17])
+            sage: Phi = Matrix(F, [[1/4,  1/4,  1/2,   0],
+            ....:                  [1/4,  1/4, -1/2,   0],
+            ....:                  [1/2, -1/2,    0,   0],
+            ....:                  [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: D.group_structure_algebraic_closure()[0]
             Additive abelian group isomorphic to Z/2 + Z/2
         """
-        from sage.rings.all import QQ
-        n = self.degree()
-        if self.base_ring() is QQ:
-            from sage.rings.all import ComplexField
-            L = ComplexField(800)  # TODO: adapt precision
-        elif self.base_ring().is_finite():
-            L = self.splitting_field('w')
-        else:
-            raise NotImplementedError
-        return self.group_structure(L)
+        return self.group_structure(self.splitting_field('w'))
 
     def pairing(self, P, Q):
         """
@@ -828,63 +796,6 @@ class DualPair_class(CategoryObject):
              23: x^2 + x + 2}
         """
         return self.frobenius_matrix(q).charpoly()
-
-    def frobenius_traces(self, B=100):
-        """
-        Return the traces of Frobenius elements at all unramified primes
-        below `B`.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: R.<t> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, [t, t^3 - t + 1])
-            sage: phi = 1/4*Matrix([[1,  3, 0,  2],
-            ....:                   [3, -3, 0, -2],
-            ....:                   [0,  0, 4, -6],
-            ....:                   [2, -2, -6, 0]])
-            sage: D = DualPair(A, phi)
-            sage: D.frobenius_traces()
-            [(3, 1),
-             (5, 0),
-             (7, 0),
-             (11, 0),
-             (13, 1),
-             (17, 0),
-             (19, 0),
-             (29, 1),
-             (31, 1),
-             (37, 0),
-             (41, 1),
-             (43, 0),
-             (47, 1),
-             (53, 0),
-             (59, 0),
-             (61, 0),
-             (67, 0),
-             (71, 1),
-             (73, 1),
-             (79, 0),
-             (83, 0),
-             (89, 0),
-             (97, 0)]
-
-        Verify numerically that the dual pair from ``GL2_mod_3.gp``
-        corresponds to the 3-torsion of the elliptic curve ``11a3``::
-
-            sage: from dual_pairs.dual_pair_import import dual_pair_import
-            sage: D = dual_pair_import('example_data/GL2_mod_3.gp')
-            sage: E = EllipticCurve('11a3')
-            sage: all(Mod(E.ap(p), 3) == t for p, t in D.frobenius_traces())
-            True
-        """
-        from sage.arith.misc import primes
-        P = self.ramified_primes()
-        L = []
-        for p in primes(B):
-            if p not in P:
-                L.append((p, self.frobenius_matrix(p).trace()))
-        return L
 
     def representation_table(self, L=None, basis=None):
         """
@@ -1199,6 +1110,10 @@ class DualPairFactory(UniqueFactory):
             Number Field in a1 with defining polynomial x
             Number Field in a2 with defining polynomial x^2 + 17
         """
+        from sage.rings.all import QQ
+        if key[0].base_ring() is QQ:
+            from dual_pairs.dual_pair_rational import DualPair_rational
+            return DualPair_rational(*key)
         return DualPair_class(*key)
 
 
