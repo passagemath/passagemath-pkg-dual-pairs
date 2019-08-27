@@ -47,6 +47,7 @@ Dual pairs of algebras
    dual_pair_from_dihedral_field
    dual_pair_from_table
    dual_pair_import
+   dual_pair_rational
 
 Finite flat algebras
 --------------------
