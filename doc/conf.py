@@ -28,9 +28,9 @@ copyright = u'2019, Peter Bruin'
 author = u'Peter Bruin'
 
 # The short X.Y version
-version = u'0.1'
+version = u'0.2'
 # The full version, including alpha/beta/rc tags
-release = u'0.1.2'
+release = u'0.2'
 
 
 # -- General configuration ---------------------------------------------------
