@@ -322,6 +322,32 @@ class DualPair_class(CategoryObject):
         """
         return DualPair(self.algebra1().change_ring(R), self.algebra2().change_ring(R), self.phi())
 
+    def dual(self):
+        """
+        Return the Cartier dual of ``self``.
+
+        EXAMPLES::
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.dual()
+            Dual pair of algebras over Rational function field in a over Rational Field
+            A = Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 + 3*a
+            B = Finite flat algebra of degree 3 over Rational function field in a over Rational Field, product of:
+            Function field in a0 defined by a0
+            Function field in a1 defined by a1^2 - a
+        """
+        return DualPair(self.algebra2(), self.algebra1(), self.phi().transpose())
+
     def points(self, R):
         """
         Return the group of points of ``self`` over `R`.
