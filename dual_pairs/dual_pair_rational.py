@@ -9,6 +9,22 @@ from sage.misc.all import cached_method
 
 from dual_pairs.dual_pair import DualPair_class
 
+def lift_to_prime(a):
+    """
+    Return the smallest prime in the residue class `a`.
+
+    EXAMPLES::
+
+        sage: from dual_pairs.dual_pair_rational import lift_to_prime
+        sage: [lift_to_prime(x) for x in Zmod(10) if x.is_unit()]
+        [11, 3, 7, 19]
+    """
+    n = a.modulus()
+    p = a.lift()
+    while not p.is_prime():
+        p += n
+    return p
+
 class DualPair_rational(DualPair_class):
     r"""
     A dual pair of algebras over the field of :math:`\mathbf{Q}`.
@@ -175,3 +191,43 @@ class DualPair_rational(DualPair_class):
                 L.append((p, self.frobenius_matrix(p).trace()))
         return L
 
+    @cached_method
+    def dirichlet_character(self):
+        """
+        Return the Dirichlet character corresponding to the determinant of
+        ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs.dual_pair_import import dual_pair_import
+            sage: D = dual_pair_import('example_data/D4_mod_3.gp')
+            sage: chi = D.dirichlet_character(); chi
+            Dirichlet character modulo 39 of conductor 39 mapping 14 |--> 2, 28 |--> 2
+            sage: p = random_prime(1000)
+            sage: D.dirichlet_character()(p) == D.frobenius_charpoly(p).constant_coefficient()
+            True
+            sage: D = dual_pair_import('example_data/GL2_mod_3.gp')
+            sage: D.dirichlet_character()
+            Dirichlet character modulo 3 of conductor 3 mapping 2 |--> 2
+            sage: D = dual_pair_import('example_data/GL2_mod_5.gp')
+            sage: D.dirichlet_character()
+            Dirichlet character modulo 5 of conductor 5 mapping 2 |--> 3
+        """
+        from sage.modular.dirichlet import DirichletGroup
+        from sage.rings.finite_rings.finite_field_constructor import FiniteField
+        S = self.ramified_primes()
+        # TODO: avoid computing the group structure over CC
+        l = self.group_structure_algebraic_closure()[0].exponent()
+        if not l.is_prime():
+            raise NotImplementedError('coefficient ring must be a prime field')
+        r = l - 1
+        if 2 in S:
+            n = 2 ** (2 + r.valuation(2)) if r % 2 == 0 else 2
+        else:
+            n = 1
+        for p in S.difference({2}):
+            n *= p ** (1 + r.valuation(p))
+        G = DirichletGroup(n, FiniteField(l))
+        P = [lift_to_prime(g) for g in G.unit_gens()]
+        chi = G([self.frobenius_matrix(p).determinant() for p in P])
+        return chi.primitive_character()
