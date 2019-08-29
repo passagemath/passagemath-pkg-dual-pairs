@@ -321,11 +321,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             sage: A.ramified_primes()
             {2}
         """
-        from sage.libs.pari import pari
-        S = set()
-        for f in self._irreducible_polys():
-            S.update(pari(f).nfdisc().abs().factor()[0].sage())
-        return S
+        from sage.rings.integer_ring import ZZ
+        return set(ZZ(self.discriminant()).prime_divisors())
 
 
 class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
@@ -550,6 +547,23 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
         """
         return self._poly.splitting_field(names)
 
+    def discriminant(self):
+        """
+        Return the discriminant of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^4 - 16, [1, 1/2*x, 1/4*x^2, 1/8*x^3])
+            sage: A.discriminant()
+            -256
+            sage: B = FiniteFlatAlgebra(QQ, x^2 - 1/25, [1, 5*x])
+            sage: B.discriminant()
+            4
+        """
+        return (self._poly.discriminant()
+                * self._basis_matrix().determinant() ** 2)
 
 class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
     """
@@ -838,6 +852,21 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
         poly = prod(self._polys)
         return poly.splitting_field(names)
 
+    def discriminant(self):
+        """
+        Return the discriminant of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 4], [[1], [1, 1/2*x]])
+            sage: A.discriminant()
+            4
+        """
+        from sage.misc.all import prod
+        return prod(f.discriminant() * M.determinant() ** 2
+                    for f, M in zip(self._polys, self._basis_matrices()))
 
 class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
     """
@@ -1023,6 +1052,19 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         poly = prod(self._irreducible_polys())
         return poly.splitting_field(names)
 
+    def discriminant(self):
+        """
+        Return the discriminant of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
+            sage: A.discriminant()
+            -4
+        """
+        return Matrix([[(a * b).matrix().trace() for a in self.gens()]
+                       for b in self.gens()]).determinant()
 
 class FiniteFlatAlgebraFactory(UniqueFactory):
     """
