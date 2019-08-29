@@ -1026,8 +1026,8 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])._irreducible_polys()
+            sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
+            sage: A._irreducible_polys()
             {x - 1, x^2 + 1}
         """
         S = set()
@@ -1043,7 +1043,6 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
             sage: A.splitting_field('a')
             Number Field in a with defining polynomial x^2 + 1
