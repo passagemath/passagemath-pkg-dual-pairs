@@ -854,7 +854,7 @@ class DualPair_class(CategoryObject):
             sage: D = DualPair(A, phi)
             sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
             sage: table = D.representation_table(L)
-            sage: {f(z): m for f, m in table.iteritems()}
+            sage: {f(z): m for f, m in table.items()}
             {-1/14*z^5 - 1/14*z^4 - 4/7*z^3 - 1/14*z^2 - 13/7*z + 1/7: [1 1]
                                                                        [0 1],
              1/14*z^5 - 1/14*z^4 + 4/7*z^3 - 1/14*z^2 + 13/7*z + 1/7: [0 1]

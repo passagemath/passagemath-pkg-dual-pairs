@@ -40,7 +40,8 @@ def dual_pair_import(filename):
         Document accepted file formats.
     """
     try:
-        stream = file(filename, 'r')
+        import io
+        stream = io.open(filename, 'r')
     except IOError:
         import pkg_resources
         stream = pkg_resources.resource_stream(__name__, filename)
@@ -49,17 +50,17 @@ def dual_pair_import(filename):
     if len(data) == 2:
         (F, Phi) = data
         R = PolynomialRing(QQ, str(F.variable()))
-        A = FiniteFlatAlgebra(QQ, map(R, F))
+        A = FiniteFlatAlgebra(QQ, [R(f) for f in F])
         return DualPair(A, Phi.sage())
     elif len(data) == 3:
         (F, BF, Phi) = data
         R = PolynomialRing(QQ, str(F.variable()))
-        A = FiniteFlatAlgebra(QQ, map(R, F), [M.sage() for M in BF])
+        A = FiniteFlatAlgebra(QQ, [R(f) for f in F], [M.sage() for M in BF])
         return DualPair(A, Phi.sage())
     else:
         (F, BF, G, BG, Phi) = data
         R = PolynomialRing(QQ, str(F.variable()))
         S = PolynomialRing(QQ, str(G.variable()))
-        A = FiniteFlatAlgebra(QQ, map(R, F), [M.sage() for M in BF])
-        B = FiniteFlatAlgebra(QQ, map(S, G), [M.sage() for M in BG])
+        A = FiniteFlatAlgebra(QQ, [R(f) for f in F], [M.sage() for M in BF])
+        B = FiniteFlatAlgebra(QQ, [S(g) for g in G], [M.sage() for M in BG])
         return DualPair(A, B, Phi.sage())

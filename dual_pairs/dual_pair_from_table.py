@@ -3,8 +3,9 @@
 Constructing a dual pair of algebras from a table.
 """
 
-from dual_pair import DualPair
-from finite_flat_algebra import FiniteFlatAlgebra
+from __future__ import absolute_import
+
+from dual_pairs import FiniteFlatAlgebra, DualPair
 
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
