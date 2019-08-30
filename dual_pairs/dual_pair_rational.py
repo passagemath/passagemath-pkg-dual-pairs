@@ -27,7 +27,7 @@ def lift_to_prime(a):
 
 class DualPair_rational(DualPair_class):
     r"""
-    A dual pair of algebras over the field of :math:`\mathbf{Q}`.
+    A dual pair of algebras over the field :math:`\mathbf{Q}`.
 
     TESTS::
 
