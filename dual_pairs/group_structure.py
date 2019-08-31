@@ -63,7 +63,7 @@ def standard_group_structure(d):
     from sage.groups.all import AdditiveAbelianGroup
     from sage.matrix.all import Matrix
     M = AdditiveAbelianGroup(d)
-    L = list(e.lift() for e in M)
+    L = [e.lift() for e in M]
     E = Matrix(QQ, [[mod1(sum(e1[k] * e2[k] / d[k] for k in range(len(d))))
                      for e2 in L] for e1 in L])
     return M, E
