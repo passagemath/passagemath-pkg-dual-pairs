@@ -28,20 +28,21 @@ def standard_group_structure(d):
 
     INPUT:
 
-    - ``d`` -- list or tuple of integers `(d_0, d_1, \ldots, d_{r-1})`
-      with `d_i` dividing `d_{i-1}`
+    - ``d`` -- list or tuple of integers :math:`(d_0, d_1, \ldots,
+      d_{r-1})` with :math:`d_i` dividing :math:`d_{i-1}`
 
     OUTPUT:
 
-    A pair `(M, E)` consisting of
+    A pair ``(M, E)`` consisting of
 
-    - ``M`` -- the finite Abelian group `C_{d_0} \times C_{d_1} \times
-      \ldots \times C_{d_{r-1}}`
+    - ``M`` -- the finite Abelian group :math:`C_{d_0} \times C_{d_1}
+      \times \ldots \times C_{d_{r-1}}`
 
-    - ``E`` -- the matrix `(\langle x,y\rangle)_{x\in M,y\in M^*}` of
-      the canonical pairing `M \times M^* \to \QQ/\ZZ`, where `M` is
-      ordered lexicographically and the dual group `M^*` is identified
-      with `M`, so that `E` is symmetric.
+    - ``E`` -- the matrix :math:`(\langle x,y\rangle)_{x\in M,y\in
+      M^*}` of the canonical pairing :math:`M \times M^* \to
+      \mathbf{Q}/\mathbf{Z}`, where `M` is ordered lexicographically
+      and the dual group :math:`M^*` is identified with `M`, so that
+      `E` is symmetric
 
     TESTS::
 
@@ -69,23 +70,24 @@ def standard_group_structure(d):
     return M, E
 
 def find_group_structure(T):
-    """
+    r"""
     Return the Abelian group structure with pairing matrix `T`.
 
     INPUT:
 
-    - ``T`` -- a square matrix with rational entries in `[0,1)`
+    - ``T`` -- a square matrix with rational entries in :math:`[0,1)`
 
     OUTPUT:
 
-    A quadruple `(M, E, p, q)` consisting of
+    A quadruple ``(M, E, p, q)`` consisting of
 
-    - ``M`` -- a finite Abelian group `C_{d_0} \times C_{d_1} \times
-      \ldots \times C_{d_{r-1}}`
+    - ``M`` -- a finite Abelian group :math:`C_{d_0} \times C_{d_1}
+      \times \ldots \times C_{d_{r-1}}`
 
-    - ``E`` -- the matrix of the standard pairing `M \times M^* \to
-      \QQ/\ZZ`, where `M` is ordered lexicographically and the dual
-      group `M^*` is identified with `M`
+    - ``E`` -- the matrix of the standard pairing :math:`M \times M^*
+      \to \mathbf{Q}/\mathbf{Z}`, where `M` is ordered
+      lexicographically and the dual group :math:`M^*` is identified
+      with `M`
 
     - ``p``, ``q`` -- permutations such that `E` is obtained by
       permuting the rows and columns of `T` according to `p` and `q`,
