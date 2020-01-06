@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="dual_pairs",
-    version="0.2",
+    version="0.3",
     author="Peter Bruin",
     author_email="P.J.Bruin@math.leidenuniv.nl",
     description="SageMath package for computing with dual pairs of algebras",
