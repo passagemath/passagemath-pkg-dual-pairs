@@ -35,10 +35,10 @@ def dual_pair_from_dihedral_field(L, F):
         sage: dual_pair_from_dihedral_field(f.splitting_field('a'), GF(2))
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 4 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x + 3
         Number Field in a1 with defining polynomial x^3 + 3*x^2 + 2*x + 1
         B = Finite flat algebra of degree 4 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x + 3
         Number Field in a1 with defining polynomial x^3 + 3*x^2 - x - 11
 
     An example of level 13 over :math:`\mathbf{F}_3`::
@@ -48,12 +48,12 @@ def dual_pair_from_dihedral_field(L, F):
         sage: dual_pair_from_dihedral_field(L, GF(3))
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 9 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^4 + 4*x^3 + 14*x^2 - 4*x + 1
+        Number Field in a0 with defining polynomial x + 4
+        Number Field in a1 with defining polynomial x^4 + 4*x^3 + 14*x^2 + 44*x + 49
         Number Field in a2 with defining polynomial x^4 + 4*x^3 + 10*x^2 + 12*x - 43
         B = Finite flat algebra of degree 9 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^4 + 4*x^3 + 14*x^2 - 4*x + 1
+        Number Field in a0 with defining polynomial x + 4
+        Number Field in a1 with defining polynomial x^4 + 4*x^3 + 14*x^2 + 44*x + 49
         Number Field in a2 with defining polynomial x^4 + 8*x^3 - 14*x^2 + 192*x + 69
 
     An example of level 16 over :math:`\mathbf{F}_3` (cf. Serre,
@@ -62,11 +62,11 @@ def dual_pair_from_dihedral_field(L, F):
         sage: dual_pair_from_dihedral_field(x^4 - 12, GF(3))
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 9 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x + 4
         Number Field in a1 with defining polynomial x^4 + 4*x^3 - 90*x^2 + 964*x + 1633
         Number Field in a2 with defining polynomial x^4 + 4*x^3 + 12*x^2 - 32*x + 16
         B = Finite flat algebra of degree 9 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x + 4
         Number Field in a1 with defining polynomial x^4 + 4*x^3 + 6*x^2 + 4*x - 191
         Number Field in a2 with defining polynomial x^4 + 4*x^3 + 12*x^2 - 32*x + 16
 
@@ -75,7 +75,7 @@ def dual_pair_from_dihedral_field(L, F):
         sage: dual_pair_from_dihedral_field(x^3 - x - 1, GF(5))
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 25 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x + 3
         Number Field in a1 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
         Number Field in a2 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
         Number Field in a3 with defining polynomial x^3 + 3*x^2 - x - 11
@@ -83,7 +83,7 @@ def dual_pair_from_dihedral_field(L, F):
         Number Field in a5 with defining polynomial x^3 + 3*x^2 - x - 11
         Number Field in a6 with defining polynomial x^3 + 3*x^2 + 2*x + 1
         B = Finite flat algebra of degree 25 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x
+        Number Field in a0 with defining polynomial x - 6
         Number Field in a1 with defining polynomial x^12 - 6*x^11 + 20*x^10 - 34*x^9 + 69*x^8 - 84*x^7 + 440*x^6 - 186*x^5 + 196*x^4 + 1400*x^3 + 1110*x^2 - 1600*x + 4105
         Number Field in a2 with defining polynomial x^12 + 128*x^11 + 7561*x^10 + 266074*x^9 + 6149384*x^8 + 97619882*x^7 + 1087374619*x^6 + 8445691276*x^5 + 43165980311*x^4 + 117455115180*x^3 - 49919785310*x^2 - 1428330707300*x - 2669533475975
     """
