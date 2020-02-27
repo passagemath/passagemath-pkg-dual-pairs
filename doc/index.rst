@@ -34,7 +34,7 @@ The source code is available at <https://gitlab.com/pbruin/dual-pairs>.
 Documentation of the modules
 ============================
 
-The documentation pages in the table below point are automatically
+The documentation pages in the table below are automatically
 generated from the source code.
 
 Dual pairs of algebras
