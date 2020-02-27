@@ -14,7 +14,8 @@ Prerequisites
 -------------
 
 - SageMath, <http://www.sagemath.org/>.  This package has been tested
-  with SageMath 8.8; it may also work with older or newer versions.
+  with SageMath 8.8 and 9.0; it may also work with older or newer
+  versions.
 
 
 Installation
