@@ -198,8 +198,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
               To:   Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
         """
         if X is self.module() or X is self.algebra():
-            from sage.structure.coerce_maps import DefaultConvertMap_unique
-            return DefaultConvertMap_unique(X, self)
+            return self._generic_coerce_map(X)
         return self._coerce_map_via([self.algebra(), self.module()], X)
 
     def _an_element_(self):
