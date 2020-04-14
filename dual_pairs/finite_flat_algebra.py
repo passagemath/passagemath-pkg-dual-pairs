@@ -55,12 +55,20 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         This should be generalised to not necessarily free modules.
     """
 
-    # TODO: hack (see sage.categories.UnitalAlgebras.ParentMethods)
-    _no_generic_basering_coercion = True
-
     def __init__(self, base_ring):
         """
-        TODO
+        Initialise a finite flat algebra over ``base_ring``.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
+            sage: A.has_coerce_map_from(A.base_ring())
+            True
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 1])
+            sage: B.has_coerce_map_from(B.base_ring())
+            True
         """
         from sage.categories.all import Algebras
         category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
@@ -181,21 +189,18 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             sage: from dual_pairs import FiniteFlatAlgebra
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
-            sage: A.coerce_map_from(A.base_ring())
-            Composite map:
-              From: Rational Field
-              To:   Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
-              Defn:   Coercion map:
-                      From: Rational Field
-                      To:   Univariate Quotient Polynomial Ring in a over Rational Field with modulus x^4 - 16
-                    then
-                      Coercion map:
-                      From: Univariate Quotient Polynomial Ring in a over Rational Field with modulus x^4 - 16
-                      To:   Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
             sage: A.coerce_map_from(A.module())
             Coercion map:
               From: Vector space of dimension 4 over Rational Field
               To:   Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
+
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 1])
+            sage: B.coerce_map_from(B.module())
+            Coercion map:
+              From: Vector space of dimension 3 over Rational Field
+              To:   Finite flat algebra of degree 3 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x^2 + 1
         """
         if X is self.module() or X is self.algebra():
             return self._generic_coerce_map(X)
@@ -443,8 +448,6 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
             sage: alg = B.algebra()
             sage: alg
             Univariate Quotient Polynomial Ring in a over Rational Field with modulus x^3 + x
-            sage: alg.category()
-            Category of commutative quotients of algebras over Rational Field
         """
         try:
             return self.base_ring().extension(self._poly, names='a')
@@ -690,56 +693,10 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
             sage: alg = A.algebra()
             sage: alg
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
-            sage: alg.category()
-            Category of Cartesian products of commutative rings
         """
-        # TODO: it shouldn't be necessary to specify a category, but
-        # this crashes if we either specify no category at all or
-        # CommutativeAlgebras(self.base_ring()).CartesianProducts().
-        # See also :trac:`19225`.
-        from sage.categories.all import cartesian_product, CommutativeRings
-        category = CommutativeRings().CartesianProducts()
+        from sage.categories.all import cartesian_product, CommutativeAlgebras
+        category = CommutativeAlgebras(self.base_ring()).CartesianProducts()
         return cartesian_product(self._factors, category=category)
-
-    def _coerce_map_from_(self, X):
-        """
-        Return a coercion map from `X` to ``self``, or ``None``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 1])
-            sage: B.coerce_map_from(B.base_ring())
-            Conversion via A map from Rational Field to Finite flat algebra of degree 3 over Rational Field, product of:
-            Number Field in a0 with defining polynomial x
-            Number Field in a1 with defining polynomial x^2 + 1 map:
-              From: Rational Field
-              To:   Finite flat algebra of degree 3 over Rational Field, product of:
-            Number Field in a0 with defining polynomial x
-            Number Field in a1 with defining polynomial x^2 + 1
-            sage: B.coerce_map_from(B.module())
-            Coercion map:
-              From: Vector space of dimension 3 over Rational Field
-              To:   Finite flat algebra of degree 3 over Rational Field, product of:
-            Number Field in a0 with defining polynomial x
-            Number Field in a1 with defining polynomial x^2 + 1
-
-        .. TODO::
-
-           This method shouldn't be necessary; the reason we need it
-           is that ``self.algebra().coerce_map_from(self.base_ring())``
-           currently returns ``None``.
-        """
-        R = self.base_ring()
-        if X is R:
-            from sage.categories.poor_man_map import PoorManMap
-            return PoorManMap(lambda x: self.element_class(self, [K(x) for K in self._factors]),
-                              domain=R, codomain=self)
-        f = self._coerce_map_via([R], X)
-        if f is not None:
-            return f
-        return super(FiniteFlatAlgebra_product, self)._coerce_map_from_(X)
 
     def is_field(self):
         """
@@ -866,6 +823,31 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
         from sage.misc.all import prod
         return prod(f.discriminant() * M.determinant() ** 2
                     for f, M in zip(self._polys, self._basis_matrices()))
+
+    if not hasattr(sage.categories.unital_algebras.UnitalAlgebras.ParentMethods,
+                   '_coerce_map_from_base_ring'):
+
+        # Compatibility with Sage versions before 9.1.beta6
+
+        _no_generic_basering_coercion = True
+
+        @cached_method
+        def algebra(self):
+            from sage.categories.all import cartesian_product, CommutativeRings
+            category = CommutativeRings().CartesianProducts()
+            return cartesian_product(self._factors, category=category)
+
+        def _coerce_map_from_(self, X):
+            R = self.base_ring()
+            if X is R:
+                from sage.categories.poor_man_map import PoorManMap
+                return PoorManMap(lambda x: self.element_class(self, [K(x) for K in self._factors]),
+                                  domain=R, codomain=self)
+            f = self._coerce_map_via([R], X)
+            if f is not None:
+                return f
+            return super(FiniteFlatAlgebra_product, self)._coerce_map_from_(X)
+
 
 class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
     """
