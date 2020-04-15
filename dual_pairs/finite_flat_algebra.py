@@ -93,6 +93,27 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         return self.element_class(self, self.module().zero())
 
     @cached_method
+    def one(self):
+        """
+        Return the unit element of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
+            sage: A.one()
+            1
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - 5])
+            sage: B.one()
+            (1, 1)
+            sage: C = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
+            sage: C.one()
+            e0
+        """
+        return self.element_class(self, self.algebra().one())
+
+    @cached_method
     def module(self):
         """
         Return the underlying module of ``self``.
@@ -413,21 +434,6 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
         return Matrix(self.base_ring(), [self.algebra()(x).list() for x in self._basis])
 
     @cached_method
-    def one(self):
-        """
-        Return the unit element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
-            sage: A.one()
-            1
-        """
-        return self.element_class(self, self.algebra().one())
-
-    @cached_method
     def algebra(self):
         """
         Return the underlying algebra of ``self``.
@@ -468,7 +474,6 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
             False
         """
         return self.algebra().is_field()
-
 
     def change_ring(self, R):
         """
@@ -567,6 +572,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
         return (self._poly.discriminant()
                 * self._basis_matrix().determinant() ** 2)
 
+
 class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
     """
     A finite flat algebra over a field `R`, represented as a product
@@ -664,21 +670,6 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
             [0 0 2]
         """
         return Matrix.block_diagonal(self._basis_matrices(), subdivide=False)
-
-    @cached_method
-    def one(self):
-        """
-        Return the unit element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 5])
-            sage: A.one()
-            (1, 1)
-        """
-        return self.element_class(self, [K.one() for K in self._factors])
 
     @cached_method
     def algebra(self):
@@ -922,20 +913,6 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
             [0 1]
         """
         return Matrix.identity(self.degree())
-
-    @cached_method
-    def one(self):
-        """
-        Return the unit element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
-            sage: A.one()
-            e0
-        """
-        return self.element_class(self, self._algebra.one())
 
     def algebra(self):
         """
