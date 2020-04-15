@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from sage.modules.module import Module
 from sage.structure.element import ModuleElement
 
-from .finite_flat_algebra import FiniteFlatAlgebra, FiniteFlatAlgebra_base
+from .finite_flat_algebra import FiniteFlatAlgebra_base
 
 
 class FiniteFlatAlgebraModuleElement(ModuleElement):
