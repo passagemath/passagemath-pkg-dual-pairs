@@ -9,8 +9,6 @@ from sage.matrix.all import Matrix
 from sage.structure.element import (AlgebraElement, CommutativeAlgebraElement,
                                     CommutativeRingElement, ModuleElement)
 
-from copy import copy
-
 
 class FiniteFlatAlgebraElement(CommutativeAlgebraElement):
     """
@@ -133,7 +131,7 @@ class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
             self._algebra_element = x
             return x
 
-    def module_element(self, copy=False):
+    def module_element(self):
         """
         Return the element of the underlying module corresponding to
         ``self``.
@@ -152,7 +150,7 @@ class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
             A = self.parent()
             v = A.module()(self._algebra_element.list()) * A._basis_matrix_inv()
             self._module_element = v
-        return copy(v) if copy else v
+        return v
 
     def matrix(self):
         """
@@ -231,7 +229,7 @@ class FiniteFlatAlgebraElement_product(FiniteFlatAlgebraElement):
             self._algebra_element = A.algebra()(x)
             return self._algebra_element
 
-    def module_element(self, copy=False):
+    def module_element(self):
         """
         Return the element of the underlying module corresponding to
         ``self``.
@@ -251,7 +249,7 @@ class FiniteFlatAlgebraElement_product(FiniteFlatAlgebraElement):
             v = (A.module()(sum((x.list() for x in self._algebra_element), []))
                  * A._basis_matrix_inv())
             self._module_element = v
-        return copy(v) if copy else v
+        return v
 
     def matrix(self):
         """
@@ -324,7 +322,7 @@ class FiniteFlatAlgebraElement_generic(FiniteFlatAlgebraElement):
             self._algebra_element = x
             return x
 
-    def module_element(self, copy=False):
+    def module_element(self):
         """
         Return the element of the underlying module corresponding to
         ``self``.
@@ -341,7 +339,7 @@ class FiniteFlatAlgebraElement_generic(FiniteFlatAlgebraElement):
         except AttributeError:
             v = self._algebra_element.vector()
             self._module_element = v
-        return copy(v) if copy else v
+        return v
 
     def matrix(self):
         """
