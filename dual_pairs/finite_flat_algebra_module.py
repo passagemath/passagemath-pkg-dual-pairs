@@ -128,6 +128,8 @@ class FiniteFlatAlgebraModule(Module):
         sage: R.<x> = QQ[]
         sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
         sage: M = FiniteFlatAlgebraModule(A)
+        sage: M.zero()
+        0
         sage: M.coerce_map_from(QQ)
         sage: M.coerce_map_from(A)
     """
@@ -163,22 +165,6 @@ class FiniteFlatAlgebraModule(Module):
             Free module of rank 1 over Monogenic algebra of degree 2 over Rational Field with defining polynomial x^2 + 1
         """
         return "Free module of rank 1 over %s" % self.base_ring()
-
-    def zero(self):
-        """
-        Return the zero element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, x^2 + 1)
-            sage: M = FiniteFlatAlgebraModule(A)
-            sage: M.zero()
-            0
-        """
-        return self.element_class(self, 0)
 
     def change_ring(self, R):
         """

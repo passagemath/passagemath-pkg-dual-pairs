@@ -53,6 +53,26 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
     .. TODO::
 
         This should be generalised to not necessarily free modules.
+
+    EXAMPLES::
+
+        sage: from dual_pairs import FiniteFlatAlgebra
+        sage: R.<x> = QQ[]
+        sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
+        sage: A.zero()
+        0
+        sage: A.one()
+        1
+        sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - 5])
+        sage: B.zero()
+        (0, 0)
+        sage: B.one()
+        (1, 1)
+        sage: C = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
+        sage: C.zero()
+        0
+        sage: C.one()
+        e0
     """
 
     def __init__(self, base_ring):
@@ -73,45 +93,6 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         from sage.categories.all import Algebras
         category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
         super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
-
-    @cached_method
-    def zero(self):
-        """
-        Return the zero element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, x^2 + x + 1)
-            sage: A.zero()
-            0
-            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + x + 1])
-            sage: B.zero()
-            (0, 0)
-        """
-        return self.element_class(self, self.module().zero())
-
-    @cached_method
-    def one(self):
-        """
-        Return the unit element of ``self``.
-
-        EXAMPLES::
-
-            sage: from dual_pairs import FiniteFlatAlgebra
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
-            sage: A.one()
-            1
-            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - 5])
-            sage: B.one()
-            (1, 1)
-            sage: C = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
-            sage: C.one()
-            e0
-        """
-        return self.element_class(self, self.algebra().one())
 
     @cached_method
     def module(self):
