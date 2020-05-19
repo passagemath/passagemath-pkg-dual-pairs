@@ -252,6 +252,32 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         return self(self.module().random_element())
 
     @cached_method
+    def multiplication_tensor(self):
+        """
+        Return the multiplication tensor of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
+            sage: A.multiplication_tensor()
+            [
+            [1 0 0]  [0 1 0]  [0 0 1]
+            [0 1 0]  [0 0 1]  [1 1 0]
+            [0 0 1], [1 1 0], [0 1 1]
+            ]
+            sage: B = FiniteFlatAlgebra(QQ, [x, x, x^2 - 5])
+            sage: B.multiplication_tensor()
+            [
+            [1 0 0 0]  [0 0 0 0]  [0 0 0 0]  [0 0 0 0]
+            [0 0 0 0]  [0 1 0 0]  [0 0 0 0]  [0 0 0 0]
+            [0 0 0 0]  [0 0 0 0]  [0 0 1 0]  [0 0 0 1]
+            [0 0 0 0], [0 0 0 0], [0 0 0 1], [0 0 5 0]
+            ]
+        """
+        return [x.matrix() for x in self.gens()]
+
     def finite_dimensional_algebra(self):
         """
         Return a :class:`FiniteDimensionalAlgebra` isomorphic to ``self``.
@@ -268,10 +294,9 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             Finite-dimensional algebra of degree 4 over Rational Field
         """
         return FiniteDimensionalAlgebra(self.base_ring(),
-                                        [x.matrix() for x in self.gens()],
+                                        self.multiplication_tensor(),
                                         assume_associative=True)
 
-    @cached_method
     def to_generic(self):
         """
         Return ``self`` as a generic finite flat algebra.
@@ -285,7 +310,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             Finite flat algebra of degree 3 over Rational Field
         """
         return FiniteFlatAlgebra(self.base_ring(),
-                                 [x.matrix() for x in self.gens()])
+                                 self.multiplication_tensor())
 
     @cached_method
     def splitting_field_polynomial(self):
