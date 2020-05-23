@@ -192,6 +192,22 @@ class FiniteFlatAlgebraModule(Module):
             return self
         return FiniteFlatAlgebraModule(R)
 
+    def random_element(self):
+        """
+        Return a random element of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^2 - 1)
+            sage: M = FiniteFlatAlgebraModule(A)
+            sage: M.random_element()  # random
+            -1/95*a - 1/2
+        """
+        return self(self.base_ring().random_element())
+
     def dual(self):
         """
         Return the dual of ``self`` over its base ring.
