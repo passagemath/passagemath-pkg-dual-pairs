@@ -130,20 +130,88 @@ class TorsorPair(CategoryObject):
 
     def dual_pair(self):
         """
-        TODO
+        Return the dual pair for which ``self`` is a torsor.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: from dual_pairs.torsor_pair import TorsorPair
+
+            sage: x = polygen(QQ, 'x')
+            sage: y = polygen(QQ, 'y')
+            sage: A = FiniteFlatAlgebra(QQ, [x^3 - 1])
+            sage: B = FiniteFlatAlgebra(QQ, [y, y, y])
+            sage: Phi = Matrix.identity(QQ, 3)
+            sage: D = DualPair(A, B, Phi)
+
+            sage: t = polygen(QQ, 't')
+            sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
+            sage: U = FiniteFlatAlgebraModule(A)
+            sage: Psi = Matrix.identity(QQ, 3)
+            sage: X = TorsorPair(D, T, U, Psi)
+            sage: X.dual_pair() is D
+            True
         """
         return self._dual_pair
 
     def psi(self):
-        """
-        TODO
+        r"""
+        Return the pairing matrix :math:`\Psi` attached to ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: from dual_pairs.torsor_pair import TorsorPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
+            sage: U = FiniteFlatAlgebraModule(A)
+            sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
+            ....:                   [0, 0, 1,   0],
+            ....:                   [0, 1, 0,   0],
+            ....:                   [0, 0, 0, -17]])
+            sage: X = TorsorPair(D, T, U, Psi)
+            sage: X.psi() == Psi
+            True
         """
         return self._psi
 
     @cached_method
     def upsilon(self):
-        """
-        TODO
+        r"""
+        Return the matrix :math:`\Upsilon` attached to ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: from dual_pairs.torsor_pair import TorsorPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
+            sage: U = FiniteFlatAlgebraModule(A)
+            sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
+            ....:                   [0, 0, 1,   0],
+            ....:                   [0, 1, 0,   0],
+            ....:                   [0, 0, 0, -17]])
+            sage: X = TorsorPair(D, T, U, Psi)
+            sage: X.upsilon()
+            [    1     0     0     0]
+            [    0     0     1     0]
+            [    0     1     0     0]
+            [    0     0     0 -1/17]
         """
         return self.psi().transpose().inverse()
 
@@ -151,11 +219,11 @@ class TorsorPair(CategoryObject):
         """
         Return ``True`` if ``self`` is isomorphic to ``other``.
 
-        TODO:
+        .. TODO::
 
-        - more efficient algorithm
+            - more efficient algorithm
 
-        - optionally also return an isomorphism
+            - optionally also return an isomorphism
 
         """
         return self.isom_torsor(other).is_trivial()
@@ -250,7 +318,7 @@ class TorsorPair(CategoryObject):
 
     def splitting_field(self, names):
         """
-        Return the set of points of ``self`` over `R`.
+        Return a splitting field for ``self``.
 
         EXAMPLES::
 
@@ -287,6 +355,10 @@ class TorsorPair(CategoryObject):
           torsor
 
         - `Q` -- a point of ``self``
+
+        OUTPUT:
+
+        The point `P + Q` of ``self``.
 
         EXAMPLES::
 
