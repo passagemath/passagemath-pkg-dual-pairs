@@ -164,6 +164,8 @@ class TorsorPair(CategoryObject):
         """
         Return ``True`` if ``self`` is a trivial torsor.
 
+        EXAMPLES::
+
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
             sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
@@ -277,8 +279,14 @@ class TorsorPair(CategoryObject):
 
     def add(self, P, Q):
         """
-        Return the sum of `P` and `Q` under the group operation of
-        ``self``.
+        Return the sum of `P` and `Q`.
+
+        INPUT:
+
+        - `P` -- a point of the group scheme for which ``self`` is a
+          torsor
+
+        - `Q` -- a point of ``self``
 
         EXAMPLES::
 

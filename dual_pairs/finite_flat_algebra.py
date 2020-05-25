@@ -246,8 +246,10 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^2 - 1)
             sage: A.random_element()  # random
+            -1/137*a - 1
             sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - 1])
             sage: B.random_element()  # random
+            (0, 1/2*a1 - 1/5)
         """
         return self(self.module().random_element())
 
