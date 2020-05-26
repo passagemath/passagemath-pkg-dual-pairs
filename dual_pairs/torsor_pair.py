@@ -44,6 +44,29 @@ class TorsorPair(CategoryObject):
         Number Field in a2 with defining polynomial x^2 + 17
         T = Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 17
 
+        sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+        sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+        sage: from dual_pairs.torsor_pair import TorsorPair
+
+        sage: A = FiniteFlatAlgebra(QQ, [x^3 - 1])
+        sage: B = FiniteFlatAlgebra(QQ, [x, x, x])
+        sage: Phi = Matrix.identity(QQ, 3)
+        sage: D = DualPair(A, B, Phi)
+
+        sage: t = polygen(QQ, 't')
+        sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
+        sage: U = FiniteFlatAlgebraModule(A)
+        sage: Psi = Matrix.identity(QQ, 3)
+        sage: X = TorsorPair(D, T, U, Psi)
+
+        sage: L.<a> = X.splitting_field()
+        sage: points_D = D.points(L)
+        sage: points_X = X.points(L)
+        sage: Matrix([[points_X.index(X.add(P, Q))
+        ....:          for Q in points_X] for P in points_D])
+        [0 1 2]
+        [1 2 0]
+        [2 0 1]
     """
 
     def __init__(self, dual_pair, T, U, psi):
@@ -115,18 +138,18 @@ class TorsorPair(CategoryObject):
             sage: U = FiniteFlatAlgebraModule(A)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
-
-            sage: L.<a> = X.splitting_field()
-            sage: points_D = D.points(L)
-            sage: points_X = X.points(L)
-            sage: Matrix([[points_X.index(X.add(P, Q))
-            ....:          for Q in points_X] for P in points_D])
-            [0 1 2]
-            [1 2 0]
-            [2 0 1]
+            sage: X
+            Torsor for Dual pair of algebras over Rational Field
+            A = Finite flat algebra of degree 3 over Rational Field, product of:
+            Univariate Quotient Polynomial Ring in a0 over Rational Field with modulus x^3 - 1
+            B = Finite flat algebra of degree 3 over Rational Field, product of:
+            Number Field in a0 with defining polynomial y
+            Number Field in a1 with defining polynomial y
+            Number Field in a2 with defining polynomial y
+            T = Monogenic algebra of degree 3 over Rational Field with defining polynomial t^3 - 7
         """
         return ('Torsor for %s\nT = %s'
-                % (self.dual_pair(), self._torsor_algebra))
+                % (self.dual_pair(), self.algebra()))
 
     def dual_pair(self):
         """
@@ -154,6 +177,60 @@ class TorsorPair(CategoryObject):
             True
         """
         return self._dual_pair
+
+    def algebra(self):
+        """
+        Return the `R`-algebra `T` attached to ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: from dual_pairs.torsor_pair import TorsorPair
+
+            sage: x = polygen(QQ, 'x')
+            sage: y = polygen(QQ, 'y')
+            sage: A = FiniteFlatAlgebra(QQ, [x^3 - 1])
+            sage: B = FiniteFlatAlgebra(QQ, [y, y, y])
+            sage: Phi = Matrix.identity(QQ, 3)
+            sage: D = DualPair(A, B, Phi)
+
+            sage: t = polygen(QQ, 't')
+            sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
+            sage: U = FiniteFlatAlgebraModule(A)
+            sage: Psi = Matrix.identity(QQ, 3)
+            sage: X = TorsorPair(D, T, U, Psi)
+            sage: X.algebra() is T
+            True
+        """
+        return self._torsor_algebra
+
+    def dual_module(self):
+        """
+        Return the `B`-module `U` attached to ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
+            sage: from dual_pairs.torsor_pair import TorsorPair
+
+            sage: x = polygen(QQ, 'x')
+            sage: y = polygen(QQ, 'y')
+            sage: A = FiniteFlatAlgebra(QQ, [x^3 - 1])
+            sage: B = FiniteFlatAlgebra(QQ, [y, y, y])
+            sage: Phi = Matrix.identity(QQ, 3)
+            sage: D = DualPair(A, B, Phi)
+
+            sage: t = polygen(QQ, 't')
+            sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
+            sage: U = FiniteFlatAlgebraModule(A)
+            sage: Psi = Matrix.identity(QQ, 3)
+            sage: X = TorsorPair(D, T, U, Psi)
+            sage: X.dual_module() is U
+            True
+        """
+        return self._dual_module
 
     def psi(self):
         r"""
@@ -274,7 +351,7 @@ class TorsorPair(CategoryObject):
         """
         raise NotImplementedError
 
-    def isom_torsor(self):
+    def isom_torsor(self, other):
         """
         Return the torsor ``Isom(self, other)``.
 
@@ -314,7 +391,7 @@ class TorsorPair(CategoryObject):
              (1, -a, a^2, -a^3)]
 
         """
-        return self._torsor_algebra.morphisms_to_ring(R)
+        return self.algebra().morphisms_to_ring(R)
 
     def splitting_field(self, names):
         """
@@ -343,7 +420,7 @@ class TorsorPair(CategoryObject):
             Number Field in a with defining polynomial x^8 + 68*x^6 + 1700*x^4 + 23120*x^2 + 73984
 
         """
-        return self._torsor_algebra.splitting_field(names)
+        return self.algebra().splitting_field(names)
 
     def add(self, P, Q):
         """
@@ -430,13 +507,12 @@ class TorsorPair(CategoryObject):
              (1, i*a, -a^2, -i*a^3)]
             sage: all(X.add(q, X.add(p, x)) == X.add(D.add(p, q), x) for x in points_X)
             True
-
         """
         R = P.base_ring()
         if Q.base_ring() is not R:
             raise ValueError("points have different base rings")
         D = self.dual_pair()
         B = D.algebra2().change_ring(R)
-        U = self._dual_module.change_ring(B)
+        U = self.dual_module().change_ring(B)
         S = B(P * D.theta()) * U(Q * self.upsilon())
         return self.psi() * S.module_element()
