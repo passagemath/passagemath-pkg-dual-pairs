@@ -73,6 +73,7 @@ Miscellaneous
 .. toctree::
    :maxdepth: 2
 
+   extensions
    group_structure
    padic_roots
 
