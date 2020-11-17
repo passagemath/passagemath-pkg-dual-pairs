@@ -36,10 +36,10 @@ def dual_pair_from_dihedral_field(L, F):
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 4 over Rational Field, product of:
         Number Field in a0 with defining polynomial x + 3
-        Number Field in a1 with defining polynomial x^3 + 3*x^2 + 2*x + 1
+        Number Field in a1 with defining polynomial x^3 + 3*x^2 - x - 11
         B = Finite flat algebra of degree 4 over Rational Field, product of:
         Number Field in a0 with defining polynomial x + 3
-        Number Field in a1 with defining polynomial x^3 + 3*x^2 - x - 11
+        Number Field in a1 with defining polynomial x^3 + 3*x^2 + 2*x + 1
 
     An example of level 13 over :math:`\mathbf{F}_3`::
 
@@ -76,12 +76,12 @@ def dual_pair_from_dihedral_field(L, F):
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 25 over Rational Field, product of:
         Number Field in a0 with defining polynomial x + 3
-        Number Field in a1 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
-        Number Field in a2 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
-        Number Field in a3 with defining polynomial x^3 + 3*x^2 - x - 11
-        Number Field in a4 with defining polynomial x^3 + 3*x^2 + 2*x + 1
-        Number Field in a5 with defining polynomial x^3 + 3*x^2 - x - 11
-        Number Field in a6 with defining polynomial x^3 + 3*x^2 + 2*x + 1
+        Number Field in a1 with defining polynomial x^3 + 3*x^2 + 2*x + 1
+        Number Field in a2 with defining polynomial x^3 + 3*x^2 - x - 11
+        Number Field in a3 with defining polynomial x^3 + 3*x^2 + 2*x + 1
+        Number Field in a4 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
+        Number Field in a5 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
+        Number Field in a6 with defining polynomial x^3 + 3*x^2 - x - 11
         B = Finite flat algebra of degree 25 over Rational Field, product of:
         Number Field in a0 with defining polynomial x - 6
         Number Field in a1 with defining polynomial x^12 - 6*x^11 + 20*x^10 - 34*x^9 + 69*x^8 - 84*x^7 + 440*x^6 - 186*x^5 + 196*x^4 + 1400*x^3 + 1110*x^2 - 1600*x + 4105

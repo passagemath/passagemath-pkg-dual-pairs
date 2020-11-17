@@ -31,7 +31,7 @@ def algebra_and_points_from_action(G, V, action):
         Finite flat algebra of degree 4 over Rational Field, product of:
         Number Field in a0 with defining polynomial x - 1
         Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1 ,
-        [(0, 0), (1, 1), (1, 0), (0, 1)],
+        [(0, 0), (0, 1), (1, 1), (1, 0)],
         [           1            0            0            0]
         [           0            1     -a^2 + 2 -a^2 + a + 3]
         [           0            1  a^2 - a - 1       -a + 2]
