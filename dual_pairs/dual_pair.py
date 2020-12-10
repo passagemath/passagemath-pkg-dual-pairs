@@ -6,9 +6,52 @@ schemes.
 
 from __future__ import absolute_import
 
+from sage.matrix.all import Matrix
 from sage.misc.all import cached_method
+from sage.rings.all import QQ, ZZ
 from sage.structure.category_object import CategoryObject
 from sage.structure.factory import UniqueFactory
+
+
+def _dlog_fun(L, n):
+    """
+    Return a discrete logarithm function for the group of :math:`n`-th
+    roots of unity in :math:`L`.
+
+    EXAMPLES::
+
+        sage: from dual_pairs.dual_pair import _dlog_fun
+        sage: _dlog_fun(Qp(3), 4)
+        <function _dlog_fun.<locals>.<lambda> at 0x...>
+    """
+    from .group_structure import mod1
+    try:
+        twopii = 2 * L.pi() * L(-1).sqrt()
+        return lambda x: mod1(((x.log()/twopii).real() * n).round() / n)
+    except AttributeError:
+        pass
+    from sage.rings.padics.generic_nodes import (pAdicFieldGeneric,
+                                                 pAdicRingGeneric)
+    if isinstance(L, (pAdicFieldGeneric, pAdicRingGeneric)):
+        l = L.prime()
+        zeta, m = L.primitive_root_of_unity(n, order=True)
+        if m % l == 0:
+            # v - 1 (= v_E(1 - zeta_l)) is the maximal valuation of
+            # all differences between two different roots of unity.
+            v = L.absolute_e() // (l - 1) + 1
+            zeta_pow = zeta.add_bigoh(v).powers(m)
+            return lambda x: mod1(zeta_pow.index(x.add_bigoh(v)) / m)
+        else:
+            Q = L.residue_field()
+            zeta_pow = Q(zeta).powers(m)
+            return lambda x: mod1(zeta_pow.index(Q(x)) / m)
+    try:
+        zeta, m = L.zeta(n), n
+    except ValueError:
+        m = L.zeta_order().gcd(n)
+        zeta = L.zeta(m)
+    zeta_pow = zeta.powers(m)
+    return lambda x: mod1(zeta_pow.index(x) / m)
 
 
 class DualPair_class(CategoryObject):
@@ -462,78 +505,6 @@ class DualPair_class(CategoryObject):
             return pushout(self.algebra1().splitting_field(names),
                            self.algebra2().splitting_field(names))
 
-    def _group_data(self, L):
-        """
-        Internal function to compute some data attached to the group of
-        `L`-points of ``self``.
-
-        TESTS::
-
-            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: R.<x> = QQ[]
-            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
-            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
-            ....:                   [1/4,  1/4, -1/2,   0],
-            ....:                   [1/2, -1/2,    0,   0],
-            ....:                   [  0,    0,    0, -17]])
-            sage: D = DualPair(A, Phi)
-            sage: T, P, Q = D._group_data(ComplexField())
-            sage: T
-            [  0   0   0   0]
-            [  0   0 1/2 1/2]
-            [  0 1/2   0 1/2]
-            [  0 1/2 1/2   0]
-            sage: P
-            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
-            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
-            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
-            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
-            sage: Q
-            [   1.00000000000000   0.000000000000000   0.000000000000000   0.000000000000000]
-            [  0.000000000000000    1.00000000000000   0.000000000000000   0.000000000000000]
-            [  0.000000000000000   0.000000000000000    1.00000000000000 -4.12310562561766*I]
-            [  0.000000000000000   0.000000000000000    1.00000000000000  4.12310562561766*I]
-
-            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 - x - 4])
-            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,  1/4],
-            ....:                   [1/4,  1/4, -1/2, -1/4],
-            ....:                   [1/2, -1/2,    0,    0],
-            ....:                   [1/4, -1/4,    0, 17/4]])
-            sage: D = DualPair(A, Phi)
-            sage: T, P, Q = D._group_data(RR)
-            sage: T
-            [  0   0   0   0]
-            [  0   0 1/2 1/2]
-            [  0 1/2   0 1/2]
-            [  0 1/2 1/2   0]
-            sage: P
-            [ 1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
-            [0.000000000000000  1.00000000000000 0.000000000000000 0.000000000000000]
-            [0.000000000000000 0.000000000000000  1.00000000000000 -1.56155281280883]
-            [0.000000000000000 0.000000000000000  1.00000000000000  2.56155281280883]
-            sage: Q
-            [ 1.00000000000000 0.000000000000000 0.000000000000000 0.000000000000000]
-            [0.000000000000000  1.00000000000000 0.000000000000000 0.000000000000000]
-            [0.000000000000000 0.000000000000000  1.00000000000000 -1.56155281280883]
-            [0.000000000000000 0.000000000000000  1.00000000000000  2.56155281280883]
-        """
-        from sage.rings.all import QQ
-        from .group_structure import mod1
-        n = self.degree()
-        try:
-            twopii = 2 * L.pi() * L(-1).sqrt()
-            dlog = lambda x: mod1(((x.log()/twopii).real() * n).round() / n)
-        except AttributeError:
-            m = L.zeta_order().gcd(n)
-            zeta = L.zeta(m)
-            zeta_pow = zeta.powers(m)
-            dlog = lambda x: mod1(zeta_pow.index(x) / m)
-        P = self.algebra1().morphisms_to_ring(L, as_matrix=True)
-        Q = self.algebra2().morphisms_to_ring(L, as_matrix=True)
-        T = P * self.theta() * Q.transpose()
-        T = T.apply_map(dlog, QQ)
-        return T, P, Q
-
     @cached_method
     def group_structure(self, L):
         """
@@ -549,7 +520,7 @@ class DualPair_class(CategoryObject):
             ....:                   [1/2, -1/2,    0,   0],
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
-            sage: M, E, P, Q, basis1, basis2 = D.group_structure(ComplexField())
+            sage: M, E, P, Q, basis1, basis2, zeta, dlog = D.group_structure(ComplexField())
             sage: M
             Additive abelian group isomorphic to Z/2 + Z/2
             sage: E
@@ -573,6 +544,10 @@ class DualPair_class(CategoryObject):
             sage: basis2
             ((0.000000000000000, 0.000000000000000, 1.00000000000000, -4.12310562561766*I),
              (0.000000000000000, 1.00000000000000, 0.000000000000000, 0.000000000000000))
+            sage: zeta
+            (-1.00000000000000, -1.00000000000000)
+            sage: dlog
+            <function _dlog_fun.<locals>.<lambda> at 0x...>
 
         A more complicated example::
 
@@ -582,15 +557,19 @@ class DualPair_class(CategoryObject):
             Additive abelian group isomorphic to Z/7 + Z/7
         """
         from .group_structure import find_group_structure
-        T, P, Q = self._group_data(L)
-        M, E, p, q = find_group_structure(T)
+        P = self.algebra1().morphisms_to_ring(L, as_matrix=True)
+        Q = self.algebra2().morphisms_to_ring(L, as_matrix=True)
+        T = P * self.theta() * Q.transpose()
+        dlog = _dlog_fun(L, self.degree())
+        M, E, p, q = find_group_structure(T.apply_map(dlog, QQ))
         P.permute_rows(p)
         Q.permute_rows(q)
         elements = list(M)
         gens_indices = [elements.index(g) for g in M.gens()]
         basis1 = tuple(P.row(i) for i in gens_indices)
         basis2 = tuple(Q.row(i) for i in gens_indices)
-        return (M, E, P, Q, basis1, basis2)
+        zeta = tuple(T[(~p)(i + 1) - 1, (~q)(i + 1) - 1] for i in gens_indices)
+        return (M, E, P, Q, basis1, basis2, zeta, dlog)
 
     def group_structure_algebraic_closure(self):
         """
@@ -706,6 +685,31 @@ class DualPair_class(CategoryObject):
         Psi = self.phi()
         return TorsorPair(self, T, U, Psi)
 
+    @cached_method
+    def _aut_matrix_helper(self, L, basis):
+        """
+        Helper function for :meth:`automorphism_matrix`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: L.<a> = QuadraticField(-17)
+            sage: _, P, _, Q = D.points(L)
+            sage: D._aut_matrix_helper(L, (P, Q))
+            [1/2 1/2]
+            [  0 1/2]
+        """
+        _, _, _, _, _, basis2, _, dlog = self.group_structure(L)
+        return Matrix(QQ, [[dlog(self.pairing(P, Q)) for P in basis]
+                           for Q in basis2])
+
     def automorphism_matrix(self, L, aut, basis=None):
         """
         Return the matrix of the automorphism ``aut``.
@@ -739,18 +743,15 @@ class DualPair_class(CategoryObject):
             [1 1]
             [1 0]
         """
-        from sage.matrix.all import Matrix
         from sage.rings.all import IntegerModRing
-        M, _, _, _, basis1, basis2 = self.group_structure(L)
+        M, _, _, _, basis1, basis2, _, dlog = self.group_structure(L)
         if basis is None:
             basis = basis1
         d = M.exponent()
-        zeta_powers = L.zeta(d).powers(d)
-        dlog = lambda x: zeta_powers.index(x)
-        T = Matrix([[dlog(self.pairing(P, Q))
-                     for P in basis] for Q in basis2])
-        U = Matrix([[dlog(self.pairing(P.apply_map(aut), Q))
-                     for P in basis] for Q in basis2])
+        T = self._aut_matrix_helper(L, basis)
+        basis = tuple(P.apply_map(aut) for P in basis)
+        U = Matrix(QQ, [[dlog(self.pairing(P, Q))
+                         for P in basis] for Q in basis2])
         return T.solve_left(U).transpose().change_ring(IntegerModRing(d))
         # return Matrix([T.transpose().__pari__().matsolvemod(r.__pari__().Col(), d).sage() for r in U.rows()]).transpose()
 
@@ -790,7 +791,6 @@ class DualPair_class(CategoryObject):
             ...
             ZeroDivisionError: input matrix must be nonsingular
         """
-        from sage.rings.all import ZZ
         K = self.base_ring()
         if K.is_finite():
             p = K.characteristic()
@@ -917,7 +917,7 @@ class DualPair_class(CategoryObject):
             1
         """
         from sage.modules.all import VectorSpace
-        from sage.rings.all import FiniteField, pAdicField, PolynomialRing, ZZ
+        from sage.rings.all import FiniteField, pAdicField
         from sage.rings.infinity import infinity
         from sage.rings.padics.precision_error import PrecisionError
         from .padic_roots import kummer_dedekind, integral_basis_generator, padic_aut
@@ -937,7 +937,7 @@ class DualPair_class(CategoryObject):
         L = Qp.extension(h, names='a')
         if L.ramification_index() == 1:
             return ZZ(0)
-        M, _, _, _, basis, _ = self.group_structure(L)
+        M, _, _, _, basis, _, _, _ = self.group_structure(L)
         F = FiniteField(M.exponent())
         dim = len(M.invariants())
         roots = polroots(h, L)
@@ -1050,7 +1050,7 @@ class DualPair_class(CategoryObject):
         from sage.rings.all import ComplexField
         L = ComplexField(800)  # TODO: adapt precision
         N = self.artin_conductor()
-        M, _, _, _, basis, _ = self.group_structure(L)
+        M, _, _, _, basis, _, _, _ = self.group_structure(L)
         l = M.exponent()
         if not l.is_prime():
             raise ValueError("value ring of the representation must be a finite field")
@@ -1158,7 +1158,6 @@ class DualPairFactory(UniqueFactory):
             Number Field in a1 with defining polynomial x
             Number Field in a2 with defining polynomial x^2 + 17
         """
-        from sage.rings.all import QQ
         if key[0].base_ring() is QQ:
             from dual_pairs.dual_pair_rational import DualPair_rational
             return DualPair_rational(*key)
