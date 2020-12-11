@@ -710,15 +710,14 @@ class DualPair_class(CategoryObject):
         return Matrix(QQ, [[dlog(self.pairing(P, Q)) for P in basis]
                            for Q in basis2])
 
-    def automorphism_matrix(self, L, aut, basis=None):
+    def automorphism_matrix(self, aut, basis=None):
         """
         Return the matrix of the automorphism ``aut``.
 
         INPUT:
 
-        - ``L`` -- an extension of the base field `K` of ``self``
-
-        - ``aut`` -- an automorphism of `L` over `K`
+        - ``aut`` -- an automorphism of `L` over `K`, where `K` is the
+          base field of ``self`` and `L` is an extension of `K`
 
         - ``basis`` -- basis of the group of `L`-points of ``self``
           (default: choose some basis)
@@ -739,11 +738,12 @@ class DualPair_class(CategoryObject):
             sage: D = DualPair(A, phi)
             sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
             sage: aut = L.hom([1/14*(z^5 + z^4 + 8*z^3 + z^2 + 26*z - 2)])
-            sage: D.automorphism_matrix(L, aut)
+            sage: D.automorphism_matrix(aut)
             [1 1]
             [1 0]
         """
         from sage.rings.all import IntegerModRing
+        L = aut.domain()
         M, _, _, _, basis1, basis2, _, dlog = self.group_structure(L)
         if basis is None:
             basis = basis1
@@ -801,7 +801,7 @@ class DualPair_class(CategoryObject):
             if not q.is_power_of(p):
                 raise ValueError('%s is not a power of %s' % (q, p))
             F = L.frobenius_endomorphism(q.log(p))
-            return self.automorphism_matrix(L, F)
+            return self.automorphism_matrix(F)
         else:
             from sage.rings.all import FiniteField
             if q is None:
@@ -893,7 +893,7 @@ class DualPair_class(CategoryObject):
         if L is None:
             L = self.splitting_field('z')
         G = L.automorphisms()
-        return {g: self.automorphism_matrix(L, g, basis) for g in G}
+        return {g: self.automorphism_matrix(g, basis) for g in G}
 
     def conductor_exponent(self, p):
         """
@@ -962,7 +962,7 @@ class DualPair_class(CategoryObject):
                 # compute G_i-invariants
                 for g in Ri:
                     aut_g = padic_aut(L, g)
-                    m = self.automorphism_matrix(L, aut_g, basis)
+                    m = self.automorphism_matrix(aut_g, basis)
                     V = V.intersection((m.change_ring(F) - 1).kernel())
                     if V.dimension() == 0:
                         break

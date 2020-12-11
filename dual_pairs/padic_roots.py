@@ -157,7 +157,8 @@ def padic_aut(K, r):
         True
     """
     # TODO: this is a horrible hack
+    from sage.categories.morphism import SetMorphism
     from sage.libs.pari import pari
     Qp = K.base_ring()
     R = PolynomialRing(Qp, 'x')
-    return lambda x: R(pari(x).Pol())(r)
+    return SetMorphism(K.Hom(K), lambda x: R(pari(x).Pol())(r))
