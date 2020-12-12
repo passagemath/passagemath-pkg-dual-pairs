@@ -724,7 +724,13 @@ class DualPair_class(CategoryObject):
 
         OUTPUT:
 
-        The matrix of ``aut`` on the group of `L`-points of ``self``.
+        The matrix of the left action of ``aut`` on the group of
+        `L`-points of ``self``.
+
+        .. NOTE::
+
+            Beware that this returns the matrix of a left action,
+            although matrices in Sage act from the right by default.
 
         EXAMPLES::
 
@@ -741,6 +747,13 @@ class DualPair_class(CategoryObject):
             sage: D.automorphism_matrix(aut)
             [1 1]
             [1 0]
+
+        The representation is a group homomorphism::
+
+            sage: rho = D.automorphism_matrix
+            sage: G = L.automorphisms()
+            sage: all(rho(s * t) == rho(s) * rho(t) for s in G for t in G)
+            True
         """
         from sage.rings.all import IntegerModRing
         L = aut.domain()
@@ -752,8 +765,7 @@ class DualPair_class(CategoryObject):
         basis = tuple(P.apply_map(aut) for P in basis)
         U = Matrix(QQ, [[dlog(self.pairing(P, Q))
                          for P in basis] for Q in basis2])
-        return T.solve_left(U).transpose().change_ring(IntegerModRing(d))
-        # return Matrix([T.transpose().__pari__().matsolvemod(r.__pari__().Col(), d).sage() for r in U.rows()]).transpose()
+        return T.solve_left(U).change_ring(IntegerModRing(d))
 
     @cached_method
     def frobenius_matrix(self, q=None):
@@ -774,12 +786,12 @@ class DualPair_class(CategoryObject):
             sage: {p: D.frobenius_matrix(p) for p in {3, 5, 7, 11, 13}}
             {3: [0 1]
                 [1 1],
-             5: [1 0]
-                [1 1],
-             7: [1 0]
-                [1 1],
-             11: [1 0]
-                 [1 1],
+             5: [1 1]
+                [0 1],
+             7: [1 1]
+                [0 1],
+             11: [1 1]
+                 [0 1],
              13: [0 1]
                  [1 1]}
             sage: D.frobenius_matrix(2)
@@ -861,8 +873,8 @@ class DualPair_class(CategoryObject):
             sage: D = DualPair(A, Phi)
             sage: D.representation_table()
             {Ring endomorphism of Number Field in z with defining polynomial x^2 + 17
-             Defn: z |--> -z: [1 0]
-                              [1 1],
+             Defn: z |--> -z: [1 1]
+                              [0 1],
              Ring endomorphism of Number Field in z with defining polynomial x^2 + 17
              Defn: z |--> z: [1 0]
                              [0 1]}
@@ -879,10 +891,10 @@ class DualPair_class(CategoryObject):
             sage: {f(z): m for f, m in table.items()}
             {z: [1 0]
                 [0 1],
-             -z: [1 0]
-                 [1 1],
-             -1/14*z^5 - 1/14*z^4 - 4/7*z^3 - 1/14*z^2 - 13/7*z + 1/7: [1 1]
-                                                                       [0 1],
+             -z: [1 1]
+                 [0 1],
+             -1/14*z^5 - 1/14*z^4 - 4/7*z^3 - 1/14*z^2 - 13/7*z + 1/7: [1 0]
+                                                                       [1 1],
              -1/14*z^5 + 1/14*z^4 - 4/7*z^3 + 1/14*z^2 - 13/7*z - 1/7: [0 1]
                                                                        [1 0],
              1/14*z^5 - 1/14*z^4 + 4/7*z^3 - 1/14*z^2 + 13/7*z + 1/7: [0 1]
