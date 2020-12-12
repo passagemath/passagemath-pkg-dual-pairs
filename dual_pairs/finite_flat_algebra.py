@@ -19,31 +19,6 @@ from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
                                           FiniteFlatAlgebraElement_generic)
 
 
-def polroots(f, R):
-    """
-    Return the roots of `f` in `R`.
-
-    EXAMPLES::
-
-        sage: from dual_pairs.finite_flat_algebra import polroots
-        sage: R.<x> = QQ[]
-        sage: f = x^2 + 1
-        sage: polroots(f, QQ)
-        []
-        sage: polroots(f, QuadraticField(-1, 'i'))
-        [i, -i]
-        sage: polroots(f, pAdicField(5))
-        [3 + 3*5 + 2*5^2 + 3*5^3 + 5^4 + 2*5^6 + 5^7 + 4*5^8 + 5^9 + 2*5^10 + 2*5^11 + 4*5^12 + 3*5^14 + 5^15 + 2*5^16 + 4*5^18 + O(5^20),
-         2 + 5 + 2*5^2 + 5^3 + 3*5^4 + 4*5^5 + 2*5^6 + 3*5^7 + 3*5^9 + 2*5^10 + 2*5^11 + 4*5^13 + 5^14 + 3*5^15 + 2*5^16 + 4*5^17 + 4*5^19 + O(5^20)]
-    """
-    from sage.rings.padics.all import is_pAdicField
-    if is_pAdicField(R):
-        from .padic_roots import padic_roots
-        return padic_roots(f, R)
-    else:
-        return f.roots(R, multiplicities=False)
-
-
 class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
     """
     A finite flat algebra over a ring.
@@ -521,7 +496,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
             []
         """
         d = self.degree()
-        roots = polroots(self._poly, R)
+        roots = self._poly.base_extend(R).roots(multiplicities=False)
         M = Matrix(R, [a.powers(d) for a in roots], ncols=d) \
             * self._basis_matrix().transpose()
         return M if as_matrix else M.rows()
@@ -756,7 +731,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
             except AttributeError:
                 f = F.defining_polynomial()
             d = f.degree()
-            roots = polroots(f, R)
+            roots = f.base_extend(R).roots(multiplicities=False)
             if len(roots) == 0:
                 B = Matrix(R, 0, d)
             else:

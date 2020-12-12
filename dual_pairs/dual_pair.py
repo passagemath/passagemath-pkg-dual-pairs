@@ -933,7 +933,6 @@ class DualPair_class(CategoryObject):
         from sage.rings.infinity import infinity
         from sage.rings.padics.precision_error import PrecisionError
         from .padic_roots import kummer_dedekind, integral_basis_generator, padic_aut
-        from .finite_flat_algebra import polroots
         # TODO: use a p-adic splitting field (not implemented in Sage)
         g = self.splitting_field_polynomial()
         prec = 20
@@ -952,7 +951,7 @@ class DualPair_class(CategoryObject):
         M, _, _, _, basis, _, _, _ = self.group_structure(L)
         F = FiniteField(M.exponent())
         dim = len(M.invariants())
-        roots = polroots(h, L)
+        roots = h.base_extend(L).roots(multiplicities=False)
         assert len(roots) == L.degree()
         assert L.gen() in roots
         indices = [(r - L.gen()).valuation() - 1 for r in roots]
