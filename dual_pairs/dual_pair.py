@@ -33,23 +33,13 @@ def _dlog_fun(L, n):
     from sage.rings.padics.generic_nodes import (pAdicFieldGeneric,
                                                  pAdicRingGeneric)
     if isinstance(L, (pAdicFieldGeneric, pAdicRingGeneric)):
-        l = L.prime()
         zeta, m = L.primitive_root_of_unity(n, order=True)
-        if m % l == 0:
-            # v - 1 (= v_E(1 - zeta_l)) is the maximal valuation of
-            # all differences between two different roots of unity.
-            v = L.absolute_e() // (l - 1) + 1
-            zeta_pow = zeta.add_bigoh(v).powers(m)
-            return lambda x: mod1(zeta_pow.index(x.add_bigoh(v)) / m)
-        else:
-            Q = L.residue_field()
-            zeta_pow = Q(zeta).powers(m)
-            return lambda x: mod1(zeta_pow.index(Q(x)) / m)
-    try:
-        zeta, m = L.zeta(n), n
-    except ValueError:
-        m = L.zeta_order().gcd(n)
-        zeta = L.zeta(m)
+    else:
+        try:
+            zeta, m = L.zeta(n), n
+        except ValueError:
+            m = L.zeta_order().gcd(n)
+            zeta = L.zeta(m)
     zeta_pow = zeta.powers(m)
     return lambda x: mod1(zeta_pow.index(x) / m)
 
