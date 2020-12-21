@@ -188,15 +188,19 @@ class DualPair_class(CategoryObject):
         return self._phi
 
     @cached_method
-    def theta(self):
+    def theta(self, R=None):
         r"""
         Return the canonical root of unity attached to ``self``.
 
+        INPUT:
+
+        - `R` -- an extension of the base ring of ``self``
+          (default: the base ring itself)
+
         OUTPUT:
 
-        The canonical root of unity :math:`\theta \in A\otimes_R B`,
-        where `R` is the base ring and `A` and `B` are the two
-        algebras defining ``self``.
+        The canonical root of unity :math:`\theta \in A_R\otimes_R B_R`,
+        where `A` and `B` are the two algebras defining ``self``.
 
         EXAMPLES::
 
@@ -213,8 +217,15 @@ class DualPair_class(CategoryObject):
             [    1     1    -1     0]
             [    1    -1     0     0]
             [    0     0     0 -1/17]
+
+        .. NOTE::
+
+            Base extension of `theta` to a given ring `R` can be quite
+            slow, for example when `R` is a ramified p-adic field.  We
+            therefore cache the result for any `R`.
         """
-        return self.phi().transpose().inverse()
+        theta = self.phi().transpose().inverse()
+        return theta if R is None else theta.base_extend(R)
 
     def degree(self):
         """
@@ -549,7 +560,7 @@ class DualPair_class(CategoryObject):
         from .group_structure import find_group_structure
         P = self.algebra1().morphisms_to_ring(L, as_matrix=True)
         Q = self.algebra2().morphisms_to_ring(L, as_matrix=True)
-        T = P * self.theta() * Q.transpose()
+        T = P * self.theta(L) * Q.transpose()
         dlog = _dlog_fun(L, self.degree())
         M, E, p, q = find_group_structure(T.apply_map(dlog, QQ))
         P.permute_rows(p)
@@ -603,7 +614,10 @@ class DualPair_class(CategoryObject):
             [ 1 -1  1 -1]
             [ 1 -1 -1  1]
         """
-        return P * self.theta() * Q
+        R = P.base_ring()
+        if Q.base_ring() is not R:
+            raise ValueError("points have different base rings")
+        return P * self.theta(R) * Q
 
     def add(self, P, Q):
         """
@@ -630,7 +644,8 @@ class DualPair_class(CategoryObject):
         if Q.base_ring() is not R:
             raise ValueError("points have different base rings")
         B = self.algebra2().change_ring(R)
-        S = B(P * self.theta()) * B(Q * self.theta())
+        theta = self.theta(R)
+        S = B(P * theta) * B(Q * theta)
         return self.phi() * S.module_element()
 
     def multiplication_by_m(self, m):
