@@ -29,7 +29,7 @@ def algebra_and_points_from_action(G, V, action):
         sage: algebra_and_points_from_action(G, V, lambda g, v: table[g] * v)
         (
         Finite flat algebra of degree 4 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x - 1
+        Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1 ,
         [(0, 0), (0, 1), (1, 1), (1, 0)],
         [           1            0            0            0]
@@ -123,10 +123,10 @@ def dual_pair_from_table(G, V, table):
         sage: dual_pair_from_table(G, V, table)
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 4 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x - 1
+        Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
         B = Finite flat algebra of degree 4 over Rational Field, product of:
-        Number Field in a0 with defining polynomial x - 1
+        Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
     """
     L = G.number_field()
