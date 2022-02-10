@@ -24,13 +24,13 @@ except ImportError:
 # -- Project information -----------------------------------------------------
 
 project = u'Dual pairs of algebras'
-copyright = u'2019–2020, Peter Bruin'
+copyright = u'2019–2022, Peter Bruin'
 author = u'Peter Bruin'
 
 # The short X.Y version
-version = u'0.3'
+version = u'0.4'
 # The full version, including alpha/beta/rc tags
-release = u'0.3'
+release = u'0.4'
 
 
 # -- General configuration ---------------------------------------------------
