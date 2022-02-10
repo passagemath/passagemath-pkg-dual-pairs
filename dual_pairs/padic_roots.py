@@ -132,7 +132,9 @@ def integral_basis_generator(f):
     p = f.base_ring().prime()
     f = f.lift()
     R = f.parent()
-    basis = pari([f, [p]]).nfbasis()
+    # Note: the nfbasis method in cypari2 has a different convention
+    # for the arguments than the nfbasis function in PARI.
+    basis = pari(f).nfbasis(0, [p])
     for b in basis:
         g = R(b.Mod(f).minpoly())
         if g(0).valuation(p) == 1:
