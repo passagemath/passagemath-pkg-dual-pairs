@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dual pairs of algebras, representing commutative finite flat group
-schemes.
+Dual pairs of algebras, representing finite flat group schemes.
 """
 
 from __future__ import absolute_import
@@ -224,7 +223,7 @@ class DualPair_class(CategoryObject):
             slow, for example when `R` is a ramified p-adic field.  We
             therefore cache the result for any `R`.
         """
-        theta = self.phi().transpose().inverse()
+        theta = self.phi().transpose().inverse_of_unit()
         return theta if R is None else theta.base_extend(R)
 
     def degree(self):
@@ -331,6 +330,74 @@ class DualPair_class(CategoryObject):
             (1, 0, 0)
         """
         return self.unit1() * self.phi()
+
+    def is_valid(self):
+        """
+        Check whether ``self`` satisfies the definition of a dual pair of
+        algebras.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: K.<a> = FunctionField(QQ)
+            sage: R.<x> = K[]
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.is_valid()
+            True
+
+        Sweedler's Hopf algebra::
+
+            sage: m_A = [Matrix.identity(4),
+            ....:        Matrix([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, -1], [0, 0, -1, 0]]),
+            ....:        Matrix([[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0]]),
+            ....:        Matrix([[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]])]
+            sage: m_B = [Matrix([[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]),
+            ....:        Matrix([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]),
+            ....:        Matrix([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]),
+            ....:        Matrix([[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])]
+            sage: A = FiniteFlatAlgebra(ZZ, m_A)
+            sage: B = FiniteFlatAlgebra(ZZ, m_B)
+            sage: Phi = Matrix.identity(4)
+            sage: D = DualPair(A, B, Phi)
+            sage: D.is_valid()
+            True
+        """
+        R = self.base_ring()
+        A = self.algebra1()
+        B = self.algebra2()
+        n = self.degree()
+
+        a = A.gens()
+        b = [B(r) for r in self.theta().rows()]
+
+        table = {(i, j, k, l): (b[i] * b[j], b[k] * b[l], a[i] * a[k], a[j] * a[l])
+                 for i in range(n) for j in range(n) for k in range(n) for l in range(n)}
+
+        def pair(x, y):
+            return x.module_element() * self.phi() * y.module_element()
+
+        def Q(a0, a1, b0, b1):
+            s = R.zero()
+            for i in range(n):
+                for j in range(n):
+                    for k in range(n):
+                        for l in range(n):
+                            b_ij, b_kl, a_ik, a_jl = table[i, j, k, l]
+                            s += pair(a0, b_ij) * pair(a1, b_kl) * pair(a_ik, b0) * pair(a_jl, b1)
+            return s
+
+        return (pair(A.one(), B.one()) == R.one()
+                and all(pair(A.one(), b0 * b1) == pair(A.one(), b0) * pair(A.one(), b1)
+                        for b0 in b for b1 in b)
+                and all(pair(a0 * a1, B.one()) == pair(a0, B.one()) * pair(a1, B.one())
+                        for a0 in a for a1 in a)
+                and all(pair(a0 * a1, b0 * b1) == Q(a0, a1, b0, b1)
+                        for a0 in a for a1 in a for b0 in b for b1 in b))
 
     def is_isomorphic(self, other):
         """
