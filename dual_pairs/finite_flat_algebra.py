@@ -17,7 +17,8 @@ from sage.structure.factory import UniqueFactory
 
 from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
                                           FiniteFlatAlgebraElement_product,
-                                          FiniteFlatAlgebraElement_generic)
+                                          FiniteFlatAlgebraElement_generic,
+                                          _alg_to_list)
 
 
 class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
@@ -415,8 +416,17 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
             [0 2 0 0]
             [0 0 4 0]
             [0 0 0 8]
+
+            sage: F.<c> = GF(9)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, x^3 - 1, [1, 2*x, x^2 + x])
+            sage: A._basis_matrix()
+            [1 0 0]
+            [0 2 0]
+            [0 1 1]
         """
-        return Matrix(self.base_ring(), [self.algebra()(x).list() for x in self._basis])
+        A = self.algebra()
+        return Matrix(self.base_ring(), [_alg_to_list(A(b)) for b in self._basis])
 
     @cached_method
     def algebra(self):
@@ -632,14 +642,17 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
                  [1 0]
             [1], [0 1]
             ]
+
+            sage: R.<x> = GF(2)[]
+            sage: A = FiniteFlatAlgebra(GF(2), [x, x^2 + x + 1], [[1], [1, 1 + x]])
+            sage: A._basis_matrices()
+            [
+                 [1 0]
+            [1], [1 1]
+            ]
         """
-        R = self.base_ring()
-        def V(F, B):
-            try:
-                return [F(b)._vector_() for b in B]
-            except AttributeError:
-                return [F(b).list() for b in B]
-        return [Matrix(R, V(F, B)) for F, B in zip(self._factors, self._bases)]
+        return [Matrix(self.base_ring(), [_alg_to_list(A(b)) for b in B])
+                for A, B in zip(self._factors, self._bases)]
 
     def _basis_matrix(self):
         """

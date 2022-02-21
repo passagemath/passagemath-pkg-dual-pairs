@@ -6,7 +6,25 @@ Elements of finite flat algebras.
 from __future__ import absolute_import
 
 from sage.matrix.all import Matrix
-from sage.structure.element import (AlgebraElement, RingElement, ModuleElement)
+from sage.rings.finite_rings.element_base import FiniteRingElement
+from sage.structure.element import AlgebraElement, RingElement, ModuleElement
+
+
+def _list_to_alg(A, v):
+    """
+    Return the element of `A` defined by the list `v`.
+    """
+    if len(v) == 1:
+        return A(v[0])
+    return A(v)
+
+def _alg_to_list(x):
+    """
+    Return the list of coefficients of the algebra element `x`.
+    """
+    if isinstance(x, FiniteRingElement):
+        return x._vector_().list()
+    return x.list()
 
 
 class FiniteFlatAlgebraElement(AlgebraElement):
@@ -141,12 +159,17 @@ class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: A(x).algebra_element()
             a
+
+            sage: R.<x> = GF(3)[]
+            sage: A = FiniteFlatAlgebra(GF(3), x^2 - 2)
+            sage: A(x).algebra_element()
+            a
         """
         try:
             return self._algebra_element
         except AttributeError:
             A = self.parent()
-            x = A.algebra()((self._module_element * A._basis_matrix()).list())
+            x = _list_to_alg(A.algebra(), (self._module_element * A._basis_matrix()).list())
             self._algebra_element = x
             return x
 
@@ -162,12 +185,18 @@ class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: A(x).module_element()
             (0, 1, 0)
+
+            sage: F.<c> = GF(9)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, x^3 - 1)
+            sage: A(x^2).module_element()
+            (0, 0, 1)
         """
         try:
             v = self._module_element
         except AttributeError:
             A = self.parent()
-            v = A.module()(self._algebra_element.list()) * A._basis_matrix_inv()
+            v = A.module()(_alg_to_list(self._algebra_element)) * A._basis_matrix_inv()
             self._module_element = v
         return v
 
@@ -234,6 +263,12 @@ class FiniteFlatAlgebraElement_product(FiniteFlatAlgebraElement):
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 - 5])
             sage: A([1, 2, x]).algebra_element()
             (1, 2, a2)
+
+            sage: F.<c> = GF(9)
+            sage: R.<x> = F[]
+            sage: A = FiniteFlatAlgebra(F, [x, x, x])
+            sage: A([x, 1, 2]).module_element()
+            (0, 1, 2)
         """
         try:
             return self._algebra_element
@@ -243,7 +278,7 @@ class FiniteFlatAlgebraElement_product(FiniteFlatAlgebraElement):
             x = []
             for i, F in enumerate(A._factors):
                 d = A._degrees[i]
-                x.append(F(v[0:d]))
+                x.append(_list_to_alg(F, v[0:d]))
                 v = v[d:]
             self._algebra_element = A.algebra()(x)
             return self._algebra_element
@@ -260,12 +295,17 @@ class FiniteFlatAlgebraElement_product(FiniteFlatAlgebraElement):
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 - 5])
             sage: A([1, 2, x]).module_element()
             (1, 2, 0, 1)
+
+            sage: R.<x> = GF(3)[]
+            sage: A = FiniteFlatAlgebra(GF(3), [x, x^2 - 2])
+            sage: A([2, x]).algebra_element()
+            (2, a1)
         """
         try:
             v = self._module_element
         except AttributeError:
             A = self.parent()
-            v = (A.module()(sum((x.list() for x in self._algebra_element), []))
+            v = (A.module()(sum((_alg_to_list(x) for x in self._algebra_element), []))
                  * A._basis_matrix_inv())
             self._module_element = v
         return v
