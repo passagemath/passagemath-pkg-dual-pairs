@@ -61,6 +61,26 @@ class FiniteFlatAlgebraElement(CommutativeAlgebraElement):
         z = self.algebra_element() * other.algebra_element()
         return P.element_class(P, z)
 
+    def _lmul_(self, x):
+        """
+        Return the product of ``self`` with `x`.
+
+        INPUT:
+
+            - `x` -- an element of the base ring of ``self``
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 2])
+            sage: A.gen(2) * QQ.one()
+            (0, a1)
+        """
+        P = self.parent()
+        z = self.module_element() * x
+        return P.element_class(P, z)
+
     def monomial_coefficients(self, **kwds):
         """
         Return a dictionary containing the coefficients of ``self``.
