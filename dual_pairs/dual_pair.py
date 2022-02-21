@@ -1156,6 +1156,28 @@ class DualPair_class(CategoryObject):
 class DualPairFactory(UniqueFactory):
     """
     Factory for dual pairs of algebras.
+
+    EXAMPLES::
+
+        sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+        sage: R.<x> = GF(3)[]
+        sage: A = FiniteFlatAlgebra(GF(3), [x, x, x])
+        sage: B = FiniteFlatAlgebra(GF(3), x^3 - 1)
+        sage: Phi = Matrix.identity(GF(3), 3)
+        sage: D = DualPair(A, B, Phi); D
+        Dual pair of algebras over Finite Field of size 3
+        A = Finite flat algebra of degree 3 over Finite Field of size 3, product of:
+        Finite Field of size 3
+        Finite Field of size 3
+        Finite Field of size 3
+        B = Monogenic algebra of degree 3 over Finite Field of size 3 with defining polynomial x^3 + 2
+
+    .. NOTE::
+
+        When constructing a dual pair of algebras, it is not checked
+        whether the given triple :math:`(A, B, \\Phi)` satisfies the
+        axioms for a dual pair, since this check is rather expensive.
+        Use :meth:`~DualPair_class.is_valid` to check validity.
     """
     def create_key(self, *data):
         """
