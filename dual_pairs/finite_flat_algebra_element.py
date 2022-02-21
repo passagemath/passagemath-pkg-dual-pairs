@@ -6,11 +6,10 @@ Elements of finite flat algebras.
 from __future__ import absolute_import
 
 from sage.matrix.all import Matrix
-from sage.structure.element import (AlgebraElement, CommutativeAlgebraElement,
-                                    CommutativeRingElement, ModuleElement)
+from sage.structure.element import (AlgebraElement, RingElement, ModuleElement)
 
 
-class FiniteFlatAlgebraElement(CommutativeAlgebraElement):
+class FiniteFlatAlgebraElement(AlgebraElement):
     """
     An element of a finite flat algebra.
 
@@ -125,7 +124,7 @@ class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
             sage: TestSuite(a).run()
         """
         self._set_parent(parent)
-        if isinstance(x, CommutativeRingElement):
+        if isinstance(x, RingElement):
             self._algebra_element = parent.algebra()(x)
         else:
             self._module_element = parent.module()(x)
