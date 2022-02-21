@@ -7,11 +7,12 @@ from __future__ import absolute_import
 
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra \
     import FiniteDimensionalAlgebra
+from sage.categories.all import Algebras
 from sage.matrix.all import Matrix
 import sage.matrix.matrix0
 from sage.misc.all import cached_method
 from sage.misc.fast_methods import WithEqualityById
-from sage.rings.ring import CommutativeAlgebra
+from sage.rings.ring import Algebra, CommutativeAlgebra
 from sage.structure.factory import UniqueFactory
 
 from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
@@ -19,7 +20,7 @@ from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
                                           FiniteFlatAlgebraElement_generic)
 
 
-class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
+class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
     """
     A finite flat algebra over a ring.
 
@@ -50,7 +51,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         e0
     """
 
-    def __init__(self, base_ring):
+    def __init__(self, base_ring, category=None):
         """
         Initialise a finite flat algebra over ``base_ring``.
 
@@ -65,8 +66,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
             sage: B.has_coerce_map_from(B.base_ring())
             True
         """
-        from sage.categories.all import Algebras
-        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
+        if category is None:
+            category = Algebras(base_ring).FiniteDimensional().WithBasis()
         super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
 
     @cached_method
@@ -333,7 +334,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, CommutativeAlgebra):
         return set(ZZ(self.discriminant()).prime_divisors())
 
 
-class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
+class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
     """
     A finite flat algebra over a ring `R`, represented as a quotient
     of the polynomial algebra `R[x]`.
@@ -375,7 +376,8 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
         """
         self._poly = poly
         self._basis = basis
-        super(FiniteFlatAlgebra_monogenic, self).__init__(base_ring)
+        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
+        super(FiniteFlatAlgebra_monogenic, self).__init__(base_ring, category=category)
 
     def _repr_(self):
         """
@@ -556,10 +558,10 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base):
                 * self._basis_matrix().determinant() ** 2)
 
 
-class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
+class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
     """
     A finite flat algebra over a field `R`, represented as a product
-    of finite flat extensions of `R`.
+    of monogenic extensions of `R`.
     """
     Element = FiniteFlatAlgebraElement_product
 
@@ -596,7 +598,8 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
             self._factors = tuple(R.quotient(f, 'a' + str(i))
                                   for i, f in enumerate(polys))
         self._bases = bases
-        super(FiniteFlatAlgebra_product, self).__init__(base_ring)
+        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
+        super(FiniteFlatAlgebra_product, self).__init__(base_ring, category=category)
 
     def _repr_(self):
         """
@@ -668,8 +671,8 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base):
             sage: alg
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
         """
-        from sage.categories.all import cartesian_product, CommutativeAlgebras
-        category = CommutativeAlgebras(self.base_ring()).CartesianProducts()
+        from sage.categories.all import cartesian_product
+        category = Algebras(self.base_ring()).Commutative().FiniteDimensional().WithBasis().CartesianProducts()
         return cartesian_product(self._factors, category=category)
 
     def is_field(self):
@@ -835,7 +838,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         sage: A
         Finite flat algebra of degree 2 over Rational Field
         sage: A.category()
-        Category of finite dimensional commutative algebras with basis over Rational Field
+        Category of finite dimensional algebras with basis over Rational Field
     """
     Element = FiniteFlatAlgebraElement_generic
 
@@ -928,6 +931,23 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
             return self
         A = self._algebra
         return FiniteFlatAlgebra(R, [M.change_ring(R) for M in A.table()])
+
+    def is_commutative(self):
+        """
+        Return whether ``self`` is commutative.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: m = [Matrix([[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]),
+            ....:      Matrix([[0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]),
+            ....:      Matrix([[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]]),
+            ....:      Matrix([[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]])]
+            sage: A = FiniteFlatAlgebra(ZZ, m)
+            sage: A.is_commutative()
+            False
+        """
+        return self.algebra().is_commutative()
 
     def morphisms_to_ring(self, R, as_matrix=False):
         """
