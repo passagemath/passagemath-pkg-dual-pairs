@@ -413,23 +413,19 @@ class DualPair_class(CategoryObject):
 
             sage: from dual_pairs import DualPair
             sage: R.<t> = ZZ[]
-            sage: D = DualPair(ZZ, [[t, t]], [[1, 1], [1, -1]])
+            sage: D = DualPair(ZZ, [[t, t]], [t^2 - 1], [[1, 0], [0, 1]])
             sage: D
             Dual pair of algebras over Integer Ring
             A = Finite flat algebra of degree 2 over Integer Ring, product of:
             Order in Number Field in a0 with defining polynomial t
             Order in Number Field in a1 with defining polynomial t
-            B = Finite flat algebra of degree 2 over Integer Ring, product of:
-            Order in Number Field in a0 with defining polynomial t
-            Order in Number Field in a1 with defining polynomial t
+            B = Monogenic algebra of degree 2 over Integer Ring with defining polynomial t^2 - 1
             sage: D.change_ring(GF(7))
             Dual pair of algebras over Finite Field of size 7
             A = Finite flat algebra of degree 2 over Finite Field of size 7, product of:
             Finite Field of size 7
             Finite Field of size 7
-            B = Finite flat algebra of degree 2 over Finite Field of size 7, product of:
-            Finite Field of size 7
-            Finite Field of size 7
+            B = Monogenic algebra of degree 2 over Finite Field of size 7 with defining polynomial t^2 + 6
         """
         return DualPair(self.algebra1().change_ring(R), self.algebra2().change_ring(R), self.phi())
 
