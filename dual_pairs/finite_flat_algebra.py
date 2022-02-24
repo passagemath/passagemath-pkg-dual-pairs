@@ -159,6 +159,20 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         """
         return ~self._basis_matrix()
 
+    def one(self):
+        """
+        Return the unit element of ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = ZZ[]
+            sage: A = FiniteFlatAlgebra(ZZ, x^3 - 2)
+            sage: A.one()
+            1
+        """
+        return self.element_class(self, self.algebra().one())
+
     def _coerce_map_from_(self, X):
         """
         Return a coercion map from `X` to ``self``, or ``None``.
