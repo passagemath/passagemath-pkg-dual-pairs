@@ -4,7 +4,7 @@ The ``dual_pairs`` package
 ==========================
 
 The `SageMath`_ package ``dual_pairs`` implements computations with
-finite commutative group schemes and Galois representations in the
+finite locally free group schemes and Galois representations in the
 form of *dual pairs of algebras*.  See the preprint `Dual pairs of
 algebras and finite commutative group schemes`_ for details.
 
