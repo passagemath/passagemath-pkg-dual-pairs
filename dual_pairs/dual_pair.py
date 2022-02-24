@@ -370,34 +370,40 @@ class DualPair_class(CategoryObject):
         R = self.base_ring()
         A = self.algebra1()
         B = self.algebra2()
+        Phi = self.phi()
+
+        A_gens = A.gens()
+        B_gens = B.gens()
         n = self.degree()
 
-        a = A.gens()
-        b = [B(r) for r in self.theta().rows()]
+        A1_Phi = A.one().module_element() * Phi
+        B1 = B.one().module_element()
+        Phi_B1 = Phi * B1
 
-        table = {(i, j, k, l): (b[i] * b[j], b[k] * b[l], a[i] * a[k], a[j] * a[l])
-                 for i in range(n) for j in range(n) for k in range(n) for l in range(n)}
+        # G is the basis of B dual to A_gens
+        G = [B(r) for r in self.theta().rows()]
+        A_prod_Phi = [[(A_gens[i] * A_gens[j]).module_element() * Phi
+                       for j in range(n)] for i in range(n)]
+        B_prod = [[(B_gens[i] * B_gens[j]).module_element()
+                   for j in range(n)] for i in range(n)]
+        Phi_G_prod = [[Phi * (G[i] * G[j]).module_element()
+                       for j in range(n)] for i in range(n)]
 
-        def pair(x, y):
-            return x.module_element() * self.phi() * y.module_element()
+        def Q(i0, i1, j0, j1):
+            return sum(Phi_G_prod[i][j][i0] *
+                       sum(sum(Phi_G_prod[k][l][i1] * A_prod_Phi[i][k][j0]
+                               for k in range(n))
+                           * A_prod_Phi[j][l][j1] for l in range(n))
+                       for i in range(n) for j in range(n))
 
-        def Q(a0, a1, b0, b1):
-            s = R.zero()
-            for i in range(n):
-                for j in range(n):
-                    for k in range(n):
-                        for l in range(n):
-                            b_ij, b_kl, a_ik, a_jl = table[i, j, k, l]
-                            s += pair(a0, b_ij) * pair(a1, b_kl) * pair(a_ik, b0) * pair(a_jl, b1)
-            return s
-
-        return (pair(A.one(), B.one()) == R.one()
-                and all(pair(A.one(), b0 * b1) == pair(A.one(), b0) * pair(A.one(), b1)
-                        for b0 in b for b1 in b)
-                and all(pair(a0 * a1, B.one()) == pair(a0, B.one()) * pair(a1, B.one())
-                        for a0 in a for a1 in a)
-                and all(pair(a0 * a1, b0 * b1) == Q(a0, a1, b0, b1)
-                        for a0 in a for a1 in a for b0 in b for b1 in b))
+        return (A1_Phi * B1 == R.one()
+                and all(A1_Phi * B_prod[j0][j1] == A1_Phi[j0] * A1_Phi[j1]
+                        for j0 in range(n) for j1 in range(n))
+                and all(A_prod_Phi[i0][i1] * B1 == Phi_B1[i0] * Phi_B1[i1]
+                        for i0 in range(n) for i1 in range(n))
+                and all(A_prod_Phi[i0][i1] * B_prod[j0][j1] == Q(i0, i1, j0, j1)
+                        for i0 in range(n) for i1 in range(n)
+                        for j0 in range(n) for j1 in range(n)))
 
     def is_isomorphic(self, other):
         """
