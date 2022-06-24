@@ -143,6 +143,15 @@ class FiniteFlatAlgebraElement(AlgebraElement):
         """
         return dict(enumerate(self.module_element(**kwds)))
 
+    def _im_gens_(self, codomain, im_gens, base_map):
+        """
+        TODO
+        """
+        m = self.module_element()
+        if base_map is not None:
+            m = m.apply_map(base_map)
+        return codomain(sum(a * x for a, x in zip(m, im_gens)))
+
 
 class FiniteFlatAlgebraElement_monogenic(FiniteFlatAlgebraElement):
     """

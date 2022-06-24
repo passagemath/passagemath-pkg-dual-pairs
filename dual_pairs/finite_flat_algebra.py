@@ -305,6 +305,17 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         return FiniteFlatAlgebra(self.base_ring(),
                                  self.multiplication_tensor())
 
+    def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None):
+        """
+        TODO
+        """
+        for a, fa in zip(self.gens(), im_gens):
+            for b, fb in zip(self.gens(), im_gens):
+                fab = (a * b)._im_gens_(codomain, im_gens, base_map=base_map)
+                if fab != fa * fb:
+                    return False
+        return True
+
     @cached_method
     def splitting_field_polynomial(self):
         """
