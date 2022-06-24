@@ -98,6 +98,34 @@ class FiniteFlatAlgebraElement(AlgebraElement):
         z = self.module_element() * x
         return P.element_class(P, z)
 
+    def __invert__(self):
+        """
+        Return the inverse of ``self``.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^2 - 2)
+            sage: ~A(x)
+            1/2*a
+            sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
+            sage: ~A.gen(1)
+            -e1
+
+        This is not implemented yet for finite flat algebras
+        represented as a product::
+
+            sage: A = FiniteFlatAlgebra(QQ, [x])
+            sage: ~A.gen(0)
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: <abstract method monomial_coefficients at 0x...>
+        """
+        P = self.parent()
+        z = ~self.algebra_element()
+        return P.element_class(P, z)
+
     def monomial_coefficients(self, **kwds):
         """
         Return a dictionary containing the coefficients of ``self``.
