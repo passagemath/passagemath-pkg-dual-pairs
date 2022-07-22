@@ -58,13 +58,16 @@ Finite flat algebras
    finite_flat_algebra
    finite_flat_algebra_element
    finite_flat_algebra_module
+   class_group
+   unit_group
 
-Torsors
--------
+Torsors and extension groups
+----------------------------
 
 .. toctree::
    :maxdepth: 2
 
+   ext_group
    torsor_pair
 
 Miscellaneous
@@ -73,6 +76,7 @@ Miscellaneous
 .. toctree::
    :maxdepth: 2
 
+   abelian_group_homomorphism
    extensions
    group_structure
    padic_roots

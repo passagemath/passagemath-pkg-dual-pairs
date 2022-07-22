@@ -723,6 +723,20 @@ class DualPair_class(CategoryObject):
         """
         raise NotImplementedError
 
+    @cached_method
+    def hopf_algebra(self):
+        """
+        Return ``self`` as a Hopf algebra.
+        """
+        A = self.algebra1()
+        m = Matrix.block(A.multiplication_tensor(), ncols=1)
+        mu = ((m * self.phi()).transpose() *
+              self.theta().tensor_product(self.theta()))
+        A2, from_left, from_right, _ = A.tensor_product(A)
+        counit = A.hom(list(self.counit1()), self.base_ring())
+        comult = A.hom(mu.rows(), A2)
+        return counit, comult
+
     def trivial_torsor(self):
         """
         Return a trivial torsor under ``self``.

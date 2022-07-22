@@ -317,6 +317,71 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         return True
 
     @cached_method
+    def tensor_product(self, other):
+        """
+        Return the tensor product of ``self`` and ``other``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
+            sage: B = FiniteFlatAlgebra(QQ, x^2 + 23)
+            sage: AB, i, j, from_prod = A.tensor_product(B)
+            sage: AB
+            Finite flat algebra of degree 6 over Rational Field
+            sage: [i(a) for a in A.gens()]
+            [e0, e2, e4]
+            sage: [j(b) for b in B.gens()]
+            [e0, e1]
+            sage: from_prod(A.gen(1), B.gen(1))
+            e3
+
+        The tensor product is canonically associative::
+
+            sage: A2 = A.tensor_product(A)[0]
+            sage: A2.tensor_product(B)[0] is A.tensor_product(AB)[0]
+            True
+            sage: BA = B.tensor_product(A)[0]
+            sage: A.tensor_product(BA)[0] is AB.tensor_product(A)[0]
+            True
+        """
+        from sage.modules.free_module_element import vector
+
+        # "tensor product" of two lists/vectors (as a list)
+        def listtensor(v, w):
+            return [a * b for a in v for b in w]
+
+        # "tensor product" of two vectors (as another vector)
+        def vectensor(v, w):
+            return vector(R, listtensor(v, w))
+
+        # tensor product of two matrices (the Sage method
+        # Matrix.tensor_product is rather slow!)
+        def mattensor(M, N):
+            return Matrix(R, [listtensor(v, w) for v in M.rows() for w in N.rows()])
+
+        R = self.base_ring()
+        multiplication_tensor = [mattensor(m, n)
+                                 for m in self.multiplication_tensor()
+                                 for n in other.multiplication_tensor()]
+        T = FiniteFlatAlgebra(R, multiplication_tensor)
+
+        e_self = self.one().module_element()
+        e_other = other.one().module_element()
+
+        im_gens_self = [vectensor(a.module_element(), e_other) for a in self.basis()]
+        im_gens_other = [vectensor(e_self, b.module_element()) for b in other.basis()]
+
+        from_left = self.hom(im_gens_self, T, check=False)
+        from_right = other.hom(im_gens_other, T, check=False)
+
+        def from_prod(a, b):
+            return T(vectensor(a.module_element(), b.module_element()))
+
+        return (T, from_left, from_right, from_prod)
+
+    @cached_method
     def splitting_field_polynomial(self):
         """
         Return a defining polynomial for the splitting field of ``self``.

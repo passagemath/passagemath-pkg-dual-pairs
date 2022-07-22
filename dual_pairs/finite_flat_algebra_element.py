@@ -126,6 +126,20 @@ class FiniteFlatAlgebraElement(AlgebraElement):
         z = ~self.algebra_element()
         return P.element_class(P, z)
 
+    def is_unit(self):
+        """
+        TODO
+        """
+        return self.algebra_element().is_unit()
+
+    def inverse_of_unit(self):
+        """
+        TODO
+        """
+        P = self.parent()
+        z = self.algebra_element().inverse_of_unit()
+        return P.element_class(P, z)
+
     def monomial_coefficients(self, **kwds):
         """
         Return a dictionary containing the coefficients of ``self``.
