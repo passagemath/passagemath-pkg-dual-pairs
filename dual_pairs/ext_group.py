@@ -42,7 +42,7 @@ class ExtGroupElement(MultiplicativeGroupElement):
         MultiplicativeGroupElement.__init__(self, parent)
 
     def _repr_(self):
-        return 'Group extension defined by ({}, {})'.format(self._ideal, self._tau)
+        return 'Group scheme extension defined by ({}, {})'.format(self._ideal, self._tau)
 
     def _mul_(self, other):
         E = self.parent()
@@ -79,6 +79,34 @@ class ExtGroup(AbelianGroupClass):
     """
     The group of isomorphism classes of central extensions
     of a group scheme by the multiplicative group.
+
+    EXAMPLES::
+
+        sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+        sage: from dual_pairs.ext_group import ExtGroup
+        sage: R.<x> = QQ[]
+        sage: A = FiniteFlatAlgebra(QQ, [x, x^3 - x^2 - 10*x + 8], [[1], [1, -x, -1/2*x^2 + 1/2*x + 3]])
+        sage: Phi = 1/4 * Matrix([[1, 3, -1, -1], [3, -3, 1, 1], [-1, 1, 41, -21], [-1, 1, -21, 41]])
+        sage: D = DualPair(A, Phi)
+        sage: E = ExtGroup(D, [2]); E
+        Group of central extensions of G by the multiplicative group
+        where G is defined by
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 10*x + 8
+        B = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 10*x + 8
+        sage: E.group_structure()
+        (Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2 x C2,
+         [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 401/31*e5 - 102/31*e6 - 78/31*e7 - 102/31*e9 - 22/31*e10 - 36/31*e11 - 78/31*e13 - 36/31*e14 + 50/31*e15),
+          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 219/31*e5 + 38/31*e6 + 80/31*e7 + 38/31*e9 + 100/31*e10 + 14/31*e11 + 80/31*e13 + 14/31*e14 - 22/31*e15),
+          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 85/31*e5 - 52/31*e6 - 34/31*e7 - 52/31*e9 + 17/31*e10 + 13/31*e11 - 34/31*e13 + 13/31*e14 + 9/31*e15),
+          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 6/31*e5 + 14/31*e6 - 1/31*e7 + 14/31*e9 - 16/31*e10 - 4/31*e11 - 1/31*e13 - 4/31*e14 + 1/31*e15),
+          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 2*e0 + 2*e1 + 2*e4 + 13/31*e5 - 19/31*e6 - 4/31*e7 + 37/31*e9 - 1/31*e10 - 12/31*e11 + 2/31*e13 + 6/31*e14)],
+         <function ExtGroup.group_structure.<locals>.exp at 0x...>,
+         <function ExtGroup.group_structure.<locals>.log at 0x...>)
     """
 
     Element = ExtGroupElement
@@ -123,6 +151,33 @@ class ExtGroup(AbelianGroupClass):
         self._mu12 = tensor_maps(idA, mu)
 
         AbelianGroup.__init__(self)
+
+    def _repr_(self):
+        """
+        Return a string representation of `self`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+            sage: from dual_pairs.ext_group import ExtGroup
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x])
+            sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+            sage: D = DualPair(A, Phi)
+            sage: E = ExtGroup(D, [])
+            sage: E
+            Group of central extensions of G by the multiplicative group
+            where G is defined by
+            Dual pair of algebras over Rational Field
+            A = Finite flat algebra of degree 2 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+            B = Finite flat algebra of degree 2 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x
+        """
+        return ("Group of central extensions of G by the multiplicative group\n"
+                "where G is defined by\n" + repr(self._dual_pair))
 
     def _d1_unit(self, x):
         return self._i1(x) * ~self._mu(x) * self._i0(x)
@@ -219,8 +274,59 @@ class ExtGroup(AbelianGroupClass):
         # now gen * ~adj has trivial d^2
         return self.element_class(self, I, gen * ~adj)
 
+    def order(self):
+        """
+        Return the order of `self`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+            sage: from dual_pairs.ext_group import ExtGroup
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x])
+            sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+            sage: D = DualPair(A, Phi)
+            sage: E = ExtGroup(D, [])
+            sage: E.order()
+            2
+        """
+        return self.group_structure()[0].order()
+
     def gens(self):
+        """
+        Return a list of generators of `self`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+            sage: from dual_pairs.ext_group import ExtGroup
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x])
+            sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+            sage: D = DualPair(A, Phi)
+            sage: E = ExtGroup(D, [])
+            sage: E.gens()
+            [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 - e3)]
+        """
         return self.group_structure()[1]
+
+    def gens_orders(self):
+        """
+        Return a list of generators of `self`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+            sage: from dual_pairs.ext_group import ExtGroup
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x])
+            sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+            sage: D = DualPair(A, Phi)
+            sage: E = ExtGroup(D, [])
+            sage: E.gens_orders()
+            (2,)
+        """
+        return self.group_structure()[0].gens_orders()
 
     def exp(self, x):
         return self.group_structure()[2](x)
@@ -257,12 +363,18 @@ class ExtGroup(AbelianGroupClass):
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x, x])
             sage: Phi = 1/4 * Matrix([[1, 1, -1, -1], [1, 1, 1, 1], [-1, 1, 1, -1], [-1, 1, -1, 1]])
             sage: D = DualPair(A, Phi)
-
-            sage: D = dual_pair_from_dihedral_field(x^3 + 4*x - 1, GF(2))
-            sage: ExtGroup(D, []).group_structure()
+            sage: E = ExtGroup(D, [])
+            sage: E.group_structure()[0]
+            Multiplicative Abelian group isomorphic to C2 x C2 x C2
 
             sage: D = dual_pair_from_dihedral_field(x^3 - x - 1, GF(2))
             sage: ExtGroup(D, [2, 23]).group_structure()
+            (Multiplicative Abelian group isomorphic to C2 x C2 x C2,
+             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 10/23*e5 + 11/23*e6 - 15/23*e7 + 11/23*e9 + 19/23*e10 - 5/23*e11 - 15/23*e13 - 5/23*e14 + 11/23*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 121/23*e5 + 2/23*e6 - 9/23*e7 + 2/23*e9 - 7/23*e10 + 43/23*e11 - 9/23*e13 + 43/23*e14 - 21/23*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 23*e0 + 23*e1 + 23*e4 + 5/23*e5 + 40/23*e6 + 4/23*e7 - 52/23*e9 - 2/23*e10 + 78/23*e11 + 4/23*e13 - 60/23*e14 - 6/23*e15)],
+             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
+             <function ExtGroup.group_structure.<locals>.log at 0x...>)
 
             # from elliptic curve 2184.j1
             # 2-descent shows that 2-Selmer group is isomorphic to (Z/2Z)^4
@@ -278,14 +390,13 @@ class ExtGroup(AbelianGroupClass):
             ....:               [0, 0, 0, 42]])
             sage: D = DualPair(A, Phi)
             sage: ExtGroup(D, [13]).group_structure()
-
-            # from elliptic curve 61504.bj1
-            # factorisation of conductor: 2^6 * 31^2
-            # Tamagawa numbers: 2, 1
-            # so the only bad prime should be 2
-            sage: from dual_pairs.dual_pair_import import dual_pair_import
-            sage: D = dual_pair_import('/home/peter/ellgalrep/61504bs1_2_red.gp')
-            sage: ExtGroup(D, [2]).group_structure()
+            (Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2,
+             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 - e10),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + 13*e6 - 2*e7 + e8 + 13*e9 + 7*e10 - e11 - 2*e13 - e14 + 1/7*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + 41/13*e6 - 6/13*e7 + e8 + 41/13*e9 + 27*e10 - 3*e11 - 6/13*e13 - 3*e14 + 1/3*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 + 13*e10)],
+             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
+             <function ExtGroup.group_structure.<locals>.log at 0x...>)
         """
         UA, gensUA, exp_UA, log_UA = self._unit_group_A
         UA2, gensUA2, exp_UA2, log_UA2 = self._unit_group_A2
@@ -294,27 +405,18 @@ class ExtGroup(AbelianGroupClass):
         ClA, gensClA, exp_ClA, log_ClA = self._class_group_A
         ClA2, gensClA2, exp_ClA2, log_ClA2 = self._class_group_A2
 
-        print('group structure UA = {}'.format(UA.gens_orders()))
-        print('group structure UA2 = {}'.format(UA2.gens_orders()))
-        print('group structure UA3 = {}'.format(UA3.gens_orders()))
-        print('group structure ClA = {}'.format(ClA.gens_orders()))
-        print('group structure ClA2 = {}'.format(ClA2.gens_orders()))
-
         p, i = self._H2_H()
         H2_H = i.domain()  # == p.codomain()
         orders_H2_H = H2_H.gens_orders()
-        print('H2_H = {}'.format(H2_H))
 
         ext_classes_H2_H = [self._from_H2_H(x) for x in H2_H.gens()]
 
         # K(A) = ker(d^1: H^1(A, \Gm) -> H^1(A \otimes A, \Gm))
         KA = self._KA_to_ClA().domain()
-        print('K(A) = {}'.format(KA))
 
         # L(A) = ker(trg: K(A) -> H^3_H(A, Gm))
         LA = self._LA_to_ClA().domain()
         orders_LA = LA.gens_orders()
-        print('L(A) = {}'.format(LA))
 
         ext_classes_LA = [self._from_LA(x) for x in LA.gens()]
 
@@ -327,7 +429,6 @@ class ExtGroup(AbelianGroupClass):
         S, U, V = R.smith_form()
         W = V.inverse_of_unit()
         orders = tuple(o for o in S.diagonal() if o != 1)
-        print('relation matrix = {}'.format(R))
 
         if P != 0 or U != 1 or V != 1:
             raise NotImplementedError('non-trivial extension')
