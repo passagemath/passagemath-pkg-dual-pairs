@@ -19,7 +19,7 @@ def solve_mod(M, N, D):
 
     EXAMPLES::
 
-        sage: from dual_pairs.ext_Gm import solve_mod
+        sage: from dual_pairs.abelian_group_homomorphism import solve_mod
         sage: M = Matrix([(-1, -1, 0, -1, 0, 1, 0, 1, 0, 0),
         ....:             (-1, -1, 0, -1, 0, 1, 0, 0, 0, 0),
         ....:             (0, 0, 0, 0, 0, 0, 1, 0, -1, 0)])
@@ -43,7 +43,7 @@ def solve_mod_right(M, N, D):
 
     EXAMPLES::
 
-        sage: from dual_pairs.ext_Gm import solve_mod
+        sage: from dual_pairs.abelian_group_homomorphism import solve_mod
         sage: M = Matrix([(-1, -1, 0, -1, 0, 1, 0, 1, 0, 0),
         ....:             (-1, -1, 0, -1, 0, 1, 0, 0, 0, 0),
         ....:             (0, 0, 0, 0, 0, 0, 1, 0, -1, 0)])
@@ -123,14 +123,20 @@ class AbelianGroupHomomorphism(Morphism):
 
         EXAMPLES::
 
-            sage: from dual_pairs.ext_Gm import hom
+            sage: from dual_pairs.abelian_group_homomorphism import hom
             sage: A = AbelianGroup([2, 2, 0])
             sage: B = AbelianGroup([2, 2, 0, 2, 0, 2, 0, 2, 0, 0])
             sage: im_gens = (B([1, 1, 0, 1, 0, 1, 0, 0, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 2, 0, -2, 0]))
             sage: hom(A, B, im_gens)
-
+            Abelian group morphism:
+              From: Multiplicative Abelian group isomorphic to C2 x C2 x Z
+              To:   Multiplicative Abelian group isomorphic to C2 x C2 x Z x C2 x Z x C2 x Z x C2 x Z x Z
+            Defn:
+              f0 |--> f0*f1*f3*f5
+              f1 |--> f7
+              f2 |--> f6^2*f8^-2
         """
         s = '\n'.join('  {} |--> {}'.format(g, x)
                       for g, x in zip(self.domain().gens(), self.im_gens()))
@@ -155,13 +161,17 @@ class AbelianGroupHomomorphism(Morphism):
 
         EXAMPLES::
 
-            sage: from dual_pairs.ext_Gm import hom
+            sage: from dual_pairs.abelian_group_homomorphism import hom
             sage: A = AbelianGroup([2, 2, 0])
             sage: B = AbelianGroup([2, 2, 0, 2, 0, 2, 0, 2, 0, 0])
             sage: im_gens = (B([1, 1, 0, 1, 0, 1, 0, 0, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 2, 0, -2, 0]))
             sage: hom(A, B, im_gens).kernel()
+            Abelian group morphism:
+              From: Trivial Abelian group
+              To:   Multiplicative Abelian group isomorphic to C2 x C2 x Z
+            Defn:
         """
         A = self.domain()
         B = self.codomain()
@@ -192,13 +202,27 @@ class AbelianGroupHomomorphism(Morphism):
 
         EXAMPLES::
 
-            sage: from dual_pairs.ext_Gm import hom
+            sage: from dual_pairs.abelian_group_homomorphism import hom
             sage: A = AbelianGroup([2, 2, 0])
             sage: B = AbelianGroup([2, 2, 0, 2, 0, 2, 0, 2, 0, 0])
             sage: im_gens = (B([1, 1, 0, 1, 0, 1, 0, 0, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
             ....:            B([0, 0, 0, 0, 0, 0, 2, 0, -2, 0]))
             sage: hom(A, B, im_gens).cokernel()
+            Abelian group morphism:
+              From: Multiplicative Abelian group isomorphic to C2 x C2 x Z x C2 x Z x C2 x Z x C2 x Z x Z
+              To:   Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2 x Z x Z x Z x Z
+            Defn:
+              f0 |--> f1*f2*f3
+              f1 |--> f2
+              f2 |--> f4
+              f3 |--> f1
+              f4 |--> f5
+              f5 |--> f3
+              f6 |--> f6
+              f7 |--> 1
+              f8 |--> f0*f6
+              f9 |--> f7
         """
         B = self.codomain()
         RB = relation_matrix(B)
@@ -217,7 +241,7 @@ class AbelianGroupHomomorphism(Morphism):
 
         EXAMPLES::
 
-            sage: from dual_pairs.ext_Gm import hom
+            sage: from dual_pairs.abelian_group_homomorphism import hom
             sage: A = AbelianGroup([2, 4, 0])
             sage: B = AbelianGroup([4, 8, 0])
             sage: im_gens = (B([2, 4, 0]),

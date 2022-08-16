@@ -47,13 +47,13 @@ def class_group(A, S):
         sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + 23])
         sage: S = [5]
         sage: Cl, gens, from_Cl, to_Cl = class_group(A, S)
-        sage: c = Cl.random_element(); c
+        sage: c = Cl.random_element(); c   # random
         f^2
-        sage: I = from_Cl(c); I
+        sage: I = from_Cl(c); I            # random
         (Fractional ideal (1), Fractional ideal (4, 1/2*a + 3/2))
         sage: to_Cl(I) == c
         True
-        sage: ideal_generator(A, S, I^-3)
+        sage: ideal_generator(A, S, I^-3)  # random
         (1, -3/128*a1 - 7/128)
     """
     Sprod = prod(S)

@@ -325,7 +325,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
 
             sage: from dual_pairs import FiniteFlatAlgebra
             sage: R.<x> = QQ[]
-            sage: sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
+            sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: B = FiniteFlatAlgebra(QQ, x^2 + 23)
             sage: AB, i, j, from_prod = A.tensor_product(B)
             sage: AB
