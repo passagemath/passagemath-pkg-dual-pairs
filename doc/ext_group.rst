@@ -1,5 +1,5 @@
-Central extensions of a finite group scheme by the multiplicative group
-=======================================================================
+Central extensions of finite group schemes
+==========================================
 
 .. automodule:: dual_pairs.ext_group
    :members:

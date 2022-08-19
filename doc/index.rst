@@ -68,6 +68,7 @@ Torsors and extension groups
    :maxdepth: 2
 
    ext_group
+   simplicial_sheaf
    torsor_pair
 
 Miscellaneous
