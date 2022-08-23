@@ -318,6 +318,15 @@ class ExtGroup(AbelianGroupClass):
              <function ExtGroup.group_structure.<locals>.exp at 0x...>,
              <function ExtGroup.group_structure.<locals>.log at 0x...>)
 
+            sage: D = dual_pair_from_dihedral_field(x^3 + 4*x - 1, GF(2))
+            sage: E = ExtGroupGm(D, [])
+            sage: E.group_structure()
+            (Multiplicative Abelian group isomorphic to C2 x C2,
+             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 40/283*e5 + 41/283*e6 + 15/283*e7 + 41/283*e9 + 134/283*e10 - 20/283*e11 + 15/283*e13 - 20/283*e14 + 41/283*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (3, a + 1)), e0 + e1 + e4 + 1670/849*e5 - 19/283*e6 + 697/849*e7 - 19/283*e9 + 359/849*e10 + 14/849*e11 + 697/849*e13 + 14/849*e14 + 226/849*e15)],
+             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
+             <function ExtGroup.group_structure.<locals>.log at 0x...>)
+
             # from elliptic curve 2184.j1
             # 2-descent shows that 2-Selmer group is isomorphic to (Z/2Z)^4
             # rank 1, torsion Z/2Z
