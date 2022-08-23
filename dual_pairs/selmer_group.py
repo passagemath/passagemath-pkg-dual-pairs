@@ -7,13 +7,9 @@ from __future__ import absolute_import
 
 from sage.groups.abelian_gps.abelian_group import AbelianGroup
 from sage.misc.all import prod
-from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ
 
 from .etale_algebra import isom_to_etale_algebra
-
-def _concat_vectors(v):
-    return vector(sum((list(b) for b in v), []))
 
 def _split_list(v, lengths):
     s = []

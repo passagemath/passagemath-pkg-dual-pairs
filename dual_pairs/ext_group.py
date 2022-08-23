@@ -400,7 +400,6 @@ class ExtGroup(AbelianGroupClass):
         EXAMPLES::
 
             sage: from dual_pairs import DualPair, FiniteFlatAlgebra
-            sage: from dual_pairs.dual_pair_from_dihedral_field import dual_pair_from_dihedral_field
             sage: from dual_pairs.ext_group import ExtGroupGm
             sage: R.<x> = QQ[]
 
