@@ -60,6 +60,7 @@ Finite flat algebras
    finite_flat_algebra_module
    class_group
    unit_group
+   selmer_group
 
 Torsors and extension groups
 ----------------------------

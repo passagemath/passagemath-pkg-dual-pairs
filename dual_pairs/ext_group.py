@@ -19,14 +19,6 @@ from .abelian_group_homomorphism import hom, homology
 class ExtGroupElement(MultiplicativeGroupElement):
 
     def __init__(self, parent, ideal, tau):
-        F = parent.simplicial_sheaf()
-        # The following needs to be adapted to other sheaves than G_m.
-        # TODO: need to check that the quotient between the two ideals
-        # is the trivial ideal of A2 after inverting the primes in S
-        # if F._d1_ideal(ideal) != principal_ideal(F._A2, tau):
-        #     raise ValueError('tau does not generate d1(ideal)')
-        # if F._d2_unit(tau) != F._A3.one():
-        #     raise ValueError('d2(tau) is non-trivial')
         self._ideal = ideal
         self._tau = tau
         MultiplicativeGroupElement.__init__(self, parent)
@@ -48,7 +40,7 @@ class ExtGroupElement(MultiplicativeGroupElement):
         F = E.simplicial_sheaf()
         x = F.to_H2_H_helper(self._ideal, self._tau)
         p, i = E._H2_H()
-        return p(F.d2_U().kernel().inverse_image(x))
+        return p(F.d2_H0().kernel().inverse_image(x))
 
     # The following two functions need the group to be commutative.
 
@@ -76,7 +68,7 @@ class ExtGroup(AbelianGroupClass):
         sage: Phi = 1/4 * Matrix([[1, 3, -1, -1], [3, -3, 1, 1], [-1, 1, 41, -21], [-1, 1, -21, 41]])
         sage: D = DualPair(A, Phi)
         sage: E = ExtGroupGm(D, [2]); E
-        Group of central extensions of G by the multiplicative group
+        Group of central extensions of G by Multiplicative group
         where G is defined by
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 4 over Rational Field, product of:
@@ -109,7 +101,7 @@ class ExtGroup(AbelianGroupClass):
 
         self._dual_pair = D
         self._simplicial_sheaf = F
-        AbelianGroup.__init__(self)
+        AbelianGroupClass.__init__(self)
 
     def _repr_(self):
         """
@@ -125,7 +117,7 @@ class ExtGroup(AbelianGroupClass):
             sage: D = DualPair(A, Phi)
             sage: E = ExtGroupGm(D, [])
             sage: E
-            Group of central extensions of G by the multiplicative group
+            Group of central extensions of G by Multiplicative group
             where G is defined by
             Dual pair of algebras over Rational Field
             A = Finite flat algebra of degree 2 over Rational Field, product of:
@@ -135,67 +127,99 @@ class ExtGroup(AbelianGroupClass):
             Number Field in a0 with defining polynomial x
             Number Field in a1 with defining polynomial x
         """
-        return ("Group of central extensions of G by the multiplicative group\n"
-                "where G is defined by\n" + repr(self._dual_pair))
+        s = "Group of central extensions of G by {}\nwhere G is defined by\n{}"
+        return s.format(self._simplicial_sheaf, self._dual_pair)
 
     def simplicial_sheaf(self):
         return self._simplicial_sheaf
+
+    def _element_constructor_(self, T, u):
+        # The following needs to be adapted to other sheaves than G_m.
+        # TODO: need to check that the quotient between the two ideals
+        # is the trivial ideal of A2 after inverting the primes in S
+        # F = parent.simplicial_sheaf()
+        # if F._d1_ideal(ideal) != principal_ideal(F._A2, tau):
+        #     raise ValueError('tau does not generate d1(ideal)')
+        # if F._d2_unit(tau) != F._A3.one():
+        #     raise ValueError('d2(tau) is non-trivial')
+        return self.element_class(self, T, u)
+
+    def one(self):
+        """
+        Return the unit element of `self`.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+            sage: from dual_pairs.ext_group import ExtGroup_mu_n
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x])
+            sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+            sage: D = DualPair(A, Phi)
+            sage: E = ExtGroup_mu_n(D, [], 2)
+            sage: E.one()
+            Group scheme extension defined by ((1, 1), e0 + e1 + e2 + e3)
+        """
+        F = self.simplicial_sheaf()
+        T = F.trivial_torsor()
+        u = F.exp_H0(2)(F.H0(2).one())
+        return self.element_class(self, T, u)
 
     @cached_method
     def trg(self):
         F = self.simplicial_sheaf()
 
-        # K(A) = ker(H^1(A, \Gm) -> H^1(A \otimes A, \Gm))
-        ker_d1_Cl = F.d1_Cl().kernel()
-        KA = ker_d1_Cl.domain()
-        coker_d2_U = F.d2_U().cokernel()
+        # K(A, F) = ker(d^1: H^1(A, F) -> H^1(A \otimes A, F))
+        ker_d1_H1 = F.d1_H1().kernel()
+        K = ker_d1_H1.domain()
+        coker_d2_H0 = F.d2_H0().cokernel()
 
-        # Next we compute the "transgression" map from K(A) to the
-        # Hochschild cohomology group H^3_H(A, \Gm).  Note that we
+        # Next we compute the "transgression" map from K(A, F) to the
+        # Hochschild cohomology group H^3_H(A, F).  Note that we
         # only need the cokernel of d^2, not the kernel of d^3.
-        images = [coker_d2_U(F.trg_helper(ker_d1_Cl(v))) for v in KA.gens()]
-        return hom(KA, coker_d2_U.codomain(), images)
+        images = [coker_d2_H0(F.trg_helper(ker_d1_H1(v))) for v in K.gens()]
+        return hom(K, coker_d2_H0.codomain(), images)
 
     @cached_method
     def _H2_H(self):
         """
-        Return the Hochschild cohomology group `H^2_H(A, Gm)`.
+        Return the Hochschild cohomology group `H^2_H(A, F)`.
         """
         F = self.simplicial_sheaf()
-        return homology(F.d1_U(), F.d2_U())
+        return homology(F.d1_H0(), F.d2_H0())
 
     @cached_method
-    def _KA_to_ClA(self):
+    def _K_to_H1(self):
         r"""
-        Return the group `K(A)` together with the map to `Cl(A)`.
+        Return the group `K(A, F)` together with the map to `H^1(A, F)`.
         """
         F = self.simplicial_sheaf()
-        return F.d1_Cl().kernel()
+        return F.d1_H1().kernel()
 
     @cached_method
-    def _LA_to_ClA(self):
+    def _L_to_H1(self):
         r"""
-        Return the kernel `L(A)` of the "transgression" map from `K(A)` to
-        the Hochschild cohomology group `H^3_H(A, Gm)`, together with
-        the map to `Cl(A)`.
+        Return the kernel `L(A, F)` of the "transgression" map from
+        `K(A, F)` to the Hochschild cohomology group `H^3_H(A, F)`,
+        together with the map to `H^1(A, F)`.
         """
-        return self._KA_to_ClA() * self.trg().kernel()
+        return self._K_to_H1() * self.trg().kernel()
 
-    # injective homomorphism H^2_H(A, Gm) -> Ext(G, Gm)
+    # injective homomorphism H^2_H(A, F) -> Ext(G, F)
     def _from_H2_H(self, x):
         F = self.simplicial_sheaf()
+        T = F.trivial_torsor()
         p, i = self._H2_H()
-        u = F.exp_UA2()(F.d2_U().kernel()(p.inverse_image(x)))
-        I = F.trivial_torsor()
-        return self.element_class(self, I, u)
+        u = F.exp_H0(2)(F.d2_H0().kernel()(p.inverse_image(x)))
+        return self.element_class(self, T, u)
 
-    # set-theoretic section L(A) -> Ext(G, Gm)
-    def _from_LA(self, x):
+    # set-theoretic section L(A, F) -> Ext(G, F)
+    def _from_L(self, x):
         F = self.simplicial_sheaf()
-        LA_to_ClA = self._LA_to_ClA()
-        I = F.exp_ClA()(LA_to_ClA(x))
-        gen = F.from_LA_helper(I)
-        return self.element_class(self, I, gen)
+        L_to_H1 = self._L_to_H1()
+        T = F.exp_H1(1)(L_to_H1(x))
+        gen = F.from_L_helper(T)
+        return self.element_class(self, T, gen)
 
     def order(self):
         """
@@ -323,18 +347,18 @@ class ExtGroup(AbelianGroupClass):
 
         ext_classes_H2_H = [self._from_H2_H(x) for x in H2_H.gens()]
 
-        # L(A) = ker(trg: K(A) -> H^3_H(A, Gm))
-        LA = self._LA_to_ClA().domain()
-        orders_LA = LA.gens_orders()
+        # L(A, F) = ker(trg: K(A, F) -> H^3_H(A, F))
+        L = self._L_to_H1().domain()
+        orders_L = L.gens_orders()
 
-        ext_classes_LA = [self._from_LA(x) for x in LA.gens()]
+        ext_classes_L = [self._from_L(x) for x in L.gens()]
 
         P = Matrix(ZZ, [(g ** o)._to_H2_H().exponents()
-                        for g, o in zip(ext_classes_LA, orders_LA)],
+                        for g, o in zip(ext_classes_L, orders_L)],
                    ncols = H2_H.ngens())
 
         R = Matrix.block(ZZ, [[Matrix.diagonal(orders_H2_H), 0],
-                              [P, Matrix.diagonal(orders_LA)]])
+                              [P, Matrix.diagonal(orders_L)]])
         S, U, V = R.smith_form()
         W = V.inverse_of_unit()
         orders = tuple(o for o in S.diagonal() if o != 1)
@@ -343,15 +367,15 @@ class ExtGroup(AbelianGroupClass):
             raise NotImplementedError('non-trivial extension')
 
         B = AbelianGroup(orders)
-        gens = ext_classes_H2_H + ext_classes_LA
+        gens = ext_classes_H2_H + ext_classes_L
 
         def exp(x):
             return prod(a * i for a, i in zip(gens, x.exponents()))
 
         def log(x):
             F = self.simplicial_sheaf()
-            w = F.log_ClA()(x._ideal).exponents()
-            x0 = prod(a * i for a, i in zip(ext_classes_LA, w))
+            w = F.log_H1(1)(x._ideal).exponents()
+            x0 = prod(a * i for a, i in zip(ext_classes_L, w))
             v = (x * ~x0)._to_H2_H().exponents()
             return B(list(v) + list(w))
 
@@ -385,11 +409,15 @@ class ExtGroup(AbelianGroupClass):
         """
         F = self.simplicial_sheaf()
         B, gens, exp, log = self.group_structure()
-        M = Matrix(ZZ, [F.log_UA2()(x.sigma()).exponents() for x in gens])
+        M = Matrix(ZZ, [F.log_H0(2)(x.sigma()).exponents() for x in gens])
         return hom(B, F.H0(2), M).kernel()
 
 
 class ExtGroupGm(ExtGroup):
+    """
+    The group of isomorphism classes of central extensions of a group
+    scheme by the multiplicative group.
+    """
 
     def __init__(self, D, S):
         r"""
@@ -422,3 +450,39 @@ class ExtGroupGm(ExtGroup):
         ideal = x._ideal
         tau = x._tau
         raise NotImplementedError
+
+
+def ExtGroup_mu_n(D, S, n):
+    """
+    Return the group of isomorphism classes of central extensions of a
+    group scheme by the sheaf of `n`-th roots of unity.
+
+    EXAMPLES::
+
+        sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+        sage: from dual_pairs.ext_group import ExtGroup_mu_n
+        sage: R.<x> = QQ[]
+        sage: A = FiniteFlatAlgebra(QQ, [x, x])
+        sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+        sage: D = DualPair(A, Phi)
+        sage: E = ExtGroup_mu_n(D, [], 2)
+        sage: E
+        Group of central extensions of G by Sheaf of 2nd roots of unity
+        where G is defined by
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 2 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
+        B = Finite flat algebra of degree 2 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
+        sage: E.group_structure()
+        (Multiplicative Abelian group isomorphic to C2 x C2,
+         [Group scheme extension defined by ((1, 1), e0 + e1 + e2 - e3),
+          Group scheme extension defined by ((1, -1), e0 + e1 + e2 + e3)],
+         <function ExtGroup.group_structure.<locals>.exp at 0x...>,
+         <function ExtGroup.group_structure.<locals>.log at 0x...>)
+    """
+    from .simplicial_sheaf import RootsOfUnitySimplicialSheaf
+    mu_n = RootsOfUnitySimplicialSheaf(D, S, n)
+    return ExtGroup(D, mu_n)

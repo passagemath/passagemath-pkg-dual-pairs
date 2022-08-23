@@ -170,7 +170,6 @@ def _ideal_generator(K, S, I):
     assert I.is_principal()
     return I.gens_reduced()[0]
 
-# TODO: maybe move to class_group.py?
 def ideal_generator(A, S, I):
     S_prod = prod(S)
     to_P, from_P = isom_to_etale_algebra(A)
