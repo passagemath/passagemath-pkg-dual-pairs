@@ -96,11 +96,11 @@ class ExtGroup(AbelianGroupClass):
 
         - `D` -- a dual pair of algebras over :math:`\mathbf{Q}`
 
-        - `F` -- a sheaf of Abelian groups (:class:`dual_pairs.simplicial_sheaf.SimplicialSheaf`)
+        - `F` -- a sheaf of Abelian groups (:class:`dual_pairs.abelian_sheaf.AbelianSheaf`)
         """
 
         self._dual_pair = D
-        self._simplicial_sheaf = F
+        self._sheaf = F
         AbelianGroupClass.__init__(self)
 
     def _repr_(self):
@@ -128,10 +128,12 @@ class ExtGroup(AbelianGroupClass):
             Number Field in a1 with defining polynomial x
         """
         s = "Group of central extensions of G by {}\nwhere G is defined by\n{}"
-        return s.format(self._simplicial_sheaf, self._dual_pair)
+        return s.format(self._sheaf, self._dual_pair)
 
+    @cached_method
     def simplicial_sheaf(self):
-        return self._simplicial_sheaf
+        from .simplicial_sheaf import SimplicialSheaf
+        return SimplicialSheaf(self._dual_pair, self._sheaf)
 
     def _element_constructor_(self, T, u):
         # The following needs to be adapted to other sheaves than G_m.
@@ -161,8 +163,8 @@ class ExtGroup(AbelianGroupClass):
             Group scheme extension defined by ((1, 1), e0 + e1 + e2 + e3)
         """
         F = self.simplicial_sheaf()
-        T = F.trivial_torsor()
-        u = F.exp_H0(2)(F.H0(2).one())
+        T = F.trivial_torsor(1)
+        u = F.trivial_section(2)
         return self.element_class(self, T, u)
 
     @cached_method
@@ -208,7 +210,7 @@ class ExtGroup(AbelianGroupClass):
     # injective homomorphism H^2_H(A, F) -> Ext(G, F)
     def _from_H2_H(self, x):
         F = self.simplicial_sheaf()
-        T = F.trivial_torsor()
+        T = F.trivial_torsor(1)
         p, i = self._H2_H()
         u = F.exp_H0(2)(F.d2_H0().kernel()(p.inverse_image(x)))
         return self.element_class(self, T, u)
@@ -418,7 +420,7 @@ class ExtGroup(AbelianGroupClass):
         F = self.simplicial_sheaf()
         B, gens, exp, log = self.group_structure()
         M = Matrix(ZZ, [F.log_H0(2)(x.sigma()).exponents() for x in gens])
-        return hom(B, F.H0(2), M).kernel()
+        return hom(B, F.group_H0(2), M).kernel()
 
 
 class ExtGroupGm(ExtGroup):
@@ -435,8 +437,8 @@ class ExtGroupGm(ExtGroup):
 
         - `S` -- a set of prime numbers
         """
-        from .simplicial_sheaf import MultiplicativeSimplicialSheaf
-        Gm = MultiplicativeSimplicialSheaf(D, S)
+        from .abelian_sheaf import MultiplicativeGroup
+        Gm = MultiplicativeGroup(S)
         ExtGroup.__init__(self, D, Gm)
 
     def extension_to_torsor(x):
@@ -491,6 +493,6 @@ def ExtGroup_mu_n(D, S, n):
          <function ExtGroup.group_structure.<locals>.exp at 0x...>,
          <function ExtGroup.group_structure.<locals>.log at 0x...>)
     """
-    from .simplicial_sheaf import RootsOfUnitySimplicialSheaf
-    mu_n = RootsOfUnitySimplicialSheaf(D, S, n)
+    from .abelian_sheaf import RootsOfUnity
+    mu_n = RootsOfUnity(S, n)
     return ExtGroup(D, mu_n)
