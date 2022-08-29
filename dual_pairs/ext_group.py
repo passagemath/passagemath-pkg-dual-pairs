@@ -167,12 +167,19 @@ class ExtGroup(AbelianGroupClass):
         u = F.trivial_section(2)
         return self.element_class(self, T, u)
 
+    def _K_to_H1(self):
+        r"""
+        Return the group `K(A, F)` together with the map to `H^1(A, F)`.
+        """
+        F = self.simplicial_sheaf()
+        return F.d1_H1().kernel()
+
     @cached_method
     def trg(self):
         F = self.simplicial_sheaf()
 
         # K(A, F) = ker(d^1: H^1(A, F) -> H^1(A \otimes A, F))
-        ker_d1_H1 = F.d1_H1().kernel()
+        ker_d1_H1 = self._K_to_H1()
         K = ker_d1_H1.domain()
         coker_d2_H0 = F.d2_H0().cokernel()
 
@@ -189,14 +196,6 @@ class ExtGroup(AbelianGroupClass):
         """
         F = self.simplicial_sheaf()
         return homology(F.d1_H0(), F.d2_H0())
-
-    @cached_method
-    def _K_to_H1(self):
-        r"""
-        Return the group `K(A, F)` together with the map to `H^1(A, F)`.
-        """
-        F = self.simplicial_sheaf()
-        return F.d1_H1().kernel()
 
     @cached_method
     def _L_to_H1(self):
