@@ -18,27 +18,27 @@ from .abelian_group_homomorphism import hom, homology
 
 class ExtGroupElement(MultiplicativeGroupElement):
 
-    def __init__(self, parent, ideal, tau):
-        self._ideal = ideal
+    def __init__(self, parent, torsor, tau):
+        self._T = torsor
         self._tau = tau
         MultiplicativeGroupElement.__init__(self, parent)
 
     def _repr_(self):
-        return 'Group scheme extension defined by ({}, {})'.format(self._ideal, self._tau)
+        return 'Group scheme extension defined by ({}, {})'.format(self._T, self._tau)
 
     def _mul_(self, other):
         E = self.parent()
-        return E.element_class(E, self._ideal * other._ideal,
+        return E.element_class(E, self._T * other._T,
                                self._tau * other._tau)
 
     def __invert__(self):
         E = self.parent()
-        return E.element_class(E, ~self._ideal, ~self._tau)
+        return E.element_class(E, ~self._T, ~self._tau)
 
     def _to_H2_H(self):
         E = self.parent()
         F = E.simplicial_sheaf()
-        x = F.to_H2_H_helper(self._ideal, self._tau)
+        x = F.to_H2_H_helper(self._T, self._tau)
         p, i = E._H2_H()
         return p(F.d2_H0().kernel().inverse_image(x))
 
@@ -47,7 +47,7 @@ class ExtGroupElement(MultiplicativeGroupElement):
     def opposite(self):
         E = self.parent()
         F = E.simplicial_sheaf()
-        return E.element_class(E, self._ideal, F.swap()(self._tau))
+        return E.element_class(E, self._T, F.swap()(self._tau))
 
     def sigma(self):
         tau = self._tau
@@ -135,16 +135,16 @@ class ExtGroup(AbelianGroupClass):
         from .simplicial_sheaf import SimplicialSheaf
         return SimplicialSheaf(self._dual_pair, self._sheaf)
 
-    def _element_constructor_(self, T, u):
+    def _element_constructor_(self, T, tau):
         # The following needs to be adapted to other sheaves than G_m.
         # TODO: need to check that the quotient between the two ideals
         # is the trivial ideal of A2 after inverting the primes in S
         # F = parent.simplicial_sheaf()
-        # if F._d1_ideal(ideal) != principal_ideal(F._A2, tau):
-        #     raise ValueError('tau does not generate d1(ideal)')
+        # if F._d1_torsor(T) != principal_ideal(F._A2, tau):
+        #     raise ValueError('tau does not generate d1(T)')
         # if F._d2_unit(tau) != F._A3.one():
         #     raise ValueError('d2(tau) is non-trivial')
-        return self.element_class(self, T, u)
+        return self.element_class(self, T, tau)
 
     def one(self):
         """
@@ -164,12 +164,12 @@ class ExtGroup(AbelianGroupClass):
         """
         F = self.simplicial_sheaf()
         T = F.trivial_torsor(1)
-        u = F.trivial_section(2)
-        return self.element_class(self, T, u)
+        tau = F.trivial_section(2)
+        return self.element_class(self, T, tau)
 
     def _K_to_H1(self):
         r"""
-        Return the group `K(A, F)` together with the map to `H^1(A, F)`.
+        Return the group `K(G, F)` together with the map to `H^1(G, F)`.
         """
         F = self.simplicial_sheaf()
         return F.d1_H1().kernel()
@@ -178,13 +178,13 @@ class ExtGroup(AbelianGroupClass):
     def trg(self):
         F = self.simplicial_sheaf()
 
-        # K(A, F) = ker(d^1: H^1(A, F) -> H^1(A \otimes A, F))
+        # K(G, F) = ker(d^1: H^1(G, F) -> H^1(G^2, F))
         ker_d1_H1 = self._K_to_H1()
         K = ker_d1_H1.domain()
         coker_d2_H0 = F.d2_H0().cokernel()
 
-        # Next we compute the "transgression" map from K(A, F) to the
-        # Hochschild cohomology group H^3_H(A, F).  Note that we
+        # Next we compute the "transgression" map from K(G, F) to the
+        # Hochschild cohomology group H^3_H(G, F).  Note that we
         # only need the cokernel of d^2, not the kernel of d^3.
         images = [coker_d2_H0(F.trg_helper(ker_d1_H1(v))) for v in K.gens()]
         return hom(K, coker_d2_H0.codomain(), images)
@@ -192,7 +192,7 @@ class ExtGroup(AbelianGroupClass):
     @cached_method
     def _H2_H(self):
         """
-        Return the Hochschild cohomology group `H^2_H(A, F)`.
+        Return the Hochschild cohomology group `H^2_H(G, F)`.
         """
         F = self.simplicial_sheaf()
         return homology(F.d1_H0(), F.d2_H0())
@@ -200,21 +200,21 @@ class ExtGroup(AbelianGroupClass):
     @cached_method
     def _L_to_H1(self):
         r"""
-        Return the kernel `L(A, F)` of the "transgression" map from
-        `K(A, F)` to the Hochschild cohomology group `H^3_H(A, F)`,
-        together with the map to `H^1(A, F)`.
+        Return the kernel `L(G, F)` of the "transgression" map from
+        `K(G, F)` to the Hochschild cohomology group `H^3_H(G, F)`,
+        together with the map to `H^1(G, F)`.
         """
         return self._K_to_H1() * self.trg().kernel()
 
-    # injective homomorphism H^2_H(A, F) -> Ext(G, F)
+    # injective homomorphism H^2_H(G, F) -> Ext(G, F)
     def _from_H2_H(self, x):
         F = self.simplicial_sheaf()
         T = F.trivial_torsor(1)
         p, i = self._H2_H()
-        u = F.exp_H0(2)(F.d2_H0().kernel()(p.inverse_image(x)))
-        return self.element_class(self, T, u)
+        tau = F.exp_H0(2)(F.d2_H0().kernel()(p.inverse_image(x)))
+        return self.element_class(self, T, tau)
 
-    # set-theoretic section L(A, F) -> Ext(G, F)
+    # set-theoretic section L(G, F) -> Ext(G, F)
     def _from_L(self, x):
         F = self.simplicial_sheaf()
         L_to_H1 = self._L_to_H1()
@@ -357,7 +357,7 @@ class ExtGroup(AbelianGroupClass):
 
         ext_classes_H2_H = [self._from_H2_H(x) for x in H2_H.gens()]
 
-        # L(A, F) = ker(trg: K(A, F) -> H^3_H(A, F))
+        # L(G, F) = ker(trg: K(G, F) -> H^3_H(G, F))
         L = self._L_to_H1().domain()
         orders_L = L.gens_orders()
 
@@ -384,7 +384,7 @@ class ExtGroup(AbelianGroupClass):
 
         def log(x):
             F = self.simplicial_sheaf()
-            w = F.log_H1(1)(x._ideal).exponents()
+            w = F.log_H1(1)(x._T).exponents()
             x0 = prod(a * i for a, i in zip(ext_classes_L, w))
             v = (x * ~x0)._to_H2_H().exponents()
             return B(list(v) + list(w))
@@ -456,7 +456,7 @@ class ExtGroupGm(ExtGroup):
         E = x.parent()
         D = E.dual_pair()
         D_dual = D.dual()
-        ideal = x._ideal
+        T = x._T
         tau = x._tau
         raise NotImplementedError
 
