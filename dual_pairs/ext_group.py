@@ -179,14 +179,14 @@ class ExtGroup(AbelianGroupClass):
         F = self.simplicial_sheaf()
 
         # K(G, F) = ker(d^1: H^1(G, F) -> H^1(G^2, F))
-        ker_d1_H1 = self._K_to_H1()
-        K = ker_d1_H1.domain()
+        K_to_H1 = self._K_to_H1()
+        K = K_to_H1.domain()
         coker_d2_H0 = F.d2_H0().cokernel()
 
         # Next we compute the "transgression" map from K(G, F) to the
         # Hochschild cohomology group H^3_H(G, F).  Note that we
         # only need the cokernel of d^2, not the kernel of d^3.
-        images = [coker_d2_H0(F.trg_helper(ker_d1_H1(v))) for v in K.gens()]
+        images = [coker_d2_H0(F.trg_helper(K_to_H1(v))) for v in K.gens()]
         return hom(K, coker_d2_H0.codomain(), images)
 
     @cached_method
