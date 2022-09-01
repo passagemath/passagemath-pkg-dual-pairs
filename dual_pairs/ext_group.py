@@ -430,49 +430,50 @@ class ExtGroup(AbelianGroupClass):
         return hom(B, F.group_H0(2), M).kernel()
 
 
-class ExtGroupGm(ExtGroup):
+def ExtGroupGm(D, S):
+    r"""
+    Return the group of isomorphism classes of central extensions of a
+    group scheme by the multiplicative group.
+
+    INPUT:
+
+    - `D` -- a dual pair of algebras over :math:`\mathbf{Q}`
+
+    - `S` -- a finite set of prime numbers
+
+        sage: from dual_pairs import DualPair, FiniteFlatAlgebra
+        sage: from dual_pairs.ext_group import ExtGroupGm
+        sage: R.<x> = QQ[]
+        sage: A = FiniteFlatAlgebra(QQ, [x, x])
+        sage: Phi = 1/2 * Matrix([[1, 1], [1, -1]])
+        sage: D = DualPair(A, Phi)
+        sage: ExtGroupGm(D, [])
+        Group of central extensions of G by Multiplicative group
+        where G is defined by
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 2 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
+        B = Finite flat algebra of degree 2 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x
     """
-    The group of isomorphism classes of central extensions of a group
-    scheme by the multiplicative group.
-    """
-
-    def __init__(self, D, S):
-        r"""
-        INPUT:
-
-        - `D` -- a dual pair of algebras over :math:`\mathbf{Q}`
-
-        - `S` -- a set of prime numbers
-        """
-        from .abelian_sheaf import MultiplicativeGroup
-        Gm = MultiplicativeGroup(S)
-        ExtGroup.__init__(self, D, Gm)
-
-    def extension_to_torsor(x):
-        """
-        Return a torsor pair corresponding to the extension `x`.
-
-        INPUT:
-
-        - `x` -- an extension (:class:`ExtGroupElement`)
-
-        OUTPUT:
-
-        A torsor pair for the dual group scheme.
-        """
-        from .torsor_pair import TorsorPair
-        E = x.parent()
-        D = E.dual_pair()
-        D_dual = D.dual()
-        T = x._T
-        tau = x._tau
-        raise NotImplementedError
+    from .abelian_sheaf import MultiplicativeGroup
+    return ExtGroup(D, MultiplicativeGroup(S))
 
 
 def ExtGroup_mu_n(D, S, n):
-    """
+    r"""
     Return the group of isomorphism classes of central extensions of a
     group scheme by the sheaf of `n`-th roots of unity.
+
+    INPUT:
+
+    - `D` -- a dual pair of algebras over :math:`\mathbf{Q}`
+
+    - `S` -- a finite set of prime numbers
+
+    - `n` -- a positive integer
 
     EXAMPLES::
 

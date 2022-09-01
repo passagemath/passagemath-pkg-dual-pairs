@@ -231,3 +231,7 @@ class DualPair_rational(DualPair_class):
         P = [lift_to_prime(g) for g in G.unit_gens()]
         chi = G([self.frobenius_matrix(p).determinant() for p in P])
         return chi.primitive_character()
+
+    def torsor_class_group(self, S):
+        from .torsor_class_group import TorsorClassGroup
+        return TorsorClassGroup(self, S)
