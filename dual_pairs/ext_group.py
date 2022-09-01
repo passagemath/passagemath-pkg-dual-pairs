@@ -98,10 +98,15 @@ class ExtGroup(AbelianGroupClass):
 
         - `F` -- a sheaf of Abelian groups (:class:`dual_pairs.abelian_sheaf.AbelianSheaf`)
         """
-
         self._dual_pair = D
         self._sheaf = F
         AbelianGroupClass.__init__(self)
+
+    def dual_pair(self):
+        return self._dual_pair
+
+    def sheaf(self):
+        return self._sheaf
 
     def _repr_(self):
         """
