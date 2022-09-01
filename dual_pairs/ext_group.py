@@ -342,14 +342,15 @@ class ExtGroup(AbelianGroupClass):
             ....:               [0, 0, 0, 42]])
             sage: D = DualPair(A, Phi)
             sage: E = ExtGroupGm(D, [13])
-            sage: E.group_structure()
-            (Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2,
-             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 - e10),
-              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + 13*e6 - 2*e7 + e8 + 13*e9 + 7*e10 - e11 - 2*e13 - e14 + 1/7*e15),
-              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + 41/13*e6 - 6/13*e7 + e8 + 41/13*e9 + 27*e10 - 3*e11 - 6/13*e13 - 3*e14 + 1/3*e15),
-              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 + 13*e10)],
-             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
-             <function ExtGroup.group_structure.<locals>.log at 0x...>)
+            sage: B, gens, exp, log = E.group_structure()
+            sage: B
+            Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2
+            sage: exp(B.gen(0))
+            Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 - e10)
+            sage: log(gens[1])
+            f1
+            sage: log(exp(B.gen(3))) == B.gen(3)
+            True
         """
         p, i = self._H2_H()
         H2_H = i.domain()  # == p.codomain()
@@ -380,12 +381,14 @@ class ExtGroup(AbelianGroupClass):
         gens = ext_classes_H2_H + ext_classes_L
 
         def exp(x):
-            return prod(a * i for a, i in zip(gens, x.exponents()))
+            return prod((a ** i for a, i in zip(gens, x.exponents())),
+                        self.one())
 
         def log(x):
             F = self.simplicial_sheaf()
             w = F.log_H1(1)(x._T).exponents()
-            x0 = prod(a * i for a, i in zip(ext_classes_L, w))
+            x0 = prod((a ** i for a, i in zip(ext_classes_L, w)),
+                      self.one())
             v = (x * ~x0)._to_H2_H().exponents()
             return B(list(v) + list(w))
 
