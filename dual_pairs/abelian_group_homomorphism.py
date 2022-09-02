@@ -35,7 +35,8 @@ def solve_mod(M, N, D):
     Mp = M.__pari__().mattranspose()
     Np = N.__pari__().mattranspose()
     Dp = D.__pari__().Col()
-    return Matrix(ZZ, [Mp.matsolvemod(Dp, v).sage() for v in Np])
+    return Matrix(ZZ, N.nrows(), M.nrows(),
+                  [Mp.matsolvemod(Dp, v).sage() for v in Np])
 
 def solve_mod_right(M, N, D):
     """
@@ -43,23 +44,23 @@ def solve_mod_right(M, N, D):
 
     EXAMPLES::
 
-        sage: from dual_pairs.abelian_group_homomorphism import solve_mod
-        sage: M = Matrix([(-1, -1, 0, -1, 0, 1, 0, 1, 0, 0),
-        ....:             (-1, -1, 0, -1, 0, 1, 0, 0, 0, 0),
-        ....:             (0, 0, 0, 0, 0, 0, 1, 0, -1, 0)])
-        sage: N = Matrix([(1, 1, 0, 1, 0, 1, 0, 0, 0, 0),
-        ....:             (0, 0, 0, 0, 0, 0, 0, 1, 0, 0),
-        ....:             (0, 0, 0, 0, 0, 0, 2, 0, -2, 0)])
-        sage: D = vector([2, 2, 0, 2, 0, 2, 0, 2, 0, 0])
-        sage: solve_mod(M, N, D)
-        [0 1 0]
-        [1 1 0]
-        [0 0 2]
+        sage: from dual_pairs.abelian_group_homomorphism import solve_mod_right
+        sage: M = Matrix([(-1, -1, 0, -1),
+        ....:             (0, 0, 0, 0)])
+        sage: N = Matrix([(1, 1, 0, 1),
+        ....:             (0, 0, 0, 0)])
+        sage: D = vector([2, 0])
+        sage: solve_mod_right(M, N, D)
+        [ 0  0  0  0]
+        [-1 -1  0 -1]
+        [ 0  0  0  0]
+        [ 0  0  0  0]
     """
     Mp = M.__pari__()
     Np = N.__pari__()
     Dp = D.__pari__().Col()
-    return Matrix(ZZ, [Mp.matsolvemod(Dp, v).sage() for v in Np]).transpose()
+    return Matrix(ZZ, N.ncols(), M.ncols(),
+                  [Mp.matsolvemod(Dp, v).sage() for v in Np]).transpose()
 
 def relation_matrix(A):
     R = Matrix.diagonal(A.gens_orders())
@@ -232,7 +233,8 @@ class AbelianGroupHomomorphism(Morphism):
         RC, U, V = H.smith_form()
         DC = RC.diagonal() + [0] * (RC.ncols() - RC.nrows())
         C = AbelianGroup([o for o in DC if o != 1])
-        W = Matrix([V.column(i) for i, o in enumerate(DC) if o != 1]).transpose()
+        W = Matrix(ZZ, C.ngens(), B.ngens(),
+                   [V.column(i) for i, o in enumerate(DC) if o != 1]).transpose()
         return hom(B, C, W.rows())
 
     def inverse_image(self, x):
