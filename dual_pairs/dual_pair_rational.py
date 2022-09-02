@@ -233,5 +233,38 @@ class DualPair_rational(DualPair_class):
         return chi.primitive_character()
 
     def torsor_class_group(self, S):
+        """
+        Return the group of isomorphism classes of torsors for ``self``.
+
+        INPUT:
+
+        - `S` -- a finite set of primes
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 7])
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 + 21])
+            sage: Phi = Matrix(QQ, [[1/3,  2/3,   0],
+            ....:                   [2/3, -2/3,   0],
+            ....:                   [  0,    0, 14]])
+            sage: D = DualPair(A, B, Phi)
+            sage: H = D.torsor_class_group([])
+            sage: H
+            Group of isomorphism classes of G-torsors where G is defined by
+            Dual pair of algebras over Rational Field
+            A = Finite flat algebra of degree 3 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x^2 - 7
+            B = Finite flat algebra of degree 3 over Rational Field, product of:
+            Number Field in a0 with defining polynomial x
+            Number Field in a1 with defining polynomial x^2 + 21
+            sage: H.group_structure()
+            (Trivial Abelian group,
+             [],
+             <function TorsorClassGroup.group_structure.<locals>.exp at 0x...>,
+             <function TorsorClassGroup.group_structure.<locals>.log at 0x...>)
+        """
         from .torsor_class_group import TorsorClassGroup
         return TorsorClassGroup(self, S)
