@@ -1,5 +1,5 @@
-Central extensions of finite group schemes
-==========================================
+Extension class groups
+======================
 
 .. automodule:: dual_pairs.ext_group
    :members:
