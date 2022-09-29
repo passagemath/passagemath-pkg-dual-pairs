@@ -775,7 +775,9 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
         """
         from sage.categories.all import cartesian_product
-        category = Algebras(self.base_ring()).Commutative().FiniteDimensional().WithBasis().CartesianProducts()
+        # In principle we could add WithBasis(), but this currently
+        # causes inversion of elements to fail.
+        category = Algebras(self.base_ring()).Commutative().FiniteDimensional().CartesianProducts()
         return cartesian_product(self._factors, category=category)
 
     def is_field(self):

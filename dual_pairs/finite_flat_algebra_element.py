@@ -112,15 +112,9 @@ class FiniteFlatAlgebraElement(AlgebraElement):
             sage: A = FiniteFlatAlgebra(QQ, [Matrix([[1,0], [0,1]]), Matrix([[0,1], [-1,0]])])
             sage: ~A.gen(1)
             -e1
-
-        This is not implemented yet for finite flat algebras
-        represented as a product::
-
             sage: A = FiniteFlatAlgebra(QQ, [x])
             sage: ~A.gen(0)
-            Traceback (most recent call last):
-            ...
-            NotImplementedError: <abstract method monomial_coefficients at 0x...>
+            (1,)
         """
         P = self.parent()
         z = ~self.algebra_element()
