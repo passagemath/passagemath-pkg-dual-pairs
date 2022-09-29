@@ -288,14 +288,6 @@ class ExtGroup(AbelianGroupClass):
         return self.group_structure()[3](x)
 
     @cached_method
-    def hochschild_subgroup(self):
-        pass
-
-    @cached_method
-    def picard_quotient(self):
-        pass
-
-    @cached_method
     def group_structure(self):
         r"""
         Return the group structure of `self`.

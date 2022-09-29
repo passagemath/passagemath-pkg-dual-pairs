@@ -312,18 +312,11 @@ def homology(f, g):
     Return the homology group of the pair `(f, g)`.
     """
     ker_g = g.kernel()
-    K = ker_g.domain()
     coker_f = f.cokernel()
     L = coker_f.codomain()
     fbar = ker_g.solve_right(f)
-    assert ker_g * fbar == f
-    # gbar = coker_f.solve_left(g) -- does not work!
-    gbar = hom(L, g.codomain(), [g(coker_f.inverse_image(x)) for x in L.gens()])
-    assert gbar * coker_f == g
     h = coker_f * ker_g
     p = fbar.cokernel()
     H = p.codomain()
-    # i = p.solve_left(h) -- does not work!
     i = hom(H, L, [h(p.inverse_image(x)) for x in H.gens()])
-    assert i * p == h
     return p, i

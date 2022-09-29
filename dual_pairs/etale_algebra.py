@@ -178,11 +178,6 @@ def ideal_generator(A, S, I):
     return from_P([_ideal_generator(K, K.primes_above(S_prod), J)
                    for K, J in zip(factors, I)])
 
-    # v = [J.gens_reduced() for J in I]
-    # if not all(len(x) == 1 for x in v):
-    #     return False
-    # return from_P([x[0] for x in v])
-
 def map_ideal(f, I):
     # f: A -> B morphism of finite flat algebras
     # I in the ideal monoid of A
