@@ -10,6 +10,7 @@ from sage.categories.algebras import Algebras
 from sage.categories.cartesian_product import cartesian_product
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import Matrix
+from sage.libs.pari import pari
 from sage.misc.all import prod
 from sage.misc.cachefunc import cached_function
 from sage.modules.free_module_element import vector
@@ -155,7 +156,6 @@ def principal_ideal(A, x):
 
 # see NumberField_generic.selmer_generators()
 def _ideal_generator(K, S, I):
-    from sage.libs.pari.all import pari
     if not I.is_principal():
         H = K.class_group()
         gen_ords = [g.order() for g in H.gens()]
@@ -189,3 +189,17 @@ def map_ideal(f, I):
     gens = (J.gens_two() for J in I)
     u, v = [to_Q(f(from_P(x))) for x in zip(*gens)]
     return QI(zip(u, v))
+
+def _ideal_root(K, S, I, n):
+    f = pari('(K,A,n)->if(idealispower(K,A,n,&B),B,error("not a power"))')
+    J = I * prod(p ** -I.valuation(p) for p in S)
+    return K.ideal(f(K, J, n))
+
+def ideal_root(A, S, I, n):
+    S_prod = prod(S)
+    to_P, from_P = isom_to_etale_algebra(A)
+    P = from_P.domain()
+    factors = P.cartesian_factors()
+    PI = ideal_monoid(A)
+    return PI([_ideal_root(K, K.primes_above(S_prod), J, n)
+               for K, J in zip(factors, I)])

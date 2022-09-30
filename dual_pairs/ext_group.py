@@ -5,7 +5,6 @@ Extensions of finite group schemes.
 
 from __future__ import absolute_import
 
-from sage.groups.abelian_gps.abelian_group import AbelianGroup
 from sage.groups.group import AbelianGroup as AbelianGroupClass
 from sage.matrix.constructor import Matrix
 from sage.misc.all import prod
@@ -14,6 +13,7 @@ from sage.rings.integer_ring import ZZ
 from sage.structure.element import MultiplicativeGroupElement
 
 from .abelian_group_homomorphism import hom, homology
+from .smith_form import abelian_group_smith_form
 
 
 class ExtGroupElement(MultiplicativeGroupElement):
@@ -84,8 +84,8 @@ class ExtGroup(AbelianGroupClass):
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 85/31*e5 - 52/31*e6 - 34/31*e7 - 52/31*e9 + 17/31*e10 + 13/31*e11 - 34/31*e13 + 13/31*e14 + 9/31*e15),
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 6/31*e5 + 14/31*e6 - 1/31*e7 + 14/31*e9 - 16/31*e10 - 4/31*e11 - 1/31*e13 - 4/31*e14 + 1/31*e15),
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 2*e0 + 2*e1 + 2*e4 + 13/31*e5 - 19/31*e6 - 4/31*e7 + 37/31*e9 - 1/31*e10 - 12/31*e11 + 2/31*e13 + 6/31*e14)],
-         <function ExtGroup.group_structure.<locals>.exp at 0x...>,
-         <function ExtGroup.group_structure.<locals>.log at 0x...>)
+         <function abelian_group_smith_form.<locals>.exp at 0x...>,
+         <function abelian_group_smith_form.<locals>.log at 0x...>)
     """
 
     Element = ExtGroupElement
@@ -313,8 +313,8 @@ class ExtGroup(AbelianGroupClass):
              [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 10/23*e5 + 11/23*e6 - 15/23*e7 + 11/23*e9 + 19/23*e10 - 5/23*e11 - 15/23*e13 - 5/23*e14 + 11/23*e15),
               Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 121/23*e5 + 2/23*e6 - 9/23*e7 + 2/23*e9 - 7/23*e10 + 43/23*e11 - 9/23*e13 + 43/23*e14 - 21/23*e15),
               Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 23*e0 + 23*e1 + 23*e4 + 5/23*e5 + 40/23*e6 + 4/23*e7 - 52/23*e9 - 2/23*e10 + 78/23*e11 + 4/23*e13 - 60/23*e14 - 6/23*e15)],
-             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
-             <function ExtGroup.group_structure.<locals>.log at 0x...>)
+             <function abelian_group_smith_form.<locals>.exp at 0x...>,
+             <function abelian_group_smith_form.<locals>.log at 0x...>)
 
             sage: D = dual_pair_from_dihedral_field(x^3 + 4*x - 1, GF(2))
             sage: E = ExtGroupGm(D, [])
@@ -322,8 +322,8 @@ class ExtGroup(AbelianGroupClass):
             (Multiplicative Abelian group isomorphic to C2 x C2,
              [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 40/283*e5 + 41/283*e6 + 15/283*e7 + 41/283*e9 + 134/283*e10 - 20/283*e11 + 15/283*e13 - 20/283*e14 + 41/283*e15),
               Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (3, a + 1)), e0 + e1 + e4 + 1670/849*e5 - 19/283*e6 + 697/849*e7 - 19/283*e9 + 359/849*e10 + 14/849*e11 + 697/849*e13 + 14/849*e14 + 226/849*e15)],
-             <function ExtGroup.group_structure.<locals>.exp at 0x...>,
-             <function ExtGroup.group_structure.<locals>.log at 0x...>)
+             <function abelian_group_smith_form.<locals>.exp at 0x...>,
+             <function abelian_group_smith_form.<locals>.log at 0x...>)
 
             # from elliptic curve 2184.j1
             # 2-descent shows that 2-Selmer group is isomorphic to (Z/2Z)^4
@@ -351,45 +351,28 @@ class ExtGroup(AbelianGroupClass):
         """
         p, i = self._H2_H()
         H2_H = i.domain()  # == p.codomain()
-        orders_H2_H = H2_H.gens_orders()
-
-        ext_classes_H2_H = [self._from_H2_H(x) for x in H2_H.gens()]
 
         # L(G, F) = ker(trg: K(G, F) -> H^3_H(G, F))
         L = self._L_to_H1().domain()
-        orders_L = L.gens_orders()
 
-        ext_classes_L = [self._from_L(x) for x in L.gens()]
+        gens_H2_H = [self._from_H2_H(x) for x in H2_H.gens()]
+        gens_L = [self._from_L(x) for x in L.gens()]
+        gens = gens_H2_H + gens_L
 
-        P = Matrix(ZZ, [(g ** o)._to_H2_H().exponents()
-                        for g, o in zip(ext_classes_L, orders_L)],
-                   ncols = H2_H.ngens())
-
-        R = Matrix.block(ZZ, [[Matrix.diagonal(orders_H2_H), 0],
-                              [P, Matrix.diagonal(orders_L)]])
-        S, U, V = R.smith_form()
-        W = V.inverse_of_unit()
-        orders = tuple(o for o in S.diagonal() if o != 1)
-
-        if P != 0 or U != 1 or V != 1:
-            raise NotImplementedError('non-trivial extension')
-
-        B = AbelianGroup(orders)
-        gens = ext_classes_H2_H + ext_classes_L
-
-        def exp(x):
-            return prod((a ** i for a, i in zip(gens, x.exponents())),
-                        self.one())
+        P = Matrix(ZZ, L.ngens(), H2_H.ngens(),
+                   [(g ** o)._to_H2_H().exponents()
+                    for g, o in zip(gens_L, L.gens_orders())])
+        R = Matrix.block(ZZ, [[Matrix.diagonal(H2_H.gens_orders()), 0],
+                              [P, Matrix.diagonal(L.gens_orders())]])
 
         def log(x):
             F = self.simplicial_sheaf()
             w = F.log_H1(1)(x._T).exponents()
-            x0 = prod((a ** i for a, i in zip(ext_classes_L, w)),
-                      self.one())
-            v = (x * ~x0)._to_H2_H().exponents()
-            return B(list(v) + list(w))
+            y = prod((a ** -i for a, i in zip(gens_L, w)), x)
+            v = y._to_H2_H().exponents()
+            return list(v) + list(w)
 
-        return B, gens, exp, log
+        return abelian_group_smith_form(R, self.one(), gens, log)
 
     @cached_method
     def commutative_subgroup(self):
@@ -490,8 +473,8 @@ def ExtGroup_mu_n(D, S, n):
         (Multiplicative Abelian group isomorphic to C2 x C2,
          [Group scheme extension defined by ((1, 1), e0 + e1 + e2 - e3),
           Group scheme extension defined by ((1, -1), e0 + e1 + e2 + e3)],
-         <function ExtGroup.group_structure.<locals>.exp at 0x...>,
-         <function ExtGroup.group_structure.<locals>.log at 0x...>)
+         <function abelian_group_smith_form.<locals>.exp at 0x...>,
+         <function abelian_group_smith_form.<locals>.log at 0x...>)
     """
     from .abelian_sheaf import RootsOfUnity
     mu_n = RootsOfUnity(S, n)

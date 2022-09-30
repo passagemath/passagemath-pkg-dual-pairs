@@ -84,6 +84,7 @@ Miscellaneous
    extensions
    group_structure
    padic_roots
+   smith_form
 
 Indices and tables
 ==================
