@@ -75,6 +75,10 @@ class MultiplicativeGroup(AbelianSheaf):
         from .etale_algebra import ideal_generator
         return ideal_generator(A, self._S, I)
 
+    def is_trivialisation(self, A, I, x):
+        from .etale_algebra import ideal_is_generator
+        return ideal_is_generator(A, self._S, I, x)
+
 
 class RootsOfUnity(AbelianSheaf):
     """
@@ -116,3 +120,6 @@ class RootsOfUnity(AbelianSheaf):
     def torsor_trivialisation(self, A, x):
         from .etale_algebra import nth_root
         return nth_root(A, x, self._n)
+
+    def is_trivialisation(self, A, x, y):
+        return x == y ** self._n

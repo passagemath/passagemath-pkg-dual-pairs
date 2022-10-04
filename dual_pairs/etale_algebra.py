@@ -178,6 +178,17 @@ def ideal_generator(A, S, I):
     return from_P([_ideal_generator(K, K.primes_above(S_prod), J)
                    for K, J in zip(factors, I)])
 
+def _ideal_is_generator(K, S, I, x):
+    return all(P in S for P in (I/x).support())
+
+def ideal_is_generator(A, S, I, x):
+    S_prod = prod(S)
+    to_P, from_P = isom_to_etale_algebra(A)
+    P = from_P.domain()
+    factors = P.cartesian_factors()
+    return all(_ideal_is_generator(K, K.primes_above(S_prod), J, y)
+               for K, J, y in zip(factors, I, to_P(x)))
+
 def map_ideal(f, I):
     # f: A -> B morphism of finite flat algebras
     # I in the ideal monoid of A

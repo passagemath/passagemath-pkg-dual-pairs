@@ -137,6 +137,11 @@ class SimplicialSheaf(SageObject):
     def torsor_trivialisation(self, i, T):
         return self.sheaf().torsor_trivialisation(self._A[i], T)
 
+    def is_valid_extension_datum(self, T, tau):
+        F = self.sheaf()
+        return (F.is_trivialisation(self._A[2], self._d1_torsor(T), tau)
+                and self._d2_section(tau) == self.trivial_section(3))
+
     # TODO: name
     def to_H2_H_helper(self, T, tau):
         log_H0_A2 = self.log_H0(2)

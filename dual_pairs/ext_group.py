@@ -141,14 +141,12 @@ class ExtGroup(AbelianGroupClass):
         return SimplicialSheaf(self._dual_pair, self._sheaf)
 
     def _element_constructor_(self, T, tau):
-        # The following needs to be adapted to other sheaves than G_m.
-        # TODO: need to check that the quotient between the two ideals
-        # is the trivial ideal of A2 after inverting the primes in S
-        # F = parent.simplicial_sheaf()
-        # if F._d1_torsor(T) != principal_ideal(F._A2, tau):
-        #     raise ValueError('tau does not generate d1(T)')
-        # if F._d2_unit(tau) != F._A3.one():
-        #     raise ValueError('d2(tau) is non-trivial')
+        """
+        Construct an element of `self`.
+        """
+        F = self.simplicial_sheaf()
+        if not F.is_valid_extension_datum(torsor, tau):
+            raise ValueError("not a valid extension datum")
         return self.element_class(self, T, tau)
 
     def one(self):
