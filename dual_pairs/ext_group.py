@@ -145,7 +145,7 @@ class ExtGroup(AbelianGroupClass):
         Construct an element of `self`.
         """
         F = self.simplicial_sheaf()
-        if not F.is_valid_extension_datum(torsor, tau):
+        if not F.is_valid_extension_datum(T, tau):
             raise ValueError("not a valid extension datum")
         return self.element_class(self, T, tau)
 
