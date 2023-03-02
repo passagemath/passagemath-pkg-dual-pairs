@@ -66,8 +66,7 @@ def relation_matrix(A):
     R = Matrix.diagonal(A.gens_orders())
     return Matrix([r for r in R.rows() if r])
 
-# TODO: AbelianGroup_class.element_class should do the reduction
-# modulo the orders!
+# Work around https://github.com/sagemath/sage/issues/35216
 def _normalise(A, x):
     return A([e % o if o else e
               for e, o in zip(A(x).exponents(), A.gens_orders())])
@@ -102,8 +101,6 @@ class AbelianGroupHomomorphism(Morphism):
     def im_gens(self):
         return self._im_gens
 
-    # TODO: AbelianGroup_class.element_class should implement
-    # _im_gens_!
     def _call_(self, x):
         y = vector(ZZ, x.exponents()) * self.matrix()
         return _normalise(self.codomain(), y)
