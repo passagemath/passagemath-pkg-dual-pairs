@@ -81,8 +81,8 @@ class ExtGroup(AbelianGroupClass):
         (Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2 x C2,
          [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 401/31*e5 - 102/31*e6 - 78/31*e7 - 102/31*e9 - 22/31*e10 - 36/31*e11 - 78/31*e13 - 36/31*e14 + 50/31*e15),
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 219/31*e5 + 38/31*e6 + 80/31*e7 + 38/31*e9 + 100/31*e10 + 14/31*e11 + 80/31*e13 + 14/31*e14 - 22/31*e15),
-          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 85/31*e5 - 52/31*e6 - 34/31*e7 - 52/31*e9 + 17/31*e10 + 13/31*e11 - 34/31*e13 + 13/31*e14 + 9/31*e15),
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 6/31*e5 + 14/31*e6 - 1/31*e7 + 14/31*e9 - 16/31*e10 - 4/31*e11 - 1/31*e13 - 4/31*e14 + 1/31*e15),
+          Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 85/31*e5 - 52/31*e6 - 34/31*e7 - 52/31*e9 + 17/31*e10 + 13/31*e11 - 34/31*e13 + 13/31*e14 + 9/31*e15),
           Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 2*e0 + 2*e1 + 2*e4 + 13/31*e5 - 19/31*e6 - 4/31*e7 + 37/31*e9 - 1/31*e10 - 12/31*e11 + 2/31*e13 + 6/31*e14)],
          <function abelian_group_smith_form.<locals>.exp at 0x...>,
          <function abelian_group_smith_form.<locals>.log at 0x...>)
@@ -341,7 +341,7 @@ class ExtGroup(AbelianGroupClass):
             sage: B
             Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2
             sage: exp(B.gen(0))
-            Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 - e10)
+            Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), 13*e0 + 13*e1 + 13*e2 + 13*e4 + 13*e5 - 13*e6 + 13*e8 - 13*e9 + 1/42*e15)
             sage: log(gens[1])
             f1
             sage: log(exp(B.gen(3))) == B.gen(3)
