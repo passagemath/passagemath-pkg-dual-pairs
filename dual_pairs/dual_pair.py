@@ -755,12 +755,36 @@ class DualPair_class(CategoryObject):
                Defn: (1, 0) |--> e0 + 1/2*e4 - 1/14*e8
                      (0, 1) |--> e1 + e3 + 1/2*e4 + 1/14*e8
                      (0, a1) |--> e2 - 1/2*e5 + e6 - 1/2*e7)
+
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + x + 6])
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - x - 17])
+            sage: Phi = Matrix(QQ, [[ 1/3,  2/3,   1/3],
+            ....:                   [ 2/3, -2/3,  -1/3],
+            ....:                   [-1/3,  1/3, -34/3]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.hopf_algebra()
+            (Ring morphism:
+               From: Finite flat algebra of degree 3 over Rational Field, product of:
+             Number Field in a0 with defining polynomial x
+             Number Field in a1 with defining polynomial x^2 + x + 6
+               To:   Rational Field
+               Defn: (1, 0) |--> 1
+                     (0, 1) |--> 0
+                     (0, a1) |--> 0,
+             Ring morphism:
+               From: Finite flat algebra of degree 3 over Rational Field, product of:
+             Number Field in a0 with defining polynomial x
+             Number Field in a1 with defining polynomial x^2 + x + 6
+               To:   Finite flat algebra of degree 9 over Rational Field
+               Defn: (1, 0) |--> e0 + 12/23*e4 + 1/23*e5 + 1/23*e7 + 2/23*e8
+                     (0, 1) |--> e1 + e3 + 11/23*e4 - 1/23*e5 - 1/23*e7 - 2/23*e8
+                     (0, a1) |--> e2 - 17/23*e4 - 11/23*e5 + e6 - 11/23*e7 + 1/23*e8)
         """
         A = self.algebra1()
         B = self.algebra2()
         m = Matrix.block(B.multiplication_tensor(), ncols=1)
-        mu = ((m * self.phi()).transpose() *
-              self.theta().tensor_product(self.theta()))
+        T = self.theta().transpose()
+        mu = self.phi() * m.transpose() * T.tensor_product(T)
         A2, from_left, from_right, _ = A.tensor_product(A)
         counit = A.hom(list(self.counit1()), self.base_ring())
         comult = A.hom(mu.rows(), A2)
