@@ -9,9 +9,11 @@ from dual_pairs import FiniteFlatAlgebra, DualPair
 
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
+from sage.rings.number_field.number_field import NumberField
+from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.rational_field import QQ
 
-def algebra_and_points_from_action(G, V, action):
+def algebra_and_points_from_action(G, V, action, reduced=True):
     """
     This is a helper function for :func:`dual_pair_from_table`.
 
@@ -72,6 +74,19 @@ def algebra_and_points_from_action(G, V, action):
     # fixed fields
     K = {v: fixed_field(stabilisers[v]) for v in T}
 
+    if reduced:
+        # replace each subfield by its polredabs'ed version
+        R = PolynomialRing(QQ, 'x')
+        for v in T:
+            Kv, incl = K[v]
+            f = Kv.polynomial()
+            f_red, im = f.__pari__().polredabs(1)
+            f_red = R(f_red)
+            if f_red != f:
+                Kv_red = NumberField(f_red, Kv.variable_name())
+                hom = Kv.hom([Kv_red(im)]).inverse()
+                K[v] = Kv_red, incl * hom
+
     T = sorted(T)
     X = []
     points = []
@@ -93,7 +108,7 @@ def algebra_and_points_from_action(G, V, action):
 
     return A, X, M
 
-def dual_pair_from_table(G, V, table):
+def dual_pair_from_table(G, V, table, reduced=True):
     r"""
     Return a dual pair of algebras corresponding to the given
     Galois representation.
@@ -108,6 +123,10 @@ def dual_pair_from_table(G, V, table):
     - ``table`` -- a dictionary ``{g: rho(g)}`` where `g` ranges
       over `G` and ``rho`` is a group homomorphism from `G` to the
       automorphism group of `V`.
+
+    - ``reduced`` -- boolean (default: ``True``); whether to apply
+      ``polredabs`` to the defining polynomials of number fields
+      appearing in the output
 
     EXAMPLES::
 
@@ -138,7 +157,6 @@ def dual_pair_from_table(G, V, table):
         def restrict(h): return h
     except ValueError:
         # There is no root of unity of order l in L.
-        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         R = PolynomialRing(L, 'w')
         f = R.cyclotomic_polynomial(l).factor()[0][0]
         Lz = L.extension(f, 'z')
@@ -159,7 +177,9 @@ def dual_pair_from_table(G, V, table):
     table_dual = {h: table[restrict(h)].transpose()**-1 * cyclo_char(h)
                   for h in H}
 
-    B, Y, N = algebra_and_points_from_action(H, V, lambda h, v: table_dual[h] * V(v))
+    B, Y, N = algebra_and_points_from_action(H, V,
+                                             lambda h, v: table_dual[h] * V(v),
+                                             reduced=reduced)
 
     pairing = matrix([[z**((v * w).lift()) for w in Y] for v in X])
     Phi = (M.transpose() * pairing.transpose()**-1 * N).change_ring(QQ)

@@ -308,9 +308,9 @@ class ExtGroup(AbelianGroupClass):
             sage: E = ExtGroupGm(D, [2, 23])
             sage: E.group_structure()
             (Multiplicative Abelian group isomorphic to C2 x C2 x C2,
-             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 10/23*e5 + 11/23*e6 - 15/23*e7 + 11/23*e9 + 19/23*e10 - 5/23*e11 - 15/23*e13 - 5/23*e14 + 11/23*e15),
-              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 121/23*e5 + 2/23*e6 - 9/23*e7 + 2/23*e9 - 7/23*e10 + 43/23*e11 - 9/23*e13 + 43/23*e14 - 21/23*e15),
-              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 23*e0 + 23*e1 + 23*e4 + 5/23*e5 + 40/23*e6 + 4/23*e7 - 52/23*e9 - 2/23*e10 + 78/23*e11 + 4/23*e13 - 60/23*e14 - 6/23*e15)],
+             [Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 9/23*e5 - 2/23*e6 + 6/23*e7 - 2/23*e9 + 20/23*e10 - 14/23*e11 + 6/23*e13 - 14/23*e14 + 19/23*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 10/23*e5 - 31/23*e6 + 47/23*e7 - 31/23*e9 + 126/23*e10 - 56/23*e11 + 47/23*e13 - 56/23*e14 - 39/23*e15),
+              Group scheme extension defined by ((Fractional ideal (1), Fractional ideal (1)), 23*e0 + 23*e1 + 23*e4 + 7/23*e5 - 24/23*e6 + 26/23*e7 + 22/23*e9 + 10/23*e10 - 76/23*e11 - 20/23*e13 + 62/23*e14 - 2/23*e15)],
              <function abelian_group_smith_form.<locals>.exp at 0x...>,
              <function abelian_group_smith_form.<locals>.log at 0x...>)
 

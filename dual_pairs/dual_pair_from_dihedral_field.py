@@ -36,10 +36,10 @@ def dual_pair_from_dihedral_field(L, F):
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 4 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^3 - x - 1
+        Number Field in a1 with defining polynomial x^3 - x^2 + 1
         B = Finite flat algebra of degree 4 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^3 - x - 1
+        Number Field in a1 with defining polynomial x^3 - x^2 + 1
 
     An example of level 13 over :math:`\mathbf{F}_3`::
 
@@ -50,11 +50,11 @@ def dual_pair_from_dihedral_field(L, F):
         A = Finite flat algebra of degree 9 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^4 - x^3 - x^2 - x + 1
-        Number Field in a2 with defining polynomial x^4 + 2*x^2 - 3*x + 1
+        Number Field in a2 with defining polynomial x^4 - x^3 - x^2 + x + 1
         B = Finite flat algebra of degree 9 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
         Number Field in a1 with defining polynomial x^4 - x^3 - x^2 - x + 1
-        Number Field in a2 with defining polynomial x^4 + 2*x^2 - 3*x + 1
+        Number Field in a2 with defining polynomial x^4 - x^3 - x^2 + x + 1
 
     An example of level 16 over :math:`\mathbf{F}_3` (cf. Serre,
     Divisibilité de certaines fonctions arithmétiques, exemple (4.4))::
@@ -76,16 +76,16 @@ def dual_pair_from_dihedral_field(L, F):
         Dual pair of algebras over Rational Field
         A = Finite flat algebra of degree 25 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^3 - x - 1
-        Number Field in a2 with defining polynomial x^3 - x - 1
-        Number Field in a3 with defining polynomial x^3 - x - 1
-        Number Field in a4 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
-        Number Field in a5 with defining polynomial x^6 + 3*x^5 + 19*x^4 + 31*x^3 + 121*x^2 + 143*x + 307
-        Number Field in a6 with defining polynomial x^3 - x - 1
+        Number Field in a1 with defining polynomial x^3 - x^2 + 1
+        Number Field in a2 with defining polynomial x^3 - x^2 + 1
+        Number Field in a3 with defining polynomial x^3 - x^2 + 1
+        Number Field in a4 with defining polynomial x^6 - 3*x^5 + 5*x^4 - 5*x^3 + 5*x^2 - 3*x + 1
+        Number Field in a5 with defining polynomial x^6 - 3*x^5 + 5*x^4 - 5*x^3 + 5*x^2 - 3*x + 1
+        Number Field in a6 with defining polynomial x^3 - x^2 + 1
         B = Finite flat algebra of degree 25 over Rational Field, product of:
         Number Field in a0 with defining polynomial x
-        Number Field in a1 with defining polynomial x^12 - 6*x^11 + 20*x^10 - 34*x^9 + 69*x^8 - 84*x^7 + 440*x^6 - 186*x^5 + 196*x^4 + 1400*x^3 + 1110*x^2 - 1600*x + 4105
-        Number Field in a2 with defining polynomial x^12 + 128*x^11 + 7561*x^10 + 266074*x^9 + 6149384*x^8 + 97619882*x^7 + 1087374619*x^6 + 8445691276*x^5 + 43165980311*x^4 + 117455115180*x^3 - 49919785310*x^2 - 1428330707300*x - 2669533475975
+        Number Field in a1 with defining polynomial x^12 - x^11 + x^10 - x^8 - 2*x^7 + 2*x^6 - 3*x^5 + x^4 + x^3 + x^2 + 1
+        Number Field in a2 with defining polynomial x^12 - 2*x^11 + 3*x^10 - 5*x^9 - 6*x^8 + 6*x^7 - 51*x^6 + 87*x^5 - 104*x^4 + 172*x^3 - 181*x^2 + 94*x - 19
     """
     if isinstance(L, Polynomial):
         L = L.splitting_field('w')
