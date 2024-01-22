@@ -43,9 +43,15 @@ def dual_pair_import(filename):
         import io
         stream = io.open(filename, 'r')
     except IOError:
-        import pkg_resources
-        stream = pkg_resources.resource_stream(__name__, filename)
+        try:
+            from importlib.resources import files
+            f = files('dual_pairs').joinpath(filename)
+            stream = f.open('r')
+        except ImportError:
+            import pkg_resources
+            stream = pkg_resources.resource_stream(__name__, filename)
     data = [pari(L) for L in stream.readlines()]
+    stream.close()
 
     if len(data) == 2:
         (F, Phi) = data
