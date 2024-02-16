@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Class groups of finite flat algebras
 """

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Constructing dual pairs from cyclic number fields
 """

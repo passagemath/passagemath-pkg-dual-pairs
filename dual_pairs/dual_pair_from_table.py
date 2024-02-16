@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Constructing a dual pair of algebras from a table.
 """

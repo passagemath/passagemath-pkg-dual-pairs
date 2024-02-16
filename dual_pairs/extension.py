@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Commutative extensions of :math:`\mathbf{Z}/m\mathbf{Z}` by
 :math:`\mu_n` over a ring :math:`R`.

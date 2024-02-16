@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Finite flat algebras.
 """
@@ -69,7 +68,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         """
         if category is None:
             category = Algebras(base_ring).FiniteDimensional().WithBasis()
-        super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
+        super().__init__(base_ring, category=category)
 
     @cached_method
     def module(self):
@@ -468,7 +467,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         self._poly = poly
         self._basis = basis
         category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
-        super(FiniteFlatAlgebra_monogenic, self).__init__(base_ring, category=category)
+        super().__init__(base_ring, category=category)
 
     def _repr_(self):
         """
@@ -699,7 +698,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
                                   for i, f in enumerate(polys))
         self._bases = bases
         category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
-        super(FiniteFlatAlgebra_product, self).__init__(base_ring, category=category)
+        super().__init__(base_ring, category=category)
 
     def _repr_(self):
         """
@@ -928,7 +927,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             f = self._coerce_map_via([R], X)
             if f is not None:
                 return f
-            return super(FiniteFlatAlgebra_product, self)._coerce_map_from_(X)
+            return super()._coerce_map_from_(X)
 
 
 class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
@@ -968,7 +967,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         """
         self._algebra = FiniteDimensionalAlgebra(base_ring, matrices,
                                                  assume_associative=True)
-        super(FiniteFlatAlgebra_generic, self).__init__(base_ring)
+        super().__init__(base_ring)
 
     def _repr_(self):
         """

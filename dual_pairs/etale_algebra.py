@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Conversion of finite flat algebras to étale algebras over :math:`\mathbf{Q}`.
 """

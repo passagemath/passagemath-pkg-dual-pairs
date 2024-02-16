@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Import a dual pair of algebras from a file.
 """

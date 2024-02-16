@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Finite locally free modules over finite flat algebras.
 """
@@ -148,7 +147,7 @@ class FiniteFlatAlgebraModule(Module):
         """
         if not isinstance(R, FiniteFlatAlgebra_base):
             raise TypeError("base ring must be a finite flat algebra")
-        super(FiniteFlatAlgebraModule, self).__init__(R)
+        super().__init__(R)
 
     def _repr_(self):
         """

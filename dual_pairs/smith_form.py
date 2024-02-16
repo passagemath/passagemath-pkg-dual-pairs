@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Smith normal form for Abelian groups
 """

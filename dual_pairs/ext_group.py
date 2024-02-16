@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Extensions of finite group schemes.
 """

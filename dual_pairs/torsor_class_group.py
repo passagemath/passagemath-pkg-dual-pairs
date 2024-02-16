@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 r"""
 Torsor class groups for finite commutative group schemes.
 """

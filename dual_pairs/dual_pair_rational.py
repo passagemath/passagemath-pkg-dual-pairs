@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Dual pairs of algebras over the rational numbers.
 """
