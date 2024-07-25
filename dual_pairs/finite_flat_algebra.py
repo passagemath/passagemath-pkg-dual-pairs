@@ -21,6 +21,13 @@ from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
                                           _alg_to_list)
 
 
+def _ring_extension(f, name):
+    try:
+        return f.base_ring().extension(f, name)
+    except (ValueError, NotImplementedError):
+        return f.parent().quotient(f, name)
+
+
 class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
     """
     A finite flat algebra over a ring.
@@ -540,10 +547,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: alg
             Univariate Quotient Polynomial Ring in a over Rational Field with modulus x^3 + x
         """
-        try:
-            return self.base_ring().extension(self._poly, names='a')
-        except (ValueError, NotImplementedError):
-            return self._poly.parent().quotient(self._poly, names='a')
+        return _ring_extension(self._poly, 'a')
 
     def is_field(self):
         """
@@ -690,13 +694,8 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         """
         self._polys = polys
         self._degrees = tuple(f.degree() for f in polys)
-        try:
-            self._factors = tuple(base_ring.extension(f, 'a' + str(i))
-                                  for i, f in enumerate(polys))
-        except (ValueError, NotImplementedError):
-            R = polys[0].parent()
-            self._factors = tuple(R.quotient(f, 'a' + str(i))
-                                  for i, f in enumerate(polys))
+        self._factors = tuple(_ring_extension(f, 'a' + str(i))
+                              for i, f in enumerate(polys))
         self._bases = bases
         category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
         super(FiniteFlatAlgebra_product, self).__init__(base_ring, category=category)
@@ -833,11 +832,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             [(1, 0, 0), (0, 1, 1), (0, 1, -1)]
         """
         M = []
-        for F, basis in zip(self._factors, self._basis_matrices()):
-            try:
-                f = F.modulus()
-            except AttributeError:
-                f = F.defining_polynomial()
+        for f, basis in zip(self._polys, self._basis_matrices()):
             d = f.degree()
             roots = f.base_extend(R).roots(multiplicities=False)
             if len(roots) == 0:

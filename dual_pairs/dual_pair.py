@@ -1332,7 +1332,7 @@ class DualPairFactory(UniqueFactory):
             Number Field in a1 with defining polynomial x
             Number Field in a2 with defining polynomial x^2 + 17
         """
-        if key[0].base_ring() is QQ:
+        if key[0].base_ring().is_subring(QQ):
             from dual_pairs.dual_pair_rational import DualPair_rational
             return DualPair_rational(*key)
         return DualPair_class(*key)
