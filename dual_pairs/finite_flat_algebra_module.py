@@ -24,6 +24,9 @@ class FiniteFlatAlgebraModuleElement(ModuleElement):
         sage: R.<x> = QQ[]
         sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
         sage: M = FiniteFlatAlgebraModule(A)
+        doctest:warning
+        ...
+        UserWarning: the class FiniteFlatAlgebraModule is deprecated
         sage: m = M(1)
         sage: m
         1
@@ -109,6 +112,9 @@ class FiniteFlatAlgebraModuleElement(ModuleElement):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
             sage: M = FiniteFlatAlgebraModule(A)
+            doctest:warning
+            ...
+            UserWarning: the class FiniteFlatAlgebraModule is deprecated
             sage: M(x).module_element()
             (0, 1, 0, 0)
         """
@@ -146,6 +152,8 @@ class FiniteFlatAlgebraModule(Module):
             sage: M = FiniteFlatAlgebraModule(A)
             sage: TestSuite(M).run(skip=['_test_elements', '_test_pickling'])
         """
+        from warnings import warn
+        warn('the class FiniteFlatAlgebraModule is deprecated')
         if not isinstance(R, FiniteFlatAlgebra_base):
             raise TypeError("base ring must be a finite flat algebra")
         super(FiniteFlatAlgebraModule, self).__init__(R)
@@ -161,6 +169,9 @@ class FiniteFlatAlgebraModule(Module):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^2 + 1)
             sage: M = FiniteFlatAlgebraModule(A)
+            doctest:warning
+            ...
+            UserWarning: the class FiniteFlatAlgebraModule is deprecated
             sage: M
             Free module of rank 1 over Monogenic algebra of degree 2 over Rational Field with defining polynomial x^2 + 1
         """
