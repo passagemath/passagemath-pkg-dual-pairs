@@ -844,9 +844,9 @@ class DualPair_class(CategoryObject):
             Number Field in a2 with defining polynomial x^2 + 17
         """
         from .torsor_pair import TorsorPair
-        from .finite_flat_algebra_module import FiniteFlatAlgebraModule
+        from sage.modules.free_module import FreeModule
         T = self.algebra1()
-        U = FiniteFlatAlgebraModule(self.algebra2())
+        U = FreeModule(self.algebra2(), 1)
         Psi = self.phi()
         return TorsorPair(self, T, U, Psi)
 
