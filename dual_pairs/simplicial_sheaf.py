@@ -63,7 +63,7 @@ class SimplicialSheaf(SageObject):
     def swap(self):
         A = self._A[1]
         A2, _, _, from_prod = A.tensor_product(A)
-        return A2.hom([from_prod(b, a) for a in A.basis() for b in A.basis()])
+        return A2.hom([from_prod(b, a) for a in A.gens() for b in A.gens()])
 
     @cached_method
     def _H0(self, i):

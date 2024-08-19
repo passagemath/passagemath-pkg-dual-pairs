@@ -75,7 +75,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             True
         """
         if category is None:
-            category = Algebras(base_ring).FiniteDimensional().WithBasis()
+            category = Algebras(base_ring).FiniteDimensional()
         super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
 
     @cached_method
@@ -137,14 +137,15 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         """
         Return the distinguished basis of ``self``.
 
-        This method is required by :class:`ModulesWithBasis`.
-
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: A.basis()
+            doctest:warning
+            ...
+            UserWarning: the basis() method is deprecated
             (1, a, a^2)
             sage: B = FiniteFlatAlgebra(QQ, x^3 - x - 1, [1, x^2 - 1, x])
             sage: B.basis()
@@ -156,6 +157,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: D.basis()
             ((1, 0), (0, 1), (0, a1^2 - 1), (0, a1))
         """
+        from warnings import warn
+        warn('the basis() method is deprecated')
         return self.gens()
 
     @cached_method
@@ -377,8 +380,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         e_self = self.one().module_element()
         e_other = other.one().module_element()
 
-        im_gens_self = [vectensor(a.module_element(), e_other) for a in self.basis()]
-        im_gens_other = [vectensor(e_self, b.module_element()) for b in other.basis()]
+        im_gens_self = [vectensor(a.module_element(), e_other) for a in self.gens()]
+        im_gens_other = [vectensor(e_self, b.module_element()) for b in other.gens()]
 
         from_left = self.hom(im_gens_self, T, check=False)
         from_right = other.hom(im_gens_other, T, check=False)
@@ -445,7 +448,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         sage: A
         Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
         sage: A.category()
-        Category of finite dimensional commutative algebras with basis over Rational Field
+        Category of finite dimensional commutative algebras over Rational Field
     """
     Element = FiniteFlatAlgebraElement_monogenic
 
@@ -474,7 +477,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         """
         self._poly = poly
         self._basis = basis
-        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
+        category = Algebras(base_ring).Commutative().FiniteDimensional()
         super(FiniteFlatAlgebra_monogenic, self).__init__(base_ring, category=category)
 
     def _repr_(self):
@@ -697,7 +700,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         self._factors = tuple(_ring_extension(f, 'a' + str(i))
                               for i, f in enumerate(polys))
         self._bases = bases
-        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
+        category = Algebras(base_ring).Commutative().FiniteDimensional()
         super(FiniteFlatAlgebra_product, self).__init__(base_ring, category=category)
 
     def _repr_(self):
@@ -774,8 +777,6 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
         """
         from sage.categories.all import cartesian_product
-        # In principle we could add WithBasis(), but this currently
-        # causes inversion of elements to fail.
         category = Algebras(self.base_ring()).Commutative().FiniteDimensional().CartesianProducts()
         return cartesian_product(self._factors, category=category)
 
@@ -938,7 +939,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         sage: A
         Finite flat algebra of degree 2 over Rational Field
         sage: A.category()
-        Category of finite dimensional algebras with basis over Rational Field
+        Category of finite dimensional algebras over Rational Field
     """
     Element = FiniteFlatAlgebraElement_generic
 

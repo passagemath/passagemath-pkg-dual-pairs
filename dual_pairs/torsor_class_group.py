@@ -78,7 +78,7 @@ class Torsor(MultiplicativeGroupElement):
         # self._T is currently not used (we only work over QQ)
         tau = self._tau
         # twist the multiplication tensor by tau
-        M = Matrix((tau * mu(b)).module_element() for b in B.basis()).transpose()
+        M = Matrix((tau * mu(b)).module_element() for b in B.gens()).transpose()
         T = FiniteFlatAlgebra(R, [M.submatrix(i*n, 0, n, n) for i in range(n)])
         U = FreeModule(B, 1)
         Psi = Matrix.identity(n)
