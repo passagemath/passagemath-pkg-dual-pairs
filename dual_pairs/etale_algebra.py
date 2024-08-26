@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 r"""
-Conversion of finite flat algebras to étale algebras over
-:math:`\mathbf{Q}.
+Conversion of finite flat algebras to étale algebras over :math:`\mathbf{Q}`.
 """
 
 from __future__ import absolute_import
@@ -20,8 +19,10 @@ from sage.rings.rational_field import QQ
 
 from .finite_flat_algebra import FiniteFlatAlgebra
 
+
 def _concat_vectors(v):
     return vector(sum((list(b) for b in v), []))
+
 
 def isom_to_number_field(A):
     """
@@ -57,6 +58,7 @@ def isom_to_number_field(A):
             to_K = A.hom(M.inverse().rows(), K)
             return from_K, to_K
     raise NotImplementedError('no basis element of the right degree')
+
 
 # TODO: make into a cached method of FiniteFlatAlgebra?
 @cached_function
@@ -133,12 +135,14 @@ def isom_to_etale_algebra(A):
 
     return to_P, from_P
 
+
 def nth_root(A, x, n):
     """
     Return an `n`-th root of `x` in `A`.
     """
     to_P, from_P = isom_to_etale_algebra(A)
     return from_P([y.nth_root(n) for y in to_P(x)])
+
 
 @cached_function
 def ideal_monoid(A):
@@ -147,12 +151,14 @@ def ideal_monoid(A):
     factors = P.cartesian_factors()
     return cartesian_product([K.ideal_monoid() for K in factors])
 
+
 def principal_ideal(A, x):
     to_P, from_P = isom_to_etale_algebra(A)
     P = from_P.domain()
     factors = P.cartesian_factors()
     PI = ideal_monoid(A)
     return PI([K.ideal(y) for K, y in zip(factors, to_P(x))])
+
 
 # see NumberField_generic.selmer_generators()
 def _ideal_generator(K, S, I):
@@ -170,6 +176,7 @@ def _ideal_generator(K, S, I):
     assert I.is_principal()
     return I.gens_reduced()[0]
 
+
 def ideal_generator(A, S, I):
     S_prod = prod(S)
     to_P, from_P = isom_to_etale_algebra(A)
@@ -178,8 +185,10 @@ def ideal_generator(A, S, I):
     return from_P([_ideal_generator(K, K.primes_above(S_prod), J)
                    for K, J in zip(factors, I)])
 
+
 def _ideal_is_generator(K, S, I, x):
-    return all(P in S for P in (I/x).support())
+    return all(P in S for P in (I / x).support())
+
 
 def ideal_is_generator(A, S, I, x):
     S_prod = prod(S)
@@ -188,6 +197,7 @@ def ideal_is_generator(A, S, I, x):
     factors = P.cartesian_factors()
     return all(_ideal_is_generator(K, K.primes_above(S_prod), J, y)
                for K, J, y in zip(factors, I, to_P(x)))
+
 
 def map_ideal(f, I):
     # f: A -> B morphism of finite flat algebras
@@ -201,10 +211,12 @@ def map_ideal(f, I):
     u, v = [to_Q(f(from_P(x))) for x in zip(*gens)]
     return QI(zip(u, v))
 
+
 def _ideal_root(K, S, I, n):
     f = pari('(K,A,n)->if(idealispower(K,A,n,&B),B,error("not a power"))')
     J = I * prod(p ** -I.valuation(p) for p in S)
     return K.ideal(f(K, J, n))
+
 
 def ideal_root(A, S, I, n):
     S_prod = prod(S)

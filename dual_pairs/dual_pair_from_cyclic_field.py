@@ -33,6 +33,13 @@ def dual_pair_from_cyclic_field(L, F):
 
         sage: f = x^3 - x^2 - 2*x + 1
         sage: dual_pair_from_cyclic_field(f.splitting_field('a'), GF(2))
+        Dual pair of algebras over Rational Field
+        A = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
+        B = Finite flat algebra of degree 4 over Rational Field, product of:
+        Number Field in a0 with defining polynomial x
+        Number Field in a1 with defining polynomial x^3 - x^2 - 2*x + 1
     """
     if isinstance(L, Polynomial):
         L = L.splitting_field('w')
