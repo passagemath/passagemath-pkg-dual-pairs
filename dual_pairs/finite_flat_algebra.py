@@ -34,10 +34,6 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
 
     This is an abstract base class.
 
-    .. TODO::
-
-        This should be generalised to not necessarily free modules.
-
     EXAMPLES::
 
         sage: from dual_pairs import FiniteFlatAlgebra
@@ -59,9 +55,9 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         e0
     """
 
-    def __init__(self, base_ring, category=None):
+    def __init__(self, module, category=None):
         """
-        Initialise a finite flat algebra over ``base_ring``.
+        Initialise a finite flat algebra with given underlying module.
 
         TESTS::
 
@@ -74,11 +70,12 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: B.has_coerce_map_from(B.base_ring())
             True
         """
+        base_ring = module.base_ring()
         if category is None:
             category = Algebras(base_ring).FiniteDimensional()
+        self._module = module
         super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
 
-    @cached_method
     def module(self):
         """
         Return the underlying module of ``self``.
@@ -91,8 +88,15 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: A.module()
             Vector space of dimension 4 over Rational Field
         """
-        from sage.modules.free_module import FreeModule
-        return FreeModule(self.base_ring(), self.degree())
+        return self._module
+
+    def degree(self):
+        """
+        Return the degree of ``self``.
+
+        This is the rank of the underlying locally free module.
+        """
+        return self.module().rank()
 
     @cached_method
     def gen(self, i):
@@ -131,7 +135,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: B.ngens()
             3
         """
-        return self.degree()
+        return self.module().ngens()
 
     def basis(self):
         """
@@ -475,10 +479,12 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
             sage: TestSuite(A).run()
         """
+        from sage.modules.free_module import FreeModule
         self._poly = poly
         self._basis = basis
+        module = FreeModule(base_ring, poly.degree())
         category = Algebras(base_ring).Commutative().FiniteDimensional()
-        super(FiniteFlatAlgebra_monogenic, self).__init__(base_ring, category=category)
+        super(FiniteFlatAlgebra_monogenic, self).__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -494,12 +500,6 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         """
         return ('Monogenic algebra of degree %s over %s with defining polynomial %s'
                 % (self.degree(), self.base_ring(), self._poly))
-
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return self._poly.degree()
 
     @cached_method
     def _basis_matrix(self):
@@ -695,13 +695,15 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 2])
             sage: TestSuite(A).run()
         """
+        from sage.modules.free_module import FreeModule
         self._polys = polys
         self._degrees = tuple(f.degree() for f in polys)
         self._factors = tuple(_ring_extension(f, 'a' + str(i))
                               for i, f in enumerate(polys))
         self._bases = bases
+        module = FreeModule(base_ring, sum(self._degrees))
         category = Algebras(base_ring).Commutative().FiniteDimensional()
-        super(FiniteFlatAlgebra_product, self).__init__(base_ring, category=category)
+        super(FiniteFlatAlgebra_product, self).__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -710,13 +712,6 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         return ('Finite flat algebra of degree %s over %s, product of:\n'
                 % (self.degree(), self.base_ring())
                 + '\n'.join(repr(K) for K in self._factors))
-
-    @cached_method
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return sum(self._degrees)
 
     @cached_method
     def _basis_matrices(self):
@@ -964,7 +959,8 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         """
         self._algebra = FiniteDimensionalAlgebra(base_ring, matrices,
                                                  assume_associative=True)
-        super(FiniteFlatAlgebra_generic, self).__init__(base_ring)
+        module = self._algebra.zero().vector().parent()
+        super(FiniteFlatAlgebra_generic, self).__init__(module)
 
     def _repr_(self):
         """
@@ -979,12 +975,6 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         """
         return ('Finite flat algebra of degree %s over %s'
                 % (self.degree(), self.base_ring()))
-
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return self._algebra.degree()
 
     @cached_method
     def _basis_matrix(self):
