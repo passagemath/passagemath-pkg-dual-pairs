@@ -93,6 +93,16 @@ class DualPair_class(CategoryObject):
         Dual pair of algebras over Integer Ring localized at (11,)
         A = Monogenic algebra of degree 4 over Integer Ring localized at (11,) with defining polynomial x^4 + 2*x^3 - 2*x
         B = Monogenic algebra of degree 4 over Integer Ring localized at (11,) with defining polynomial x^4 + 2*x^3 - 2*x
+
+    The following dual pair does not represent a group scheme, only a
+    monoid scheme::
+
+        sage: A = FiniteFlatAlgebra(ZZ, [x, x])
+        sage: B = FiniteFlatAlgebra(ZZ, x^2 - x)
+        sage: E = DualPair(A, B, Matrix.identity(2))
+        sage: P, Q = E.points(ZZ)
+        sage: E.add(P, Q) == E.add(Q, Q)
+        True
     """
 
     def __init__(self, alg1, alg2, phi):
@@ -429,6 +439,34 @@ class DualPair_class(CategoryObject):
                         for i0 in range(n) for i1 in range(n)
                         for j0 in range(n) for j1 in range(n)))
 
+    def is_group_like(self):
+        """
+        Return ``True`` if ``self`` is group-like.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = ZZ[]
+            sage: A = FiniteFlatAlgebra(ZZ, [x, x])
+            sage: B = FiniteFlatAlgebra(ZZ, x^2 - x)
+            sage: E = DualPair(A, B, Matrix.identity(2))
+            sage: P, Q = E.points(ZZ)
+            sage: E.add(P, Q) == E.add(Q, Q)
+            True
+
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + x - 3])
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - x + 10])
+            sage: Phi = 1/3 * Matrix(QQ, [[1, 2, 1], [2, -2, -1], [-1, 1, -19]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.is_group_like()
+            True
+        """
+        try:
+            _ = self.multiplication_by_m(-1)
+            return True
+        except ZeroDivisionError:
+            return False
+
     def is_isomorphic(self, other):
         """
         Return ``True`` if ``self`` is isomorphic to ``other``.
@@ -744,8 +782,45 @@ class DualPair_class(CategoryObject):
     def multiplication_by_m(self, m):
         """
         Return the multiplication-by-`m` map on ``self``.
+
+        EXAMPLES::
+
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + x - 3])
+            sage: B = FiniteFlatAlgebra(QQ, [x, x^2 - x + 10])
+            sage: Phi = 1/3 * Matrix(QQ, [[1, 2, 1], [2, -2, -1], [-1, 1, -19]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.multiplication_by_m(2)
+            (
+            [ 1  0  0]  [ 1  0  0]
+            [ 0  1  0]  [ 0  1  0]
+            [ 0 -1 -1], [ 0  1 -1]
+            )
+
+            sage: K.<a> = FunctionField(QQ)
+            sage: A = FiniteFlatAlgebra(K, [x, x^2 - a])
+            sage: B = FiniteFlatAlgebra(K, [x, x^2 + 3*a])
+            sage: Phi = Matrix(K, [[1/3,  2/3,   0],
+            ....:                  [2/3, -2/3,   0],
+            ....:                  [  0,    0, 2*a]])
+            sage: D = DualPair(A, B, Phi)
+            sage: D.multiplication_by_m(-1)
+            (
+            [ 1  0  0]  [ 1  0  0]
+            [ 0  1  0]  [ 0  1  0]
+            [ 0  0 -1], [ 0  0 -1]
+            )
         """
-        raise NotImplementedError
+        A = self.algebra1()
+        B = self.algebra2()
+        phi = self.phi()
+        theta = self.theta()
+        AB, _, _, _, from_matrix = A.tensor_product(B)
+        T = theta.parent()((from_matrix(theta) ** m).module_element())
+        # TODO: convert into a pair of algebra homomorphisms
+        # once A.hom(A) is implemented correctly
+        return phi * T.transpose(), phi.transpose() * T
 
     @cached_method
     def hopf_algebra(self):
@@ -809,7 +884,7 @@ class DualPair_class(CategoryObject):
         m = Matrix.block(B.multiplication_tensor(), ncols=1)
         T = self.theta().transpose()
         mu = self.phi() * m.transpose() * T.tensor_product(T)
-        A2, from_left, from_right, _ = A.tensor_product(A)
+        A2, from_left, from_right, _, _ = A.tensor_product(A)
         counit = A.hom(list(self.counit1()), self.base_ring())
         comult = A.hom(mu.rows(), A2)
         return counit, comult

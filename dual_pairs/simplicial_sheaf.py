@@ -16,8 +16,8 @@ def tensor_maps(f, g):
     C = f.codomain()
     B = g.domain()
     D = g.codomain()
-    AB, _, _, _ = A.tensor_product(B)
-    CD, _, _, t = C.tensor_product(D)
+    AB, _, _, _, _ = A.tensor_product(B)
+    CD, _, _, t, _ = C.tensor_product(D)
     return AB.hom([t(f(a), g(b)) for a in A.gens() for b in B.gens()], CD)
 
 
@@ -37,7 +37,7 @@ class SimplicialSheaf(SageObject):
         self._sheaf = F
 
         A = D.algebra1()
-        A2, i0, i1, from_prod = A.tensor_product(A)
+        A2, i0, i1, from_prod, _ = A.tensor_product(A)
         A3 = A.tensor_product(A2)[0]
         e, mu = D.hopf_algebra()
 
@@ -62,7 +62,7 @@ class SimplicialSheaf(SageObject):
     @cached_method
     def swap(self):
         A = self._A[1]
-        A2, _, _, from_prod = A.tensor_product(A)
+        A2, _, _, from_prod, _ = A.tensor_product(A)
         return A2.hom([from_prod(b, a) for a in A.gens() for b in A.gens()])
 
     @cached_method

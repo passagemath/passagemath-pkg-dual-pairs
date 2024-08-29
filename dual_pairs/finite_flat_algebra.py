@@ -341,7 +341,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: B = FiniteFlatAlgebra(QQ, x^2 + 23)
-            sage: AB, i, j, from_prod = A.tensor_product(B)
+            sage: AB, i, j, from_prod, from_matrix = A.tensor_product(B)
             sage: AB
             Finite flat algebra of degree 6 over Rational Field
             sage: [i(a) for a in A.gens()]
@@ -350,6 +350,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             [e0, e1]
             sage: from_prod(A.gen(1), B.gen(1))
             e3
+            sage: from_matrix(Matrix(QQ, [[0, 1], [1, 0], [0, 0]]))
+            e1 + e2
 
         The tensor product is canonically associative::
 
@@ -393,7 +395,10 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         def from_prod(a, b):
             return T(vectensor(a.module_element(), b.module_element()))
 
-        return (T, from_left, from_right, from_prod)
+        def from_matrix(A):
+            return T(A.list())
+
+        return (T, from_left, from_right, from_prod, from_matrix)
 
     @cached_method
     def splitting_field_polynomial(self):
