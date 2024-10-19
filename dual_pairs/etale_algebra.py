@@ -48,7 +48,7 @@ def isom_to_number_field(A):
            Defn: 1 |--> 1)
     """
     n = A.degree()
-    for b in A.basis():
+    for b in A.gens():
         f = b.matrix().minpoly()
         if f.degree() == n:
             K = NumberField(f, names='a')
@@ -56,7 +56,7 @@ def isom_to_number_field(A):
             M = Matrix(K, [c.module_element() for c in b.powers(n)])
             to_K = A.hom(M.inverse().rows(), K)
             return from_K, to_K
-    raise NotImplementedError('no basis element of the right degree')
+    raise NotImplementedError('no generator of the right degree')
 
 
 # TODO: make into a cached method of FiniteFlatAlgebra?
@@ -105,7 +105,7 @@ def isom_to_etale_algebra(A):
         Ka = FiniteFlatAlgebra(QQ, Kf.table())
         from_K, to_K = isom_to_number_field(Ka)
         fields.append(from_K.domain())
-        images.append([to_K(x.module_element() * Mp) for x in A.basis()])
+        images.append([to_K(x.module_element() * Mp) for x in A.gens()])
         matrices.append(Mp)
         from_maps.append(from_K)
 

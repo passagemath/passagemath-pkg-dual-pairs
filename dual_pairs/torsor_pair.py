@@ -15,7 +15,6 @@ class TorsorPair(CategoryObject):
     EXAMPLES::
 
         sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-        sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
         sage: from dual_pairs.torsor_pair import TorsorPair
         sage: R.<x> = QQ[]
         sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -25,7 +24,7 @@ class TorsorPair(CategoryObject):
         ....:                   [  0,    0,    0, -17]])
         sage: D = DualPair(A, Phi)
         sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-        sage: U = FiniteFlatAlgebraModule(A)
+        sage: U = FreeModule(A, 1)
         sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
         ....:                   [0, 0, 1,   0],
         ....:                   [0, 1, 0,   0],
@@ -44,7 +43,6 @@ class TorsorPair(CategoryObject):
         T = Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 17
 
         sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-        sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
         sage: from dual_pairs.torsor_pair import TorsorPair
 
         sage: A = FiniteFlatAlgebra(QQ, [x^3 - 1])
@@ -54,7 +52,7 @@ class TorsorPair(CategoryObject):
 
         sage: t = polygen(QQ, 't')
         sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-        sage: U = FiniteFlatAlgebraModule(A)
+        sage: U = FreeModule(A, 1)
         sage: Psi = Matrix.identity(QQ, 3)
         sage: X = TorsorPair(D, T, U, Psi)
 
@@ -87,7 +85,6 @@ class TorsorPair(CategoryObject):
         TESTS::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -97,7 +94,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -122,7 +119,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
 
             sage: x = polygen(QQ, 'x')
@@ -134,7 +130,7 @@ class TorsorPair(CategoryObject):
 
             sage: t = polygen(QQ, 't')
             sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
             sage: X
@@ -157,7 +153,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
 
             sage: x = polygen(QQ, 'x')
@@ -169,7 +164,7 @@ class TorsorPair(CategoryObject):
 
             sage: t = polygen(QQ, 't')
             sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
             sage: X.dual_pair() is D
@@ -184,7 +179,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
 
             sage: x = polygen(QQ, 'x')
@@ -196,7 +190,7 @@ class TorsorPair(CategoryObject):
 
             sage: t = polygen(QQ, 't')
             sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
             sage: X.algebra() is T
@@ -211,7 +205,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
 
             sage: x = polygen(QQ, 'x')
@@ -223,7 +216,7 @@ class TorsorPair(CategoryObject):
 
             sage: t = polygen(QQ, 't')
             sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
             sage: X.dual_module() is U
@@ -238,7 +231,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -248,7 +240,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -267,7 +259,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -277,7 +268,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -311,7 +302,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
 
             sage: x = polygen(QQ, 'x')
@@ -326,7 +316,7 @@ class TorsorPair(CategoryObject):
 
             sage: t = polygen(QQ, 't')
             sage: T = FiniteFlatAlgebra(QQ, t^3 - 7)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix.identity(QQ, 3)
             sage: X = TorsorPair(D, T, U, Psi)
             sage: X.is_trivial()
@@ -365,7 +355,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -375,7 +364,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -399,7 +388,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -409,7 +397,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -439,7 +427,6 @@ class TorsorPair(CategoryObject):
         EXAMPLES::
 
             sage: from dual_pairs import FiniteFlatAlgebra, DualPair
-            sage: from dual_pairs.finite_flat_algebra_module import FiniteFlatAlgebraModule
             sage: from dual_pairs.torsor_pair import TorsorPair
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
@@ -449,7 +436,7 @@ class TorsorPair(CategoryObject):
             ....:                   [  0,    0,    0, -17]])
             sage: D = DualPair(A, Phi)
             sage: T = FiniteFlatAlgebra(QQ, x^4 - 17)
-            sage: U = FiniteFlatAlgebraModule(A)
+            sage: U = FreeModule(A, 1)
             sage: Psi = Matrix(QQ, [[1, 0, 0,   0],
             ....:                   [0, 0, 1,   0],
             ....:                   [0, 1, 0,   0],
@@ -513,5 +500,5 @@ class TorsorPair(CategoryObject):
         D = self.dual_pair()
         B = D.algebra2().change_ring(R)
         U = self.dual_module().change_ring(B)
-        S = B(P * D.theta()) * U(Q * self.upsilon())
-        return self.psi() * S.module_element()
+        S = B(P * D.theta()) * U([Q * self.upsilon()])
+        return self.psi() * S[0].module_element()

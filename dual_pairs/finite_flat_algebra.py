@@ -20,15 +20,18 @@ from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
                                           _alg_to_list)
 
 
+def _ring_extension(f, name):
+    try:
+        return f.base_ring().extension(f, name)
+    except (ValueError, NotImplementedError):
+        return f.parent().quotient(f, name)
+
+
 class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
     """
     A finite flat algebra over a ring.
 
     This is an abstract base class.
-
-    .. TODO::
-
-        This should be generalised to not necessarily free modules.
 
     EXAMPLES::
 
@@ -51,9 +54,9 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         e0
     """
 
-    def __init__(self, base_ring, category=None):
+    def __init__(self, module, category=None):
         """
-        Initialise a finite flat algebra over ``base_ring``.
+        Initialise a finite flat algebra with given underlying module.
 
         TESTS::
 
@@ -66,11 +69,12 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: B.has_coerce_map_from(B.base_ring())
             True
         """
+        base_ring = module.base_ring()
         if category is None:
-            category = Algebras(base_ring).FiniteDimensional().WithBasis()
+            category = Algebras(base_ring).FiniteDimensional()
+        self._module = module
         super().__init__(base_ring, category=category)
 
-    @cached_method
     def module(self):
         """
         Return the underlying module of ``self``.
@@ -83,8 +87,15 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: A.module()
             Vector space of dimension 4 over Rational Field
         """
-        from sage.modules.free_module import FreeModule
-        return FreeModule(self.base_ring(), self.degree())
+        return self._module
+
+    def degree(self):
+        """
+        Return the degree of ``self``.
+
+        This is the rank of the underlying locally free module.
+        """
+        return self.module().rank()
 
     @cached_method
     def gen(self, i):
@@ -123,13 +134,11 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: B.ngens()
             3
         """
-        return self.degree()
+        return self.module().ngens()
 
     def basis(self):
         """
         Return the distinguished basis of ``self``.
-
-        This method is required by :class:`ModulesWithBasis`.
 
         EXAMPLES::
 
@@ -137,6 +146,9 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: A.basis()
+            doctest:warning
+            ...
+            UserWarning: the basis() method is deprecated
             (1, a, a^2)
             sage: B = FiniteFlatAlgebra(QQ, x^3 - x - 1, [1, x^2 - 1, x])
             sage: B.basis()
@@ -148,6 +160,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: D.basis()
             ((1, 0), (0, 1), (0, a1^2 - 1), (0, a1))
         """
+        from warnings import warn
+        warn('the basis() method is deprecated')
         return self.gens()
 
     @cached_method
@@ -326,7 +340,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             sage: R.<x> = QQ[]
             sage: A = FiniteFlatAlgebra(QQ, x^3 - x - 1)
             sage: B = FiniteFlatAlgebra(QQ, x^2 + 23)
-            sage: AB, i, j, from_prod = A.tensor_product(B)
+            sage: AB, i, j, from_prod, from_matrix = A.tensor_product(B)
             sage: AB
             Finite flat algebra of degree 6 over Rational Field
             sage: [i(a) for a in A.gens()]
@@ -335,6 +349,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
             [e0, e1]
             sage: from_prod(A.gen(1), B.gen(1))
             e3
+            sage: from_matrix(Matrix(QQ, [[0, 1], [1, 0], [0, 0]]))
+            e1 + e2
 
         The tensor product is canonically associative::
 
@@ -369,8 +385,8 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         e_self = self.one().module_element()
         e_other = other.one().module_element()
 
-        im_gens_self = [vectensor(a.module_element(), e_other) for a in self.basis()]
-        im_gens_other = [vectensor(e_self, b.module_element()) for b in other.basis()]
+        im_gens_self = [vectensor(a.module_element(), e_other) for a in self.gens()]
+        im_gens_other = [vectensor(e_self, b.module_element()) for b in other.gens()]
 
         from_left = self.hom(im_gens_self, T, check=False)
         from_right = other.hom(im_gens_other, T, check=False)
@@ -378,7 +394,10 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         def from_prod(a, b):
             return T(vectensor(a.module_element(), b.module_element()))
 
-        return (T, from_left, from_right, from_prod)
+        def from_matrix(A):
+            return T(A.list())
+
+        return (T, from_left, from_right, from_prod, from_matrix)
 
     @cached_method
     def splitting_field_polynomial(self):
@@ -437,7 +456,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         sage: A
         Monogenic algebra of degree 4 over Rational Field with defining polynomial x^4 - 16
         sage: A.category()
-        Category of finite dimensional commutative algebras with basis over Rational Field
+        Category of finite dimensional commutative algebras over Rational Field
     """
     Element = FiniteFlatAlgebraElement_monogenic
 
@@ -464,10 +483,12 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
             sage: TestSuite(A).run()
         """
+        from sage.modules.free_module import FreeModule
         self._poly = poly
         self._basis = basis
-        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
-        super().__init__(base_ring, category=category)
+        module = FreeModule(base_ring, poly.degree())
+        category = Algebras(base_ring).Commutative().FiniteDimensional()
+        super().__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -483,12 +504,6 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         """
         return ('Monogenic algebra of degree %s over %s with defining polynomial %s'
                 % (self.degree(), self.base_ring(), self._poly))
-
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return self._poly.degree()
 
     @cached_method
     def _basis_matrix(self):
@@ -539,10 +554,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: alg
             Univariate Quotient Polynomial Ring in a over Rational Field with modulus x^3 + x
         """
-        try:
-            return self.base_ring().extension(self._poly, names='a')
-        except (ValueError, NotImplementedError):
-            return self._poly.parent().quotient(self._poly, names='a')
+        return _ring_extension(self._poly, 'a')
 
     def is_field(self):
         """
@@ -687,18 +699,15 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: A = FiniteFlatAlgebra(QQ, [x, x^2 - 2])
             sage: TestSuite(A).run()
         """
+        from sage.modules.free_module import FreeModule
         self._polys = polys
         self._degrees = tuple(f.degree() for f in polys)
-        try:
-            self._factors = tuple(base_ring.extension(f, 'a' + str(i))
-                                  for i, f in enumerate(polys))
-        except (ValueError, NotImplementedError):
-            R = polys[0].parent()
-            self._factors = tuple(R.quotient(f, 'a' + str(i))
-                                  for i, f in enumerate(polys))
+        self._factors = tuple(_ring_extension(f, 'a' + str(i))
+                              for i, f in enumerate(polys))
         self._bases = bases
-        category = Algebras(base_ring).Commutative().FiniteDimensional().WithBasis()
-        super().__init__(base_ring, category=category)
+        module = FreeModule(base_ring, sum(self._degrees))
+        category = Algebras(base_ring).Commutative().FiniteDimensional()
+        super().__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -707,13 +716,6 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         return ('Finite flat algebra of degree %s over %s, product of:\n'
                 % (self.degree(), self.base_ring())
                 + '\n'.join(repr(K) for K in self._factors))
-
-    @cached_method
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return sum(self._degrees)
 
     @cached_method
     def _basis_matrices(self):
@@ -774,8 +776,6 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
         """
         from sage.categories.all import cartesian_product
-        # In principle we could add WithBasis(), but this currently
-        # causes inversion of elements to fail.
         category = Algebras(self.base_ring()).Commutative().FiniteDimensional().CartesianProducts()
         return cartesian_product(self._factors, category=category)
 
@@ -832,11 +832,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             [(1, 0, 0), (0, 1, 1), (0, 1, -1)]
         """
         M = []
-        for F, basis in zip(self._factors, self._basis_matrices()):
-            try:
-                f = F.modulus()
-            except AttributeError:
-                f = F.defining_polynomial()
+        for f, basis in zip(self._polys, self._basis_matrices()):
             d = f.degree()
             roots = f.base_extend(R).roots(multiplicities=False)
             if len(roots) == 0:
@@ -942,7 +938,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         sage: A
         Finite flat algebra of degree 2 over Rational Field
         sage: A.category()
-        Category of finite dimensional algebras with basis over Rational Field
+        Category of finite dimensional algebras over Rational Field
     """
     Element = FiniteFlatAlgebraElement_generic
 
@@ -967,7 +963,8 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         """
         self._algebra = FiniteDimensionalAlgebra(base_ring, matrices,
                                                  assume_associative=True)
-        super().__init__(base_ring)
+        module = self._algebra.zero().vector().parent()
+        super().__init__(module)
 
     def _repr_(self):
         """
@@ -982,12 +979,6 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         """
         return ('Finite flat algebra of degree %s over %s'
                 % (self.degree(), self.base_ring()))
-
-    def degree(self):
-        """
-        Return the degree of ``self``.
-        """
-        return self._algebra.degree()
 
     @cached_method
     def _basis_matrix(self):
