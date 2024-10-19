@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Torsors under commutative finite flat group schemes.
 """
@@ -111,7 +110,7 @@ class TorsorPair(CategoryObject):
         self._torsor_algebra = T
         self._dual_module = U
         self._psi = M(psi)
-        super(TorsorPair, self).__init__(base=R)
+        super().__init__(base=R)
 
     def _repr_(self):
         """

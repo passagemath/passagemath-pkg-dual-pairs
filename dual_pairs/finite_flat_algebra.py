@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Finite flat algebras.
 """
@@ -74,7 +73,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         if category is None:
             category = Algebras(base_ring).FiniteDimensional()
         self._module = module
-        super(FiniteFlatAlgebra_base, self).__init__(base_ring, category=category)
+        super().__init__(base_ring, category=category)
 
     def module(self):
         """
@@ -489,7 +488,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         self._basis = basis
         module = FreeModule(base_ring, poly.degree())
         category = Algebras(base_ring).Commutative().FiniteDimensional()
-        super(FiniteFlatAlgebra_monogenic, self).__init__(module, category=category)
+        super().__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -708,7 +707,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         self._bases = bases
         module = FreeModule(base_ring, sum(self._degrees))
         category = Algebras(base_ring).Commutative().FiniteDimensional()
-        super(FiniteFlatAlgebra_product, self).__init__(module, category=category)
+        super().__init__(module, category=category)
 
     def _repr_(self):
         """
@@ -924,7 +923,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             f = self._coerce_map_via([R], X)
             if f is not None:
                 return f
-            return super(FiniteFlatAlgebra_product, self)._coerce_map_from_(X)
+            return super()._coerce_map_from_(X)
 
 
 class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
@@ -965,7 +964,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         self._algebra = FiniteDimensionalAlgebra(base_ring, matrices,
                                                  assume_associative=True)
         module = self._algebra.zero().vector().parent()
-        super(FiniteFlatAlgebra_generic, self).__init__(module)
+        super().__init__(module)
 
     def _repr_(self):
         """

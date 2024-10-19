@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Constructing dual pairs from dihedral number fields
 """

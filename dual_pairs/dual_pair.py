@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Dual pairs of algebras, representing finite flat group schemes.
 """
@@ -127,7 +126,7 @@ class DualPair_class(CategoryObject):
         self._algebra1 = alg1
         self._algebra2 = alg2
         self._phi = phi
-        super(DualPair_class, self).__init__(base=alg1.base_ring())
+        super().__init__(base=alg1.base_ring())
 
     def _repr_(self):
         """
