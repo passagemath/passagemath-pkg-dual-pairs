@@ -12,7 +12,7 @@ from sage.matrix.all import Matrix
 import sage.matrix.matrix0
 from sage.misc.all import cached_method
 from sage.misc.fast_methods import WithEqualityById
-from sage.rings.ring import Algebra, CommutativeAlgebra
+from sage.rings.ring import Ring, CommutativeRing
 from sage.structure.factory import UniqueFactory
 
 from .finite_flat_algebra_element import (FiniteFlatAlgebraElement_monogenic,
@@ -28,7 +28,7 @@ def _ring_extension(f, name):
         return f.parent().quotient(f, name)
 
 
-class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
+class FiniteFlatAlgebra_base(WithEqualityById, Ring):
     """
     A finite flat algebra over a ring.
 
@@ -444,7 +444,7 @@ class FiniteFlatAlgebra_base(WithEqualityById, Algebra):
         return set(ZZ(self.discriminant()).prime_divisors())
 
 
-class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
+class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeRing):
     """
     A finite flat algebra over a ring `R`, represented as a quotient
     of the polynomial algebra `R[x]`.
@@ -718,7 +718,7 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         return pari([f, B])
 
 
-class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
+class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeRing):
     """
     A finite flat algebra over a field `R`, represented as a product
     of monogenic extensions of `R`.
