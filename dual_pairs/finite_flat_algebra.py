@@ -7,10 +7,10 @@ from __future__ import absolute_import
 
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra \
     import FiniteDimensionalAlgebra
-from sage.categories.all import Algebras
-from sage.matrix.all import Matrix
+from sage.categories.algebras import Algebras
+from sage.matrix.constructor import Matrix
 import sage.matrix.matrix0
-from sage.misc.all import cached_method
+from sage.misc.cachefunc import cached_method
 from sage.misc.fast_methods import WithEqualityById
 from sage.rings.ring import Algebra, CommutativeAlgebra
 from sage.structure.factory import UniqueFactory
@@ -776,7 +776,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: alg
             The Cartesian product of (Number Field in a0 with defining polynomial x, Number Field in a1 with defining polynomial x^2 + 1)
         """
-        from sage.categories.all import cartesian_product
+        from sage.categories.cartesian_product import cartesian_product
         category = Algebras(self.base_ring()).Commutative().FiniteDimensional().CartesianProducts()
         return cartesian_product(self._factors, category=category)
 
@@ -882,7 +882,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: FiniteFlatAlgebra(QQ, [x, x^3 + x]).splitting_field('a')
             Number Field in a with defining polynomial x^2 + 1
         """
-        from sage.misc.all import prod
+        from sage.misc.misc_c import prod
         poly = prod(self._polys)
         return poly.splitting_field(names)
 
@@ -898,7 +898,7 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
             sage: A.discriminant()
             4
         """
-        from sage.misc.all import prod
+        from sage.misc.misc_c import prod
         return prod(f.discriminant() * M.determinant() ** 2
                     for f, M in zip(self._polys, self._basis_matrices()))
 
@@ -911,7 +911,8 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
 
         @cached_method
         def algebra(self):
-            from sage.categories.all import cartesian_product, CommutativeRings
+            from sage.categories.cartesian_product import cartesian_product
+            from sage.categories.commutative_rings import CommutativeRings
             category = CommutativeRings().CartesianProducts()
             return cartesian_product(self._factors, category=category)
 
@@ -1104,7 +1105,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
             sage: A.splitting_field('a')
             Number Field in a with defining polynomial x^2 + 1
         """
-        from sage.misc.all import prod
+        from sage.misc.misc_c import prod
         poly = prod(self._irreducible_polys())
         return poly.splitting_field(names)
 

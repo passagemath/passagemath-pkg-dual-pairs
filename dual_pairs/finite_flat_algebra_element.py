@@ -5,7 +5,7 @@ Elements of finite flat algebras.
 
 from __future__ import absolute_import
 
-from sage.matrix.all import Matrix
+from sage.matrix.constructor import Matrix
 from sage.rings.finite_rings.element_base import FiniteRingElement
 from sage.structure.element import AlgebraElement, RingElement, ModuleElement
 

@@ -5,7 +5,7 @@ Utility functions
 
 from __future__ import absolute_import
 
-from sage.rings.all import QQ
+from sage.rings.rational_field import Q as QQ
 
 def mod1(x):
     """
@@ -61,8 +61,8 @@ def standard_group_structure(d):
         Additive abelian group isomorphic to Z/2 + Z/2, [  0 1/2 1/2   0]
         )
     """
-    from sage.groups.all import AdditiveAbelianGroup
-    from sage.matrix.all import Matrix
+    from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup
+    from sage.matrix.constructor import Matrix
     M = AdditiveAbelianGroup(d)
     L = [e.lift() for e in M]
     E = Matrix(QQ, [[mod1(sum(e1[k] * e2[k] / d[k] for k in range(len(d))))
@@ -143,7 +143,9 @@ def find_group_structure(T):
         True
     """
     import copy
-    from sage.misc.all import exists, prod, sum
+    from sage.misc.misc import exists
+    from sage.misc.misc_c import prod
+    from sage.misc.functional import symbolic_sum as sum
     d = []
     pivot_rows = []
     pivot_columns = []
@@ -188,8 +190,8 @@ def find_group_structure_old(T):
     Old version of :func:`find_group_structure` (much slower, useless
     except maybe for debugging).
     """
-    from sage.matrix.all import Matrix
-    from sage.misc.all import prod
+    from sage.matrix.constructor import Matrix
+    from sage.misc.misc_c import prod
     Tp = T.__pari__()
     B = Tp.matrixqz(-1)
     C = Tp.matinverseimage(B).concat(Tp.matker()).matrixqz(-1)

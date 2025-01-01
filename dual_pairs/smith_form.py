@@ -6,8 +6,8 @@ Smith normal form for Abelian groups
 from __future__ import absolute_import
 
 from sage.groups.abelian_gps.abelian_group import AbelianGroup
-from sage.matrix.all import Matrix
-from sage.misc.all import prod
+from sage.matrix.constructor import Matrix
+from sage.misc.misc_c import prod
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 
