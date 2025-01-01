@@ -5,9 +5,10 @@ Dual pairs of algebras, representing finite flat group schemes.
 
 from __future__ import absolute_import
 
-from sage.matrix.all import Matrix
-from sage.misc.all import cached_method
-from sage.rings.all import QQ, ZZ
+from sage.matrix.constructor import Matrix
+from sage.misc.cachefunc import cached_method
+from sage.rings.rational_field import Q as QQ
+from sage.rings.integer_ring import Z as ZZ
 from sage.structure.category_object import CategoryObject
 from sage.structure.factory import UniqueFactory
 
@@ -995,7 +996,7 @@ class DualPair_class(CategoryObject):
             sage: all(rho(s * t) == rho(s) * rho(t) for s in G for t in G)
             True
         """
-        from sage.rings.all import IntegerModRing
+        from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
         L = aut.domain()
         M, _, _, _, basis1, basis2, _, dlog = self.group_structure(L)
         if basis is None:
@@ -1055,7 +1056,7 @@ class DualPair_class(CategoryObject):
             F = L.frobenius_endomorphism(q.log(p))
             return self.automorphism_matrix(F)
         else:
-            from sage.rings.all import FiniteField
+            from sage.rings.finite_rings.finite_field_constructor import FiniteField
             if q is None:
                 raise ValueError("should pass a prime power to Frob")
             return self.change_ring(FiniteField(q, 'a')).frobenius_matrix()
@@ -1168,8 +1169,9 @@ class DualPair_class(CategoryObject):
             sage: D.conductor_exponent(23)
             1
         """
-        from sage.modules.all import VectorSpace
-        from sage.rings.all import FiniteField, pAdicField
+        from sage.modules.free_module import VectorSpace
+        from sage.rings.padics.factory import Qp as pAdicField
+        from sage.rings.finite_rings.finite_field_constructor import FiniteField
         from sage.rings.infinity import infinity
         from sage.rings.padics.precision_error import PrecisionError
         from .padic_roots import kummer_dedekind, integral_basis_generator, padic_aut
@@ -1256,7 +1258,7 @@ class DualPair_class(CategoryObject):
             sage: D.artin_conductor()  # long time (14 s)
             32
         """
-        from sage.misc.all import prod
+        from sage.misc.misc_c import prod
         return prod(p ** self.conductor_exponent(p)
                     for p in self.algebra1().ramified_primes()
                     if self.degree() % p != 0)
@@ -1297,8 +1299,9 @@ class DualPair_class(CategoryObject):
             2
         """
         from sage.arith.misc import primes
-        from sage.rings.all import infinity, Mod
-        from sage.rings.all import ComplexField
+        from sage.rings.infinity import Infinity as infinity
+        from sage.rings.finite_rings.integer_mod import Mod
+        from sage.rings.complex_mpfr import ComplexField
         L = ComplexField(800)  # TODO: adapt precision
         N = self.artin_conductor()
         M, _, _, _, basis, _, _, _ = self.group_structure(L)
@@ -1377,7 +1380,7 @@ class DualPairFactory(UniqueFactory):
             [   0    0    0  -17]
             )
         """
-        from sage.matrix.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         from .finite_flat_algebra import FiniteFlatAlgebra, FiniteFlatAlgebra_base
         if len(data) == 0:
             raise ValueError('no arguments given')

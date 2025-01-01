@@ -7,7 +7,7 @@ from __future__ import absolute_import
 
 from sage.groups.group import AbelianGroup as AbelianGroupClass
 from sage.matrix.constructor import Matrix
-from sage.misc.all import prod
+from sage.misc.misc_c import prod
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import MultiplicativeGroupElement
