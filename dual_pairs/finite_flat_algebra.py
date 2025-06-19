@@ -669,6 +669,36 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         return (self._poly.discriminant()
                 * self._basis_matrix().determinant() ** 2)
 
+    def nice_model(self):
+        """
+        Return a nice model for ``self``.
+
+        This is currently only implemented if ``self`` is a field.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^4 + 16)
+            sage: B, P = A.nice_model()
+            sage: v = vector([1, 2, 3, 4])
+            sage: A(v).matrix() == P * B(v * P).matrix() * ~P
+            True
+            sage: A = FiniteFlatAlgebra(QQ, x^4 - 16)
+            sage: A.nice_model()
+            Traceback (most recent call last):
+            ...
+            NotImplementedError: nice_model() only implemented for fields
+        """
+        from sage.rings.rational_field import QQ
+        f = self._poly
+        A = self.algebra()
+        if not A.is_field():
+            raise NotImplementedError('nice_model() only implemented for fields')
+        B = self.algebra().__pari__()[7].sage()
+        P = B.transpose() * self._basis_matrix()
+        return FiniteFlatAlgebra(QQ, f, B), P
+
 
 class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
     """
@@ -901,6 +931,27 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         from sage.misc.all import prod
         return prod(f.discriminant() * M.determinant() ** 2
                     for f, M in zip(self._polys, self._basis_matrices()))
+
+    def nice_model(self):
+        """
+        Return a nice model for ``self``.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + x + 1], [[1], [1, 1 + x]])
+            sage: B, P = A.nice_model()
+            sage: v = vector([1, 2, 3])
+            sage: A(v).matrix().charpoly() == B(v * P).matrix().charpoly()
+            True
+        """
+        from sage.rings.rational_field import QQ
+        F = self._polys
+        BF = [K.__pari__()[7].sage() for K in self._factors]
+        P = Matrix.block_diagonal([M.transpose() * N
+                                   for M, N in zip(BF, self._basis_matrices())])
+        return FiniteFlatAlgebra(QQ, F, BF), P
 
     if not hasattr(sage.categories.unital_algebras.UnitalAlgebras.ParentMethods,
                    '_coerce_map_from_base_ring'):

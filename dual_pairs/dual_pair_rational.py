@@ -232,6 +232,36 @@ class DualPair_rational(DualPair_class):
         chi = G([self.frobenius_matrix(p).determinant() for p in P])
         return chi.primitive_character()
 
+    def nice_model(self):
+        """
+        Return a nice model for ``self``.
+
+        TESTS::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^8 - x^7 - 2*x^6 + 7*x^5 - 7*x^4 + 7*x^3 - 7*x^2 + 4*x - 1])
+            sage: Phi = 1/9 * matrix([[1, 8, 1, 5, -14, 17, -74, 128, -293],
+            ....:                     [8, -8, -1, -5, 14, -17, 74, -128, 293],
+            ....:                     [1, -1, 10, -4, 31, -118, 151, -484, 985],
+            ....:                     [5, -5, -22, 34, -151, 274, -532, 1477, -2941],
+            ....:                     [-14, 14, 13, 20, 115, -130, 181, -892, 1123],
+            ....:                     [17, -17, -91, 76, -418, 1054, -1438, 4948, -9409],
+            ....:                     [-74, 74, 115, -118, 946, -1663, 2830, -8995, 16462],
+            ....:                     [128, -128, -331, 145, -1810, 3877, -5368, 19327, -34516],
+            ....:                     [-293, 293, 832, -727, 5002, -10354, 15985, -52408, 97765]])
+            sage: D = DualPair(A, Phi)
+            sage: D.ramified_primes()
+            {3, 7, 11}
+            sage: D.nice_model().ramified_primes()
+            {3, 11}
+        """
+        from .dual_pair import DualPair
+        A, P = self.algebra1().nice_model()
+        B, Q = self.algebra2().nice_model()
+        Phi = ~P * self.phi() * ~Q.transpose()
+        return DualPair(A, B, Phi)
+
     def lmfdb_data(self):
         """
         Return ``self`` in LMFDB format.
