@@ -26,7 +26,7 @@ def _dlog_fun(L, n):
     from .group_structure import mod1
     try:
         twopii = 2 * L.pi() * L(-1).sqrt()
-        return lambda x: mod1(((x.log()/twopii).real() * n).round() / n)
+        return lambda x: mod1(((x.log() / twopii).real() * n).round() / n)
     except AttributeError:
         pass
     from sage.rings.padics.generic_nodes import (pAdicFieldGeneric,
@@ -1172,7 +1172,7 @@ class DualPair_class(CategoryObject):
         from sage.rings.all import FiniteField, pAdicField
         from sage.rings.infinity import infinity
         from sage.rings.padics.precision_error import PrecisionError
-        from .padic_roots import kummer_dedekind, integral_basis_generator, padic_aut
+        from .padic_roots import integral_basis_generator, padic_aut
         # TODO: use a p-adic splitting field (not implemented in Sage)
         g = self.splitting_field_polynomial()
         prec = 20
@@ -1197,7 +1197,7 @@ class DualPair_class(CategoryObject):
         indices = [(r - L.gen()).valuation() - 1 for r in roots]
         breaks = sorted(set(indices).difference({infinity}))
         assert breaks != []
-        lengths = [breaks[0] + 1] + [breaks[i] - breaks[i-1]
+        lengths = [breaks[0] + 1] + [breaks[i] - breaks[i - 1]
                                      for i in range(1, len(breaks))]
         # from smaller to larger subgroups of G_0
         breaks.reverse()
@@ -1310,7 +1310,7 @@ class DualPair_class(CategoryObject):
             raise ValueError("representation must be 2-dimensional")
         for p in primes(2, infinity):
             if (p % N == 1 and p % l != 0
-                and Mod(p, l).is_primitive_root()):
+                    and Mod(p, l).is_primitive_root()):
                 try:
                     d = self.frobenius_matrix(p).determinant()
                 except ZeroDivisionError:

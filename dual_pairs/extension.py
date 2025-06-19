@@ -16,6 +16,7 @@ from sage.rings.polynomial.polynomial_ring import polygen
 
 from dual_pairs import FiniteFlatAlgebra, DualPair
 
+
 def extension(R, m, n, a, b):
     r"""
     Return the extension of :math:`\mathbf{Z}/m\mathbf{Z}` by
@@ -77,9 +78,9 @@ def extension(R, m, n, a, b):
     u = polygen(R, 'u')
     A = FiniteFlatAlgebra(R, [t**n - a**i for i in range(m)])
     B = FiniteFlatAlgebra(R, [u**m - b**j for j in range(n)])
-    Phi = Matrix.zero(R, m*n, m*n)
+    Phi = Matrix.zero(R, m * n, m * n)
     for i in range(m):
         for j in range(n):
-            Phi[j + n*i, i + m*j] = R.one()
+            Phi[j + n * i, i + m * j] = R.one()
     Phi.set_immutable()
     return DualPair(A, B, Phi)

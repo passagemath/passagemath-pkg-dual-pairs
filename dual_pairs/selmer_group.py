@@ -14,6 +14,7 @@ from .etale_algebra import ideal_generator, ideal_root, principal_ideal
 from .smith_form import abelian_group_smith_form
 from .unit_group import unit_group
 
+
 def selmer_group(A, S, n):
     """
     Return the `n`-Selmer group of `A` relative to `S`.

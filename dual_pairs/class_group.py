@@ -11,12 +11,14 @@ from sage.misc.all import prod
 
 from .etale_algebra import isom_to_etale_algebra
 
+
 def _split_list(v, lengths):
     s = []
     for l in lengths:
         s.append(v[:l])
         v = v[l:]
     return s
+
 
 def _S_class_group(K, S):
     Cl = K.S_class_group(S)
@@ -30,6 +32,7 @@ def _S_class_group(K, S):
         return Cl(I).exponents()
 
     return Cl, Cl_gens, from_Cl, to_Cl
+
 
 def class_group(A, S):
     """

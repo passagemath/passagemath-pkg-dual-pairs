@@ -5,6 +5,7 @@ Utility functions for `p`-adic roots
 
 from sage.rings.all import PolynomialRing
 
+
 def reduce_element(a, K):
     """
     TODO
@@ -21,6 +22,7 @@ def reduce_element(a, K):
     else:
         return k(K(a).expansion())
 
+
 def reduce_poly(f, K):
     """
     TODO
@@ -30,11 +32,13 @@ def reduce_poly(f, K):
     R = PolynomialRing(k, x)
     return R([reduce_element(a, K) for a in f.list()])
 
+
 def roots_mod_m(f, K):
     """
     TODO
     """
     return reduce_poly(f, K).roots(multiplicities=False)
+
 
 def lift_root(f, a, K):
     """
@@ -46,8 +50,9 @@ def lift_root(f, a, K):
     if g(a).valuation() != 0:
         raise ValueError('%s is not a simple root of %s' % (a, f))
     while f(a) != 0:
-        a -= f(a)/g(a)
+        a -= f(a) / g(a)
     return a
+
 
 def rootpadic(f, a, K):
     """
@@ -67,6 +72,7 @@ def rootpadic(f, a, K):
     # print('roots of %s mod m: %s' % (g, r))
     return sum(([pi * u + a for u in rootpadic(g, b.lift(), K)]
                 for b in r), [])
+
 
 # assume f has integral coefficients and is squarefree
 def padic_roots(f, K):
@@ -98,6 +104,7 @@ def padic_roots(f, K):
     assert all(f(a) == 0 for a in R)
     return R
 
+
 def kummer_dedekind(f):
     """
     TODO
@@ -116,9 +123,10 @@ def kummer_dedekind(f):
         return f
     p = K.prime()
     if f.degree() == 2:
-        return kummer_dedekind(f(p*x)/p^2)
+        return kummer_dedekind(f(p * x) / p**2)
     raise NotImplementedError('maximal order of %s-adic field defined by %s'
                               % (p, f))
+
 
 def integral_basis_generator(f):
     """
@@ -142,6 +150,7 @@ def integral_basis_generator(f):
             return g
     raise NotImplementedError('maximal order of %s-adic field defined by %s'
                               % (p, f))
+
 
 def padic_aut(K, r):
     """

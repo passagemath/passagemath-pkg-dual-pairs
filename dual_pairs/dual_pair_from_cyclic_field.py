@@ -11,6 +11,7 @@ from sage.rings.polynomial.polynomial_element import Polynomial
 
 from .dual_pair_from_table import dual_pair_from_table
 
+
 def dual_pair_from_cyclic_field(L, F):
     r"""
     Return a dual pair encoding a cyclic Galois representation.
@@ -65,6 +66,6 @@ def dual_pair_from_cyclic_field(L, F):
         t = F(z + z**q)
         im_rho = matrix(F, [[0, -1], [1, t]])
 
-    table = { rho**j : im_rho**j for j in range(n) }
+    table = {rho**j: im_rho**j for j in range(n)}
 
     return dual_pair_from_table(G, F**2, table)

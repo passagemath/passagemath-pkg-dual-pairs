@@ -11,6 +11,7 @@ from sage.rings.polynomial.polynomial_element import Polynomial
 
 from .dual_pair_from_table import dual_pair_from_table
 
+
 def dual_pair_from_dihedral_field(L, F):
     r"""
     Return a dual pair encoding a dihedral Galois representation.
@@ -120,7 +121,7 @@ def dual_pair_from_dihedral_field(L, F):
         im_rho = matrix(F, [[0, -1], [1, t]])
         im_sigma = matrix(F, [[0, 1], [1, 0]])
 
-    table = { sigma**i * rho**j : im_sigma**i * im_rho**j
-              for i in range(2) for j in range(n) }
+    table = {sigma**i * rho**j: im_sigma**i * im_rho**j
+             for i in range(2) for j in range(n)}
 
     return dual_pair_from_table(G, F**2, table)

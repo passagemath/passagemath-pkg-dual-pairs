@@ -11,6 +11,7 @@ from sage.misc.all import prod
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 
+
 def abelian_group_smith_form(R, one, gens_0, log_0):
     S, U, V = R.smith_form()
     D = S.diagonal()

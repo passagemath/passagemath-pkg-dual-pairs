@@ -79,7 +79,8 @@ class Torsor(MultiplicativeGroupElement):
         tau = self._tau
         # twist the multiplication tensor by tau
         M = Matrix((tau * mu(b)).module_element() for b in B.gens()).transpose()
-        T = FiniteFlatAlgebra(R, [M.submatrix(i*n, 0, n, n) for i in range(n)])
+        T = FiniteFlatAlgebra(R, [M.submatrix(i * n, 0, n, n)
+                                  for i in range(n)])
         U = FreeModule(B, 1)
         Psi = Matrix.identity(n)
         return TorsorPair(D, T, U, Psi)

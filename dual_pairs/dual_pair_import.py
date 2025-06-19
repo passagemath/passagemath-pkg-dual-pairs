@@ -12,6 +12,7 @@ from sage.rings.rational_field import QQ
 from .dual_pair import DualPair
 from .finite_flat_algebra import FiniteFlatAlgebra
 
+
 def dual_pair_import(filename):
     """
     Import a dual pair of algebras from ``filename``.
