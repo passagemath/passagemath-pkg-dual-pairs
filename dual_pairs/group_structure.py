@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 from sage.rings.all import QQ
 
+
 def mod1(x):
     """
     Return the fractional part of `x`.
@@ -15,12 +16,14 @@ def mod1(x):
     d = x.denominator()
     return (x.numerator() % d) / d
 
+
 def find_perm(x, y):
     """
     Return the permutation that when applied to `x` gives `y`.
     """
     from sage.combinat.permutation import Permutation
     return Permutation([x.index(z) + 1 for z in y])
+
 
 def standard_group_structure(d):
     r"""
@@ -68,6 +71,7 @@ def standard_group_structure(d):
     E = Matrix(QQ, [[mod1(sum(e1[k] * e2[k] / d[k] for k in range(len(d))))
                      for e2 in L] for e1 in L])
     return M, E
+
 
 def find_group_structure(T):
     r"""
@@ -182,6 +186,7 @@ def find_group_structure(T):
     if T != E:
         raise ValueError("inconsistent data")
     return M, E, p, q
+
 
 def find_group_structure_old(T):
     """

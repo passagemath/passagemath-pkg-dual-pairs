@@ -13,6 +13,7 @@ from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.structure.richcmp import richcmp
 
+
 def solve_mod(M, N, D):
     """
     Return an integral solution of ``X * M == N (mod D)``.
@@ -38,6 +39,7 @@ def solve_mod(M, N, D):
     return Matrix(ZZ, N.nrows(), M.nrows(),
                   [Mp.matsolvemod(Dp, v).sage() for v in Np])
 
+
 def solve_mod_right(M, N, D):
     """
     Return an integral solution of ``M * X == N (mod D)``.
@@ -62,14 +64,17 @@ def solve_mod_right(M, N, D):
     return Matrix(ZZ, N.ncols(), M.ncols(),
                   [Mp.matsolvemod(Dp, v).sage() for v in Np]).transpose()
 
+
 def relation_matrix(A):
     R = Matrix.diagonal(A.gens_orders())
     return Matrix([r for r in R.rows() if r])
+
 
 # Work around https://github.com/sagemath/sage/issues/35216
 def _normalise(A, x):
     return A([e % o if o else e
               for e, o in zip(A(x).exponents(), A.gens_orders())])
+
 
 class AbelianGroupHomomorphism(Morphism):
     """
@@ -261,7 +266,7 @@ class AbelianGroupHomomorphism(Morphism):
         r = K.row(0)
         if r[0] != 1:
             raise ValueError('{} is not in the image of {}'.format(x, self))
-        return A(r[1:A.ngens()+1])
+        return A(r[1:A.ngens() + 1])
 
     def solve_right(self, h):
         """
@@ -298,11 +303,13 @@ class AbelianGroupHomomorphism(Morphism):
         X = solve_mod_right(self.matrix(), h.matrix(), vector(C.gens_orders()))
         return hom(B, C, X)
 
+
 def hom(A, B, im_gens):
     # explicitly pass category because otherwise some morphisms end up
     # in the category of *finite* commutative groups
     from sage.categories.groups import Groups
     return AbelianGroupHomomorphism(A.Hom(B, category=Groups().Commutative()), im_gens)
+
 
 def homology(f, g):
     """

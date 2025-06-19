@@ -18,6 +18,7 @@ def _list_to_alg(A, v):
         return A(v[0])
     return A(v)
 
+
 def _alg_to_list(x):
     """
     Return the list of coefficients of the algebra element `x`.

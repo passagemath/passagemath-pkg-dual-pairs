@@ -13,6 +13,7 @@ from sage.rings.number_field.number_field import NumberField
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.rational_field import QQ
 
+
 def algebra_and_points_from_action(G, V, action, reduced=True):
     """
     This is a helper function for :func:`dual_pair_from_table`.
@@ -108,6 +109,7 @@ def algebra_and_points_from_action(G, V, action, reduced=True):
 
     return A, X, M
 
+
 def dual_pair_from_table(G, V, table, reduced=True):
     r"""
     Return a dual pair of algebras corresponding to the given
@@ -154,7 +156,9 @@ def dual_pair_from_table(G, V, table, reduced=True):
     try:
         z = L.zeta(l)
         H = G
-        def restrict(h): return h
+
+        def restrict(h):
+            return h
     except ValueError:
         # There is no root of unity of order l in L.
         R = PolynomialRing(L, 'w')
@@ -164,14 +168,15 @@ def dual_pair_from_table(G, V, table, reduced=True):
         iota = Lz_abs.structure()[1] * Lz.coerce_map_from(L)
         H = Lz_abs.galois_group()
         z = Lz_abs(Lz.gen())
+
         def restrict(h):
             a = L.gen()
             ha = h(iota(a))
-            return [g for g in G if iota(g(a)) == ha][0]
+            return next(g for g in G if iota(g(a)) == ha)
         M = M.apply_map(iota)
 
     def cyclo_char(h):
-        return [a for a in range(l) if h(z) == z**a][0]
+        return next(a for a in range(l) if h(z) == z**a)
 
     # compute the dual representation
     table_dual = {h: table[restrict(h)].transpose()**-1 * cyclo_char(h)

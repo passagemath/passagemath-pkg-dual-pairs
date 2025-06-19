@@ -1173,6 +1173,7 @@ class FiniteFlatAlgebra_generic(FiniteFlatAlgebra_base):
         return Matrix([[(a * b).matrix().trace() for a in self.gens()]
                        for b in self.gens()]).determinant()
 
+
 class FiniteFlatAlgebraFactory(UniqueFactory):
     """
     Factory for finite flat algebras.

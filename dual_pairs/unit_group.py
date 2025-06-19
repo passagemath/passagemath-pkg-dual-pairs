@@ -10,12 +10,14 @@ from sage.misc.all import prod
 
 from .etale_algebra import isom_to_etale_algebra
 
+
 def _split_list(v, lengths):
     s = []
     for l in lengths:
         s.append(v[:l])
         v = v[l:]
     return s
+
 
 def _S_unit_group(K, S):
     U = K.S_unit_group(S=S)
@@ -29,6 +31,7 @@ def _S_unit_group(K, S):
 
     return U, U_gens, from_U, to_U
 
+
 def _mu_n(K, n):
     n = n.gcd(K.zeta_order())
     mu = K.zeta(n).powers(n)
@@ -40,6 +43,7 @@ def _mu_n(K, n):
         return mu.index(x)
 
     return K.zeta(n), n, exp, log
+
 
 def unit_group(A, S):
     """
@@ -91,6 +95,7 @@ def unit_group(A, S):
         return UA(sum((list(g(y)) for g, y in zip(to_U, to_P(x))), []))
 
     return UA, gens, from_UA, to_UA
+
 
 def roots_of_unity(A, n):
     """

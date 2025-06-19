@@ -9,6 +9,7 @@ from sage.misc.all import cached_method
 
 from dual_pairs.dual_pair import DualPair_class
 
+
 def lift_to_prime(a):
     """
     Return the smallest prime in the residue class `a`.
@@ -24,6 +25,7 @@ def lift_to_prime(a):
     while not p.is_prime():
         p += n
     return p
+
 
 class DualPair_rational(DualPair_class):
     r"""
@@ -184,12 +186,8 @@ class DualPair_rational(DualPair_class):
             True
         """
         from sage.arith.misc import primes
-        P = self.ramified_primes()
-        L = []
-        for p in primes(B):
-            if p not in P:
-                L.append((p, self.frobenius_matrix(p).trace()))
-        return L
+        return [(p, self.frobenius_matrix(p).trace())
+                for p in primes(B) if p not in self.ramified_primes()]
 
     @cached_method
     def dirichlet_character(self):
