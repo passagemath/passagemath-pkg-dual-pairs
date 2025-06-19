@@ -266,8 +266,8 @@ class TorsorClassGroup(AbelianGroupClass):
             sage: H = D.torsor_class_group([2, 23])
             sage: H.group_structure()
             (Multiplicative Abelian group isomorphic to C2 x C2,
-             [Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 10/23*e5 - 31/23*e6 + 47/23*e7 - 31/23*e9 + 126/23*e10 - 56/23*e11 + 47/23*e13 - 56/23*e14 - 39/23*e15),
-              Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 - 9/23*e5 - 2/23*e6 + 6/23*e7 - 2/23*e9 + 20/23*e10 - 14/23*e11 + 6/23*e13 - 14/23*e14 + 19/23*e15)],
+             [Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 62/23*e5 - 45/23*e6 - 49/23*e7 - 45/23*e9 + 59/23*e10 - 39/23*e11 - 49/23*e13 - 39/23*e14 + 71/23*e15),
+              Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), -e0 - e1 - e4 + 128/529*e5 + 583/529*e6 - 1335/529*e7 + 583/529*e9 - 2219/529*e10 + 539/529*e11 - 1335/529*e13 + 539/529*e14 + 1695/529*e15)],
              <function TorsorClassGroup.group_structure.<locals>.exp at 0x...>,
              <function TorsorClassGroup.group_structure.<locals>.log at 0x...>)
 
@@ -275,7 +275,7 @@ class TorsorClassGroup(AbelianGroupClass):
             sage: H = D.torsor_class_group([])
             sage: H.group_structure()
             (Multiplicative Abelian group isomorphic to C2 x C2,
-             [Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e4 + 40/283*e5 + 41/283*e6 + 15/283*e7 + 41/283*e9 + 134/283*e10 - 20/283*e11 + 15/283*e13 - 20/283*e14 + 41/283*e15),
+             [Torsor defined by ((Fractional ideal (1), Fractional ideal (1)), -e0 - e1 - e4 - 88/283*e5 + 23/283*e6 - 33/283*e7 + 23/283*e9 + 158/283*e10 + 44/283*e11 - 33/283*e13 + 44/283*e14 + 23/283*e15),
               Torsor defined by ((Fractional ideal (1), Fractional ideal (3, a + 1)), e0 + e1 + e4 + 1670/849*e5 - 19/283*e6 + 697/849*e7 - 19/283*e9 + 359/849*e10 + 14/849*e11 + 697/849*e13 + 14/849*e14 + 226/849*e15)],
              <function TorsorClassGroup.group_structure.<locals>.exp at 0x...>,
              <function TorsorClassGroup.group_structure.<locals>.log at 0x...>)
@@ -298,7 +298,7 @@ class TorsorClassGroup(AbelianGroupClass):
             sage: B
             Multiplicative Abelian group isomorphic to C2 x C2 x C2 x C2
             sage: exp(B.gen(0))
-            Torsor defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), 13*e0 + 13*e1 + 13*e2 + 13*e4 + 13*e5 - 13*e6 + 13*e8 - 13*e9 + 1/42*e15)
+            Torsor defined by ((Fractional ideal (1), Fractional ideal (1), Fractional ideal (1)), e0 + e1 + e2 + e4 + e5 + e6 + e8 + e9 - e10)
             sage: log(gens[1])
             f1
             sage: log(exp(B.gen(3))) == B.gen(3)
