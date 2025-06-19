@@ -53,7 +53,15 @@ def dual_pair_import(filename):
     data = [pari(L) for L in stream.readlines()]
     stream.close()
 
-    if len(data) == 2:
+    if len(data) == 1:
+        # LMFDB format
+        F, G, d_Phi = data[0]
+        Phi = d_Phi[1] / d_Phi[0]
+        R = PolynomialRing(QQ, 'x')
+        A = FiniteFlatAlgebra(QQ, [R(f) for f in F])
+        B = FiniteFlatAlgebra(QQ, [R(g) for g in G])
+        return DualPair(A, B, Phi.sage())
+    elif len(data) == 2:
         (F, Phi) = data
         R = PolynomialRing(QQ, str(F.variable()))
         A = FiniteFlatAlgebra(QQ, [R(f) for f in F])
