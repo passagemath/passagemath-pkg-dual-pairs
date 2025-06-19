@@ -699,6 +699,24 @@ class FiniteFlatAlgebra_monogenic(FiniteFlatAlgebra_base, CommutativeAlgebra):
         P = B.transpose() * self._basis_matrix()
         return FiniteFlatAlgebra(QQ, f, B), P
 
+    @cached_method
+    def pari_data(self):
+        """
+        Return ``self`` in PARI format.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, x^2 + x + 1, [1, 1 + x])
+            sage: A.pari_data()
+            [x^2 + x + 1, [1, -1; 0, 1]]
+        """
+        from sage.libs.pari import pari
+        f = self._poly
+        B = ~self._basis_matrix().transpose()
+        return pari([f, B])
+
 
 class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
     """
@@ -952,6 +970,24 @@ class FiniteFlatAlgebra_product(FiniteFlatAlgebra_base, CommutativeAlgebra):
         P = Matrix.block_diagonal([M.transpose() * N
                                    for M, N in zip(BF, self._basis_matrices())])
         return FiniteFlatAlgebra(QQ, F, BF), P
+
+    @cached_method
+    def pari_data(self):
+        """
+        Return ``self`` in PARI format.
+
+        TESTS::
+
+            sage: from dual_pairs import FiniteFlatAlgebra
+            sage: R.<x> = QQ[]
+            sage: A = FiniteFlatAlgebra(QQ, [x, x^2 + x + 1], [[1], [1, 1 + x]])
+            sage: A.pari_data()
+            [[x, x^2 + x + 1], [Mat(1), [1, -1; 0, 1]]]
+        """
+        from sage.libs.pari import pari
+        F = self._polys
+        BF = [~M.transpose() for M in self._basis_matrices()]
+        return pari([F, BF])
 
     if not hasattr(sage.categories.unital_algebras.UnitalAlgebras.ParentMethods,
                    '_coerce_map_from_base_ring'):
