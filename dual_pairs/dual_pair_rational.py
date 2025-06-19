@@ -289,6 +289,28 @@ class DualPair_rational(DualPair_class):
                 [list(g) for g in B._polys],
                 [den, [list(r) for r in den * Phi]]]
 
+    def pari_data(self):
+        """
+        Return ``self`` in PARI format.
+
+        TESTS::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.pari_data()
+            [[x, x, x^2 + 17], [Mat(1), Mat(1), [1, 0; 0, 1]], [x, x, x^2 + 17], [Mat(1), Mat(1), [1, 0; 0, 1]], [1/4, 1/4, 1/2, 0; 1/4, 1/4, -1/2, 0; 1/2, -1/2, 0, 0; 0, 0, 0, -17]]
+        """
+        from sage.libs.pari import pari
+        return pari([self.algebra1().pari_data(),
+                     self.algebra2().pari_data(),
+                     [self.phi()]]).concat()
+
     def torsor_class_group(self, S):
         """
         Return the group of isomorphism classes of torsors for ``self``.
