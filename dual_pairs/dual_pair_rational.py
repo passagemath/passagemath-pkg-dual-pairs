@@ -232,6 +232,33 @@ class DualPair_rational(DualPair_class):
         chi = G([self.frobenius_matrix(p).determinant() for p in P])
         return chi.primitive_character()
 
+    def lmfdb_data(self):
+        """
+        Return ``self`` in LMFDB format.
+
+        TESTS::
+
+            sage: R.<x> = QQ[]
+            sage: from dual_pairs import FiniteFlatAlgebra, DualPair
+            sage: A = FiniteFlatAlgebra(QQ, [x, x, x^2 + 17])
+            sage: Phi = Matrix(QQ, [[1/4,  1/4,  1/2,   0],
+            ....:                   [1/4,  1/4, -1/2,   0],
+            ....:                   [1/2, -1/2,    0,   0],
+            ....:                   [  0,    0,    0, -17]])
+            sage: D = DualPair(A, Phi)
+            sage: D.lmfdb_data()
+            [[[0, 1], [0, 1], [17, 0, 1]],
+             [[0, 1], [0, 1], [17, 0, 1]],
+             [4, [[1, 1, 2, 0], [1, 1, -2, 0], [2, -2, 0, 0], [0, 0, 0, -68]]]]
+        """
+        A = self.algebra1()
+        B = self.algebra2()
+        Phi = ~A._basis_matrix() * self.phi() * ~B._basis_matrix().transpose()
+        den = Phi.denominator()
+        return [[list(f) for f in A._polys],
+                [list(g) for g in B._polys],
+                [den, [list(r) for r in den * Phi]]]
+
     def torsor_class_group(self, S):
         """
         Return the group of isomorphism classes of torsors for ``self``.
