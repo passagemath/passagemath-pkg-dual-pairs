@@ -6,7 +6,7 @@ Unit groups of finite flat algebras
 from __future__ import absolute_import
 
 from sage.groups.abelian_gps.abelian_group import AbelianGroup
-from sage.misc.all import prod
+from sage.misc.misc_c import prod
 
 from .etale_algebra import isom_to_etale_algebra
 

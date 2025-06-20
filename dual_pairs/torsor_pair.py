@@ -5,7 +5,7 @@ Torsors under commutative finite flat group schemes.
 
 from __future__ import absolute_import
 
-from sage.misc.all import cached_method
+from sage.misc.cachefunc import cached_method
 from sage.structure.category_object import CategoryObject
 
 
@@ -103,7 +103,7 @@ class TorsorPair(CategoryObject):
             sage: X = TorsorPair(D, T, U, Psi)
             sage: TestSuite(X).run(skip=['_test_pickling'])
         """
-        from sage.matrix.all import MatrixSpace
+        from sage.matrix.matrix_space import MatrixSpace
         R = dual_pair.base_ring()
         n = dual_pair.degree()
         M = MatrixSpace(R, n, n)

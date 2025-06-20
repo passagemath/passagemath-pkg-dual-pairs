@@ -5,8 +5,8 @@ Selmer groups of finite flat algebras
 
 from __future__ import absolute_import
 
-from sage.matrix.all import Matrix
-from sage.misc.all import prod
+from sage.matrix.constructor import Matrix
+from sage.misc.misc_c import prod
 
 from .abelian_group_homomorphism import hom
 from .class_group import class_group
