@@ -16,7 +16,9 @@ setuptools.setup(
                                     "passagemath-groups",
                                     "passagemath-modules",
                                     "passagemath-pari",
-                                    "passagemath-repl"]},
+                                    "passagemath-repl",
+                                    "passagemath-schemes",
+                                    "passagemath-singular"]},
     classifiers=[
         "Topic :: Scientific/Engineering :: Mathematics",
         "Intended Audience :: Science/Research",
