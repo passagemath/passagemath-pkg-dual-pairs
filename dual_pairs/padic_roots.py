@@ -3,7 +3,7 @@
 Utility functions for `p`-adic roots
 """
 
-from sage.rings.all import PolynomialRing
+from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
 def reduce_element(a, K):
     """

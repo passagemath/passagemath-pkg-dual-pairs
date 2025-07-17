@@ -5,7 +5,7 @@ Dual pairs of algebras over the rational numbers.
 
 from __future__ import absolute_import
 
-from sage.misc.all import cached_method
+from sage.misc.cachefunc import cached_method
 
 from dual_pairs.dual_pair import DualPair_class
 
@@ -88,7 +88,7 @@ class DualPair_rational(DualPair_class):
             sage: D.splitting_field('a')
             Number Field in a with defining polynomial x^4 + 28*x^2 + 784
         """
-        from sage.rings.all import QQ
+        from sage.rings.rational_field import Q as QQ
         return QQ.extension(self.splitting_field_polynomial(),
                             names=names)
 
@@ -130,7 +130,7 @@ class DualPair_rational(DualPair_class):
             sage: D.group_structure_algebraic_closure()[0]
             Additive abelian group isomorphic to Z/2 + Z/2
         """
-        from sage.rings.all import ComplexField
+        from sage.rings.complex_mpfr import ComplexField
         L = ComplexField(800)  # TODO: adapt precision
         return self.group_structure(L)
 

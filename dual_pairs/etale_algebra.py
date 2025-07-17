@@ -10,7 +10,7 @@ from sage.categories.cartesian_product import cartesian_product
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import Matrix
 from sage.libs.pari import pari
-from sage.misc.all import prod
+from sage.misc.misc_c import prod
 from sage.misc.cachefunc import cached_function
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
