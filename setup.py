@@ -13,6 +13,7 @@ setuptools.setup(
     package_data={"dual_pairs": ["example_data/*.gp"]},
     extras_require={"doc": "sphinx>=2",
                     "passagemath": ["passagemath-flint",
+                                    "passagemath-groups",
                                     "passagemath-modules",
                                     "passagemath-pari",
                                     "passagemath-repl"]},
