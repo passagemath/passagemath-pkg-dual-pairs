@@ -983,6 +983,7 @@ class DualPair_class(CategoryObject):
             ....:                   [0,  0, 4, -6],
             ....:                   [2, -2, -6, 0]])
             sage: D = DualPair(A, phi)
+            sage: x = polygen(ZZ)
             sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
             sage: aut = L.hom([1/14*(z^5 + z^4 + 8*z^3 + z^2 + 26*z - 2)])
             sage: D.automorphism_matrix(aut)
@@ -1127,6 +1128,7 @@ class DualPair_class(CategoryObject):
             ....:                   [0,  0, 4, -6],
             ....:                   [2, -2, -6, 0]])
             sage: D = DualPair(A, phi)
+            sage: x = polygen(ZZ)
             sage: L.<z> = NumberField(x^6 + 7*x^4 + 18*x^2 + 23)
             sage: table = D.representation_table(L)
             sage: {f(z): m for f, m in table.items()}
