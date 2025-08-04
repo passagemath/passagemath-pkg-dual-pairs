@@ -10,18 +10,32 @@ Author
 Peter Bruin, <P.J.Bruin@math.leidenuniv.nl>
 
 
-Prerequisites
--------------
+Use with an existing SageMath installation
+------------------------------------------
+
+Prerequisite:
 
 - SageMath, <http://www.sagemath.org/>.  This package has been tested
   with SageMath versions from 8.2 up to 10.4; it may also work with
   older or newer versions.
 
-
-Installation
-------------
+Installation:
 
     $ sage --pip install dual_pairs
+
+
+Standalone use in Python
+------------------------
+
+Installation:
+
+    $ pip install git+https://github.com/passagemath/passagemath-pkg-dual-pairs
+
+This will automatically install the required modularized distributions
+of the Sage library developed by the
+[passagemath project](https://github.com/passagemath/passagemath)
+as dependencies.
+
 
 Documentation
 -------------
