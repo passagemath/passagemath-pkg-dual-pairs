@@ -15,7 +15,7 @@ setuptools.setup(
                     "passagemath": ["passagemath-flint",
                                     "passagemath-groups",
                                     "passagemath-modules",
-                                    "passagemath-pari",
+                                    "passagemath-pari[galdata]",
                                     "passagemath-repl",
                                     "passagemath-schemes",
                                     "passagemath-singular"]},
